@@ -1,4 +1,5 @@
 /node_modules/
 /build/
+/.vercel/
 /.svelte-kit/
 /vite.config.ts.timestamp-*.mjs
