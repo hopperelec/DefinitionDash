@@ -11,7 +11,7 @@
     "eslint": "eslint .",
     "stylelint": "stylelint '**/*.{css,html,scss,svelte}'",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format-check": "prettier --check .",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "playwright test",
     "test:unit": "vitest"
