@@ -3,3 +3,4 @@
 /.vercel/
 /.svelte-kit/
 /vite.config.ts.timestamp-*.mjs
+/.replit
