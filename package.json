@@ -3,9 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite dev",
-    "dev:host": "vite dev --host",
-    "build": "vite build",
+    "dev": "cross-env PUBLIC_BASE_URL=http://localhost:5173 vite dev",
+    "build": "cross-env PUBLIC_BASE_URL=http://localhost:4173 vite build",
     "preview": "vite preview",
     "preview:host": "vite preview --host",
     "eslint": "eslint .",
@@ -17,6 +16,7 @@
     "test:unit": "vitest"
   },
   "dependencies": {
+    "google-auth-library": "^9.2.0",
     "html-minifier-terser": "^7.2.0"
   },
   "devDependencies": {
@@ -27,6 +27,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "autoprefixer": "^10.4.16",
+    "cross-env": "^7.0.3",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-svelte": "^2.30.0",
