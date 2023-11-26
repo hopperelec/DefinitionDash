@@ -18,6 +18,7 @@ jobs:
       - run: npm run test:unit
   integration-test:
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3

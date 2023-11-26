@@ -2,6 +2,7 @@
 /build/
 /.vercel/
 /.svelte-kit/
+/test-results/
 /vite.config.ts.timestamp-*.mjs
 /.replit
 /.env
