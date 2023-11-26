@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 60
+    env:
+      PUBLIC_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
