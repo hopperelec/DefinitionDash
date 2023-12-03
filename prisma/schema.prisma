@@ -9,13 +9,16 @@ datasource db {
 }
 
 model School {
-  id    Int     @id @default(autoincrement()) @db.UnsignedInt
-  name  String?
-  users User[]
+  id     Int     @id @default(autoincrement()) @db.UnsignedInt
+  name   String?
+  domain String  @unique
+  users  User[]
 }
 
 model User {
   id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  name       String?
+  picture    String?   @db.Text
   school     School    @relation(fields: [school_id], references: [id])
   school_id  Int       @db.UnsignedInt
   google_sub String    @db.VarChar(255)

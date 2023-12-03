@@ -1,13 +1,20 @@
 import type { RequestHandler } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import { OAuth2Client } from "google-auth-library";
 import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
-import { error } from "@sveltejs/kit";
+import { ALLOWED_DOMAIN } from "$env/static/private";
+import prisma from "$lib/prisma";
+import type { School, User } from "@prisma/client";
+import { toBuffer } from "uuid-buffer";
+import { dev } from "$app/environment";
 
-export const POST: RequestHandler = async ({ request }) => {
+const SESSION_DURATION_DAYS = 7;
+
+export const POST: RequestHandler = async ({ request, cookies }) => {
   const params = new URLSearchParams(await request.text());
 
   const token = params.get("credential");
-  if (!token) throw error(403, "No credential passed");
+  if (!token) throw error(400, "No credential passed");
   const csrf_cookie = params.get("g_csrf_token");
   if (!csrf_cookie) throw error(400, "No CSRF token in Cookie.");
   const csrf_body = params.get("g_csrf_token");
@@ -19,8 +26,66 @@ export const POST: RequestHandler = async ({ request }) => {
     idToken: token,
     audience: PUBLIC_GOOGLE_CLIENT_ID,
   });
-  // const payload = ticket.getPayload();
-  // payload?.hd
+  const payload = ticket.getPayload();
+  if (!payload) {
+    throw error(400, "Failed to verify ID token");
+  }
+
+  let user: User | null = await prisma.user.findFirst({
+    where: { google_sub: payload.sub },
+  });
+  if (!user) {
+    if (payload.hd != ALLOWED_DOMAIN) {
+      throw error(
+        403,
+        "Currently, only accounts registered with my school are allowed to access Definition Dash",
+      );
+    }
+    let school: School | null = await prisma.school.findUnique({
+      where: { domain: payload.hd },
+    });
+    if (!school) {
+      school = await prisma.school.create({
+        data: {
+          domain: payload.hd,
+        },
+      });
+    }
+    user = await prisma.user.create({
+      data: {
+        school_id: school.id,
+        google_sub: payload.sub,
+      },
+    });
+  }
+  user = await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      name: payload.name,
+      picture: payload.picture,
+    },
+  });
+
+  const session_uuid: string = crypto.randomUUID();
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + SESSION_DURATION_DAYS);
+  await prisma.session.create({
+    data: {
+      user_id: user.id,
+      uuid_bin: toBuffer(session_uuid),
+      expires: expiry,
+    },
+  });
+
+  cookies.set("session", session_uuid, {
+    path: "/",
+    httpOnly: true,
+    sameSite: true,
+    secure: !dev,
+    maxAge: 60 * 60 * 24 * SESSION_DURATION_DAYS,
+  });
 
   return new Response("Authenticated!");
 };
