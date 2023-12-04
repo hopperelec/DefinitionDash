@@ -7,8 +7,7 @@ import prisma from "$lib/prisma";
 import type { School, User } from "@prisma/client";
 import { toBuffer } from "uuid-buffer";
 import { dev } from "$app/environment";
-
-const SESSION_DURATION_DAYS = 7;
+import { SESSION_COOKIE_KEY, SESSION_DURATION_DAYS } from "$lib/constants";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   const params = new URLSearchParams(await request.text());
@@ -73,7 +72,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     },
   });
 
-  cookies.set("session", session_uuid, {
+  cookies.set(SESSION_COOKIE_KEY, session_uuid, {
     path: "/",
     httpOnly: true,
     secure: !dev,

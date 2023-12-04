@@ -4,6 +4,7 @@ import type { Options } from "html-minifier-terser";
 import { minify } from "html-minifier-terser";
 import prisma from "$lib/prisma";
 import { toBuffer } from "uuid-buffer";
+import { SESSION_COOKIE_KEY } from "$lib/constants";
 
 const minification_options: Options = {
   collapseInlineTagWhitespace: true,
@@ -18,7 +19,7 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
   if (event.url.pathname.startsWith("/login")) {
     return true;
   }
-  const sessionUUID = event.cookies.get("session");
+  const sessionUUID = event.cookies.get(SESSION_COOKIE_KEY);
   if (!sessionUUID) {
     return false;
   }
