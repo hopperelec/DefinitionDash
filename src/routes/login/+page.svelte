@@ -1,30 +1,30 @@
 <script>
-  import { PUBLIC_GOOGLE_CLIENT_ID, PUBLIC_BASE_URL } from "$env/static/public";
+  import { PUBLIC_BASE_URL, PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
 </script>
 
 <svelte:head>
-  <script src="https://accounts.google.com/gsi/client" async></script>
+  <script async src="https://accounts.google.com/gsi/client"></script>
 </svelte:head>
 
 <div
-  id="g_id_onload"
+  data-auto_prompt="false"
   data-client_id={PUBLIC_GOOGLE_CLIENT_ID}
   data-context="signin"
+  data-login_uri="{PUBLIC_BASE_URL}/login/callback"
   data-ux_mode="redirect"
-  data-login_uri="{PUBLIC_BASE_URL}/callback"
-  data-auto_prompt="false"
+  id="g_id_onload"
 ></div>
 
 <main>
   <header>Definition Dash</header>
   <div
     class="g_id_signin"
-    data-type="standard"
-    data-shape="rectangular"
-    data-theme="outline"
-    data-text="continue_with"
-    data-size="large"
     data-logo_alignment="left"
+    data-shape="rectangular"
+    data-size="large"
+    data-text="continue_with"
+    data-theme="outline"
+    data-type="standard"
   >
     <!-- prettier-ignore -->
   </div>

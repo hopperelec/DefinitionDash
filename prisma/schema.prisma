@@ -23,6 +23,7 @@ model User {
   school_id  Int       @db.UnsignedInt
   google_sub String    @db.VarChar(255)
   is_teacher Boolean   @default(false)
+  allowed    Boolean   @default(false)
   sessions   Session[]
 }
 

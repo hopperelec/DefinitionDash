@@ -35,26 +35,20 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     where: { google_sub: payload.sub },
   });
   if (!user) {
-    if (payload.hd != ALLOWED_DOMAIN) {
-      throw error(
-        403,
-        "Currently, only accounts registered with my school are allowed to access Definition Dash",
-      );
-    }
+    const domain = payload.hd || ALLOWED_DOMAIN;
     let school: School | null = await prisma.school.findUnique({
-      where: { domain: payload.hd },
+      where: { domain },
     });
     if (!school) {
       school = await prisma.school.create({
-        data: {
-          domain: payload.hd,
-        },
+        data: { domain },
       });
     }
     user = await prisma.user.create({
       data: {
         school_id: school.id,
         google_sub: payload.sub,
+        allowed: payload.hd === ALLOWED_DOMAIN,
       },
     });
   }
@@ -82,10 +76,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   cookies.set("session", session_uuid, {
     path: "/",
     httpOnly: true,
-    sameSite: true,
+    sameSite: !dev,
     secure: !dev,
     maxAge: 60 * 60 * 24 * SESSION_DURATION_DAYS,
   });
 
-  return new Response("Authenticated!");
+  return new Response("Redirect", {
+    status: 303,
+    headers: { Location: "/" },
+  });
 };

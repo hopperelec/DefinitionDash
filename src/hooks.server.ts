@@ -1,6 +1,9 @@
-import type { Handle } from "@sveltejs/kit";
-import { minify } from "html-minifier-terser";
+import type { Handle, RequestEvent } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import type { Options } from "html-minifier-terser";
+import { minify } from "html-minifier-terser";
+import prisma from "$lib/prisma";
+import { toBuffer } from "uuid-buffer";
 
 const minification_options: Options = {
   collapseInlineTagWhitespace: true,
@@ -11,15 +14,54 @@ const minification_options: Options = {
   removeRedundantAttributes: true,
 };
 
+async function isAuthorized(event: RequestEvent): Promise<boolean> {
+  if (event.url.pathname.startsWith("/login")) {
+    return true;
+  }
+  const sessionUUID = event.cookies.get("session");
+  if (!sessionUUID) {
+    return false;
+  }
+  const session = await prisma.session.findUnique({
+    where: {
+      uuid_bin: toBuffer(sessionUUID),
+    },
+    include: {
+      user: true,
+    },
+  });
+  if (!session) {
+    throw error(400, "Invalid session UUID");
+  }
+  if (new Date() > session.expires) {
+    return false;
+  }
+  if (session.user.allowed) {
+    event.locals.user = session.user;
+    return true;
+  }
+
+  throw error(
+    403,
+    "Currently, only accounts registered with my school are allowed to access Definition Dash",
+  );
+}
+
 export const handle: Handle = async ({ event, resolve }) => {
   let page = "";
 
-  return resolve(event, {
-    transformPageChunk: ({ html, done }) => {
-      page += html;
-      if (done) {
-        return minify(page, minification_options);
-      }
-    },
+  if (await isAuthorized(event)) {
+    return resolve(event, {
+      transformPageChunk: ({ html, done }) => {
+        page += html;
+        if (done) {
+          return minify(page, minification_options);
+        }
+      },
+    });
+  }
+  return new Response("Redirect", {
+    status: 303,
+    headers: { Location: "/login" },
   });
 };
