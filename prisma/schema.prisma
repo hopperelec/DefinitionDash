@@ -16,15 +16,16 @@ model School {
 }
 
 model User {
-  id         Int       @id @default(autoincrement()) @db.UnsignedInt
-  name       String?
-  picture    String?   @db.Text
-  school     School    @relation(fields: [school_id], references: [id])
-  school_id  Int       @db.UnsignedInt
-  google_sub String    @db.VarChar(255)
-  is_teacher Boolean   @default(false)
-  allowed    Boolean   @default(false)
-  sessions   Session[]
+  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  name         String?
+  picture      String?   @db.Text
+  school       School    @relation(fields: [school_id], references: [id])
+  school_id    Int       @db.UnsignedInt
+  google_sub   String    @db.VarChar(255)
+  is_teacher   Boolean   @default(false)
+  allowed      Boolean   @default(false)
+  sessions     Session[]
+  created_maps Map[]
 }
 
 model Session {
@@ -33,4 +34,12 @@ model Session {
   user_id   Int      @db.UnsignedInt
   createdAt DateTime @default(now())
   expires   DateTime @db.Timestamp(0)
+}
+
+model Map {
+  id         Int     @id @default(autoincrement()) @db.UnsignedInt
+  creator    User    @relation(fields: [creator_id], references: [id])
+  creator_id Int     @db.UnsignedInt
+  img_url    String  @db.Text
+  name       String?
 }

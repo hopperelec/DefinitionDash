@@ -1,9 +1,40 @@
 <script lang="ts">
-  import type { LayoutData } from "./$types";
-  import LogoutButton from "$lib/LogoutButton.svelte";
+  import type { PageData } from "./$types";
+  import { onMount } from "svelte";
 
-  export let data: LayoutData;
+  export let data: PageData;
+  onMount(() => {
+    if (data.map) {
+      const map_container = document.getElementById("map-container");
+      if (map_container) {
+        map_container.append(new DOMParser().parseFromString(data.map, "image/svg+xml").documentElement);
+      }
+    }
+  });
 </script>
 
-<p>You are currently logged in as {data.user.name}</p>
-<LogoutButton />
+<div id="map-container"></div>
+
+<svelte:head>
+  <style>
+      body {
+          margin: 0;
+      }
+
+      #map-container {
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+
+      [data-room]:hover {
+          filter: brightness(1.5);
+          cursor: pointer;
+      }
+
+      text {
+          pointer-events: none;
+      }
+  </style>
+</svelte:head>
