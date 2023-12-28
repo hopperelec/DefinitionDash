@@ -123,8 +123,7 @@
           cursor: pointer;
       }
 
-      /* noinspection CssUnusedSymbol */
-      .roomLabels, [data-icon-for] {
+      [data-label-for], [data-icon-for] {
           pointer-events: none;
       }
 
