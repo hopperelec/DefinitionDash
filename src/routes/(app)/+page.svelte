@@ -7,14 +7,19 @@
   const ICON_SIZE = 16;
   const SVG_NS = "http://www.w3.org/2000/svg";
 
-  function getElmWhere(dataName: string, dataValue: number): SVGGraphicsElement | null {
+  function getElmWhere(
+    dataName: string,
+    dataValue: number,
+  ): SVGGraphicsElement | null {
     return mapElm.querySelector(`[data-${dataName}='${dataValue}']`);
   }
   function getRoom(id: number): SVGGraphicsElement | null {
     return getElmWhere("room", id) as SVGGraphicsElement;
   }
   function getLabelsFor(roomId: number): IterableIterator<HTMLElement> | null {
-    return mapElm.querySelectorAll(`[data-label-for='${roomId}']`).values() as IterableIterator<HTMLElement>;
+    return mapElm
+      .querySelectorAll(`[data-label-for='${roomId}']`)
+      .values() as IterableIterator<HTMLElement>;
   }
 
   function removeIcon(icon: SVGImageElement) {
@@ -53,21 +58,31 @@
     iconContainer.appendChild(icon);
 
     const roomBBox = room.getBBox();
-    let center = new DOMPoint(roomBBox.x + roomBBox.width/2, roomBBox.y + roomBBox.height/2);
+    let center = new DOMPoint(
+      roomBBox.x + roomBBox.width / 2,
+      roomBBox.y + roomBBox.height / 2,
+    );
     const roomCTM = room.getCTM();
     const svgCTM = mapElm.getCTM();
     if (roomCTM && svgCTM) {
       center = center.matrixTransform(svgCTM.inverse().multiply(roomCTM));
     }
     const iconContainerBBox = iconContainer.getBBox();
-    center.x -= iconContainerBBox.width/2;
-    center.y -= iconContainerBBox.height/2;
+    center.x -= iconContainerBBox.width / 2;
+    center.y -= iconContainerBBox.height / 2;
 
-    iconContainer.setAttribute("transform", `translate(${center.x}, ${center.y})`);
+    iconContainer.setAttribute(
+      "transform",
+      `translate(${center.x}, ${center.y})`,
+    );
     return icon;
   }
 
-  function movePlayerIcon(playerId: number, playerPicture: string | null, roomId: number) {
+  function movePlayerIcon(
+    playerId: number,
+    playerPicture: string | null,
+    roomId: number,
+  ) {
     const prevIcon = getElmWhere("player", playerId) as SVGImageElement;
     if (prevIcon) removeIcon(prevIcon);
     const newIcon = addIconTo(roomId, playerPicture || "/default_pfp.svg");
@@ -79,23 +94,29 @@
     if (data.map) {
       const mapContainer = document.getElementById("map-container");
       if (mapContainer) {
-        const tempMapElm = new DOMParser().parseFromString(data.map, "image/svg+xml").documentElement;
+        const tempMapElm = new DOMParser().parseFromString(
+          data.map,
+          "image/svg+xml",
+        ).documentElement;
         if (tempMapElm instanceof SVGSVGElement) {
           mapElm = tempMapElm;
-          mapElm.onclick = event => {
+          mapElm.onclick = (event) => {
             if (event.target instanceof SVGElement) {
               let clickedRoom = event.target.dataset.room;
-              if (!clickedRoom) clickedRoom = event.target.parentElement?.dataset.room
+              if (!clickedRoom)
+                clickedRoom = event.target.parentElement?.dataset.room;
               if (clickedRoom) {
                 position = Number(clickedRoom);
                 movePlayerIcon(data.user.id, data.user.picture, position);
               }
             }
-          }
+          };
           mapContainer.append(mapElm);
           movePlayerIcon(data.user.id, data.user.picture, position);
         } else {
-          mapContainer.appendChild(document.createTextNode("Error: Invalid map! Must be SVG."));
+          mapContainer.appendChild(
+            document.createTextNode("Error: Invalid map! Must be SVG."),
+          );
         }
       }
     }
@@ -106,29 +127,30 @@
 
 <svelte:head>
   <style>
-      body {
-          margin: 0;
-      }
+    body {
+      margin: 0;
+    }
 
-      #map-container {
-          height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-      }
+    #map-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
-      [data-room]:hover {
-          filter: brightness(1.5);
-          cursor: pointer;
-      }
+    [data-room]:hover {
+      filter: brightness(1.5);
+      cursor: pointer;
+    }
 
-      [data-label-for], [data-icon-for] {
-          pointer-events: none;
-      }
+    [data-label-for],
+    [data-icon-for] {
+      pointer-events: none;
+    }
 
-      [data-player] {
-          clip-path: inset(0% round 50%);
-      }
+    [data-player] {
+      clip-path: inset(0% round 50%);
+    }
   </style>
 </svelte:head>
