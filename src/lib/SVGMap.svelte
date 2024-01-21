@@ -11,7 +11,11 @@
 
   export function getEventRoom(event: MouseEvent) {
     if (event.target instanceof SVGElement) {
-      return +(event.target.dataset.room || event.target.parentElement?.dataset.room || 0);
+      return +(
+        event.target.dataset.room ||
+        event.target.parentElement?.dataset.room ||
+        0
+      );
     }
   }
 
@@ -24,7 +28,9 @@
   export function getRoom(id: number): SVGGraphicsElement | null {
     return getElmWhere("room", id) as SVGGraphicsElement;
   }
-  export function getLabelsFor(roomId: number): IterableIterator<HTMLElement> | null {
+  export function getLabelsFor(
+    roomId: number,
+  ): IterableIterator<HTMLElement> | null {
     return svg
       .querySelectorAll(`[data-label-for='${roomId}']`)
       .values() as IterableIterator<HTMLElement>;
@@ -96,10 +102,10 @@
   export let onSuccess = () => {};
   export let onError = (message: string) => {
     (container || document.body).appendChild(
-      document.createTextNode("Error: "+message),
+      document.createTextNode("Error: " + message),
     );
   };
-  export let onClickRoom: ((clickedRoom: number) => void) | undefined
+  export let onClickRoom: ((clickedRoom: number) => void) | undefined;
 
   onMount(() => {
     if (mapData) {
@@ -112,7 +118,7 @@
       ).documentElement;
       if (tempMapElm instanceof SVGSVGElement) {
         svg = container.appendChild(tempMapElm);
-        svg.addEventListener("click", event => {
+        svg.addEventListener("click", (event) => {
           if (onClickRoom) {
             let clickedRoom = getEventRoom(event);
             if (clickedRoom) onClickRoom(clickedRoom);
@@ -132,25 +138,25 @@
 
 <svelte:head>
   <style>
-      body {
-          margin: 0;
-      }
+    body {
+      margin: 0;
+    }
 
-      #map-container {
-          height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-      }
+    #map-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
-      [data-room]:hover {
-          filter: brightness(1.5);
-      }
+    [data-room]:hover {
+      filter: brightness(1.5);
+    }
 
-      [data-label-for],
-      [data-icon-for] {
-          pointer-events: none;
-      }
+    [data-label-for],
+    [data-icon-for] {
+      pointer-events: none;
+    }
   </style>
 </svelte:head>

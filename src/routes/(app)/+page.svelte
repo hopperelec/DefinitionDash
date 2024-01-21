@@ -8,11 +8,14 @@
   let map: SVGMap;
   let position: number | undefined;
 
-  const doors = data.map.doors.reduce((acc: { [key: number]: number[] }, door) => {
-    acc[door.room1_id] = acc[door.room1_id] || [];
-    acc[door.room1_id].push(door.room2_id);
-    return acc;
-  }, {});
+  const doors = data.map.doors.reduce(
+    (acc: { [key: number]: number[] }, door) => {
+      acc[door.room1_id] = acc[door.room1_id] || [];
+      acc[door.room1_id].push(door.room2_id);
+      return acc;
+    },
+    {},
+  );
 
   function movePlayerIcon(
     playerId: number,
@@ -40,9 +43,13 @@
 
   function onSuccess() {
     position = 1;
-    map.getSVG().addEventListener("mousemove", event => {
+    map.getSVG().addEventListener("mousemove", (event) => {
       const hoveredRoom = map.getEventRoom(event);
-      map.getSVG().style.cursor = hoveredRoom ? (canMoveTo(hoveredRoom) ? "pointer" : "not-allowed") : "";
+      map.getSVG().style.cursor = hoveredRoom
+        ? canMoveTo(hoveredRoom)
+          ? "pointer"
+          : "not-allowed"
+        : "";
     });
   }
 
@@ -51,7 +58,7 @@
   }
 </script>
 
-<SVGMap bind:this={map} mapData={data.map?.data} {onClickRoom} {onSuccess}/>
+<SVGMap bind:this={map} mapData={data.map?.data} {onClickRoom} {onSuccess} />
 
 <svelte:head>
   <style>
