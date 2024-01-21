@@ -9,6 +9,12 @@
     return svg;
   }
 
+  export function getEventRoom(event: MouseEvent) {
+    if (event.target instanceof SVGElement) {
+      return +(event.target.dataset.room || event.target.parentElement?.dataset.room || 0);
+    }
+  }
+
   export function getElmWhere(
     dataName: string,
     dataValue: number,
@@ -107,9 +113,9 @@
       if (tempMapElm instanceof SVGSVGElement) {
         svg = container.appendChild(tempMapElm);
         svg.addEventListener("click", event => {
-          if (onClickRoom && event.target instanceof SVGElement) {
-            let clickedRoom = event.target.dataset.room || event.target.parentElement?.dataset.room;
-            if (clickedRoom) onClickRoom(+clickedRoom);
+          if (onClickRoom) {
+            let clickedRoom = getEventRoom(event);
+            if (clickedRoom) onClickRoom(clickedRoom);
           }
         });
         onSuccess();
@@ -140,7 +146,6 @@
 
       [data-room]:hover {
           filter: brightness(1.5);
-          cursor: pointer;
       }
 
       [data-label-for],
