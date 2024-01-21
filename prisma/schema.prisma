@@ -43,13 +43,27 @@ model Map {
   img_url    String  @db.Text
   name       String?
   rooms      Room[]
+  doors      Door[]
 }
 
 model Room {
-  id     Int     @default(autoincrement()) @db.UnsignedInt
-  map    Map     @relation(fields: [map_id], references: [id])
-  map_id Int     @db.UnsignedInt
-  name   String?
+  id              Int     @default(autoincrement()) @db.UnsignedInt
+  map             Map     @relation(fields: [map_id], references: [id])
+  map_id          Int     @db.UnsignedInt
+  name            String?
+  primary_doors   Door[]  @relation("room1")
+  secondary_doors Door[]  @relation("room2")
 
   @@id([id, map_id])
+}
+
+model Door {
+  map      Map  @relation(fields: [map_id], references: [id])
+  room1    Room @relation("room1", fields: [map_id, room1_id], references: [map_id, id])
+  room2    Room @relation("room2", fields: [map_id, room2_id], references: [map_id, id])
+  map_id   Int  @db.UnsignedInt
+  room1_id Int  @db.UnsignedInt
+  room2_id Int  @db.UnsignedInt
+
+  @@id([map_id, room1_id, room2_id])
 }

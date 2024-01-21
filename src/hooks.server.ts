@@ -16,13 +16,9 @@ const minification_options: Options = {
 };
 
 async function isAuthorized(event: RequestEvent): Promise<boolean> {
-  if (event.url.pathname.startsWith("/login")) {
-    return true;
-  }
+  if (event.url.pathname.startsWith("/login")) return true;
   const sessionUUID = event.cookies.get(SESSION_COOKIE_KEY);
-  if (!sessionUUID) {
-    return false;
-  }
+  if (!sessionUUID) return false;
   const session = await prisma.session.findUnique({
     where: {
       uuid_bin: toBuffer(sessionUUID),
@@ -31,21 +27,17 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
       user: true,
     },
   });
-  if (!session) {
-    throw error(400, "Invalid session UUID");
-  }
-  if (new Date() > session.expires) {
-    return false;
-  }
-  if (session.user.allowed) {
-    event.locals.user = session.user;
+  if (!session) throw error(400, "Invalid session UUID");
+  if (new Date() > session.expires) return false;
+  if (!session.user.allowed)
+    throw error(
+      403,
+      "Currently, only accounts registered with my school are allowed to access Definition Dash",
+    );
+  event.locals.user = session.user;
+  if (!event.url.pathname.startsWith("/teacher") || session.user.is_teacher)
     return true;
-  }
-
-  throw error(
-    403,
-    "Currently, only accounts registered with my school are allowed to access Definition Dash",
-  );
+  throw error(403, "Only teachers can access this page!");
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
