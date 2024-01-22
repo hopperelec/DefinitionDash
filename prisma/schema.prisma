@@ -67,3 +67,18 @@ model Door {
 
   @@id([map_id, room1_id, room2_id])
 }
+
+model Topic {
+  id          Int          @id @default(autoincrement()) @db.UnsignedInt
+  name        String       @unique
+  definitions Definition[]
+}
+
+model Definition {
+  id           Int    @id @default(autoincrement()) @db.UnsignedInt
+  topic        Topic  @relation(fields: [topic_id], references: [id])
+  topic_id     Int    @db.UnsignedInt
+  definition   String @db.Text
+  difficulty   Int    @db.TinyInt
+  answer_regex String
+}
