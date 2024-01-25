@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ url }) => {
     },
   });
   if (!res) throw error(400, "Invalid question ID");
-  const correct = new RegExp("^" + res.answer_regex + "$").test(answer);
+  const correct = new RegExp("^" + res.answer_regex + "$", "i").test(answer);
   return new Response(JSON.stringify({ correct }), {
     headers: {
       "Content-Type": "application/json",
