@@ -2,6 +2,7 @@
   import type { PageData } from "./$types";
   import SVGMap from "$lib/SVGMap.svelte";
   import { error } from "@sveltejs/kit";
+  import type { Question } from "$lib/types";
 
   export let data: PageData;
   if (!data.map) throw error(403, "You do not have access to any maps!");
@@ -37,8 +38,28 @@
     return doors[room1_id] && doors[room1_id].includes(room2_id);
   }
 
-  function onClickRoom(clickedRoom: number) {
-    if (canMoveTo(clickedRoom)) position = clickedRoom;
+  async function askQuestion(question: Question): Promise<boolean> {
+    const answer = prompt(question.question);
+    const res = await fetch(`/check-answer?id=${question.id}&answer=${answer}`);
+    console.log(res);
+    return (await res.json()).correct;
+  }
+
+  async function getNextQuestion(): Promise<Question> {
+    const res: { id: number; definition: string } = await (await fetch("/get-definition")).json();
+    return {id: res.id, question: "What vocabulary is being defined: "+res.definition}
+  }
+
+  async function onClickRoom(clickedRoom: number) {
+    if (canMoveTo(clickedRoom)) {
+      const question = await getNextQuestion();
+      let askAgain = true;
+      while (askAgain) {
+        console.log(2);
+        if (await askQuestion(question)) askAgain = false;
+      }
+      position = clickedRoom;
+    }
   }
 
   function onSuccess() {

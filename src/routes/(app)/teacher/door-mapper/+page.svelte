@@ -3,6 +3,7 @@
   import SVGMap from "$lib/SVGMap.svelte";
   import { SVG_NS } from "$lib/constants";
   import { error } from "@sveltejs/kit";
+  import type { LocalDoor } from "$lib/types";
 
   export let data: PageData;
   if (!data.map) throw error(403, "You do not have access to any maps!");
@@ -11,11 +12,7 @@
   let firstRoom: number;
   let firstRoomCenter: DOMPoint | undefined;
 
-  function drawLine(
-    door: { room1_id: number; room2_id: number },
-    firstRoomCenter?: DOMPoint,
-    secondRoomCenter?: DOMPoint,
-  ) {
+  function drawLine(door: LocalDoor, firstRoomCenter?: DOMPoint, secondRoomCenter?: DOMPoint) {
     if (firstRoomCenter && secondRoomCenter) {
       const line = map
         .getSVG()
