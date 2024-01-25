@@ -2,15 +2,11 @@ import type { LayoutServerLoad } from "./$types";
 import type { User } from "@prisma/client";
 import { getMapFor } from "$lib/get-map-for";
 import prisma from "$lib/prisma";
+import type { DefinitionDashMap } from "$lib/types";
 
-type Map = {
-  id: number;
-  data: string;
-  doors: { room1_id: number; room2_id: number }[];
-};
 type Props = {
   user: User;
-  map?: Map;
+  map?: DefinitionDashMap;
 };
 export const load: LayoutServerLoad = async ({ locals }) => {
   const data: Props = {

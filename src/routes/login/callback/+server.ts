@@ -4,7 +4,6 @@ import { OAuth2Client } from "google-auth-library";
 import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
 import { ALLOWED_DOMAIN } from "$env/static/private";
 import prisma from "$lib/prisma";
-import type { School, User } from "@prisma/client";
 import { toBuffer } from "uuid-buffer";
 import { dev } from "$app/environment";
 import { SESSION_COOKIE_KEY, SESSION_DURATION_DAYS } from "$lib/constants";
@@ -30,17 +29,20 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     throw error(400, "Failed to verify ID token");
   }
 
-  let user: User | null = await prisma.user.findFirst({
+  let user: { id: number } | null = await prisma.user.findFirst({
     where: { google_sub: payload.sub },
+    select: { id: true },
   });
   if (!user) {
     const domain = payload.hd || ALLOWED_DOMAIN;
-    let school: School | null = await prisma.school.findUnique({
+    let school: { id: number } | null = await prisma.school.findUnique({
       where: { domain },
+      select: { id: true },
     });
     if (!school) {
       school = await prisma.school.create({
         data: { domain },
+        select: { id: true },
       });
     }
     user = await prisma.user.create({
@@ -49,9 +51,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         google_sub: payload.sub,
         allowed: payload.hd === ALLOWED_DOMAIN,
       },
+      select: { id: true },
     });
   }
-  user = await prisma.user.update({
+  await prisma.user.update({
     where: {
       id: user.id,
     },
