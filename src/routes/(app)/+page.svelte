@@ -46,8 +46,13 @@
   }
 
   async function getNextQuestion(): Promise<Question> {
-    const res: { id: number; definition: string } = await (await fetch("/get-definition")).json();
-    return {id: res.id, question: "What vocabulary is being defined: "+res.definition}
+    const res: { id: number; definition: string } = await (
+      await fetch("/get-definition")
+    ).json();
+    return {
+      id: res.id,
+      question: "What vocabulary is being defined: " + res.definition,
+    };
   }
 
   async function onClickRoom(clickedRoom: number) {

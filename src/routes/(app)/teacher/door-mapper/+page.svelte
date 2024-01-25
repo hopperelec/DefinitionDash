@@ -12,7 +12,11 @@
   let firstRoom: number;
   let firstRoomCenter: DOMPoint | undefined;
 
-  function drawLine(door: LocalDoor, firstRoomCenter?: DOMPoint, secondRoomCenter?: DOMPoint) {
+  function drawLine(
+    door: LocalDoor,
+    firstRoomCenter?: DOMPoint,
+    secondRoomCenter?: DOMPoint,
+  ) {
     if (firstRoomCenter && secondRoomCenter) {
       const line = map
         .getSVG()
