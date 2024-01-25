@@ -41,7 +41,6 @@
   async function askQuestion(question: Question): Promise<boolean> {
     const answer = prompt(question.question);
     const res = await fetch(`/check-answer?id=${question.id}&answer=${answer}`);
-    console.log(res);
     return (await res.json()).correct;
   }
 
@@ -60,7 +59,6 @@
       const question = await getNextQuestion();
       let askAgain = true;
       while (askAgain) {
-        console.log(2);
         if (await askQuestion(question)) askAgain = false;
       }
       position = clickedRoom;
