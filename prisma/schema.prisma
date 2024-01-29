@@ -47,25 +47,27 @@ model Map {
 }
 
 model Room {
-  id             Int     @default(autoincrement()) @db.UnsignedInt
+  id             Int     @id @default(autoincrement()) @db.UnsignedInt
   map            Map     @relation(fields: [mapId], references: [id])
   mapId          Int     @db.UnsignedInt
+  svgRef         Int     @db.UnsignedInt
   name           String?
   primaryDoors   Door[]  @relation("room1")
   secondaryDoors Door[]  @relation("room2")
 
-  @@id([id, mapId])
+  @@unique([mapId, svgRef])
 }
 
 model Door {
-  map     Map  @relation(fields: [mapId], references: [id])
-  room1   Room @relation("room1", fields: [mapId, room1Id], references: [mapId, id])
-  room2   Room @relation("room2", fields: [mapId, room2Id], references: [mapId, id])
-  mapId   Int  @db.UnsignedInt
-  room1Id Int  @db.UnsignedInt
-  room2Id Int  @db.UnsignedInt
+  id        Int  @id @default(autoincrement()) @db.UnsignedInt
+  map       Map  @relation(fields: [mapId], references: [id])
+  svgRef1   Room @relation("room1", fields: [mapId, svgRef1Id], references: [mapId, svgRef])
+  svgRef2   Room @relation("room2", fields: [mapId, svgRef2Id], references: [mapId, svgRef])
+  mapId     Int  @db.UnsignedInt
+  svgRef1Id Int  @db.UnsignedInt
+  svgRef2Id Int  @db.UnsignedInt
 
-  @@id([mapId, room1Id, room2Id])
+  @@unique([mapId, svgRef1Id, svgRef2Id])
 }
 
 model Topic {

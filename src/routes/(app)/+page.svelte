@@ -13,8 +13,8 @@
 
   const doors = data.map.doors.reduce(
     (acc: { [key: number]: number[] }, door) => {
-      acc[door.room1Id] = acc[door.room1Id] || [];
-      acc[door.room1Id].push(door.room2Id);
+      acc[door.svgRef1Id] = acc[door.svgRef1Id] || [];
+      acc[door.svgRef1Id].push(door.svgRef2Id);
       return acc;
     },
     {},

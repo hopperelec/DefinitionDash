@@ -26,8 +26,8 @@
       line.setAttribute("x2", secondRoomCenter.x.toString());
       line.setAttribute("y2", secondRoomCenter.y.toString());
       line.classList.add("door-line");
-      if (!lines[door.room1Id]) lines[door.room1Id] = {};
-      lines[door.room1Id][door.room2Id] = line;
+      if (!lines[door.svgRef1Id]) lines[door.svgRef1Id] = {};
+      lines[door.svgRef1Id][door.svgRef2Id] = line;
     }
   }
 

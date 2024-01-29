@@ -22,8 +22,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
           mapId: map.id,
         },
         select: {
-          room1Id: true,
-          room2Id: true,
+          svgRef1Id: true,
+          svgRef2Id: true,
         },
       }),
     };

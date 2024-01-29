@@ -7,7 +7,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const mapId = (await getMapFor(locals.user))?.id;
   if (!mapId) throw error(403, "You do not have access to any maps!");
   const door: LocalDoor = await request.json();
-  if (door.room1Id === door.room2Id)
+  if (door.svgRef1Id === door.svgRef2Id)
     throw error(400, "Cannot add a door between a room and itself!");
   await prisma.door.create({
     data: {
@@ -16,18 +16,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
           id: mapId,
         },
       },
-      room1: {
+      svgRef1: {
         connect: {
-          id_mapId: {
-            id: Math.min(door.room1Id, door.room2Id),
+          mapId_svgRef: {
+            svgRef: Math.min(door.svgRef1Id, door.svgRef2Id),
             mapId,
           },
         },
       },
-      room2: {
+      svgRef2: {
         connect: {
-          id_mapId: {
-            id: Math.max(door.room1Id, door.room2Id),
+          mapId_svgRef: {
+            svgRef: Math.max(door.svgRef1Id, door.svgRef2Id),
             mapId,
           },
         },

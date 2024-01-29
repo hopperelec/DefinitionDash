@@ -9,11 +9,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   if (!mapId) throw error(403, "You do not have access to any maps!");
   await prisma.door.delete({
     where: {
-      mapId_room1Id_room2Id: {
-        mapId,
-        room1Id: door.room1Id,
-        room2Id: door.room2Id,
-      },
+      mapId,
+      svgRef1Id: door.svgRef1Id,
+      svgRef2Id: door.svgRef2Id,
     },
   });
   return new Response();
