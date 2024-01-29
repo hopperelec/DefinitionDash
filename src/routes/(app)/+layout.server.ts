@@ -16,14 +16,14 @@ export const load: LayoutServerLoad = async ({ locals }) => {
   if (map) {
     data.map = {
       id: map.id,
-      data: await (await fetch(map.img_url)).text(),
+      data: await (await fetch(map.imgURL)).text(),
       doors: await prisma.door.findMany({
         where: {
-          map_id: map.id,
+          mapId: map.id,
         },
         select: {
-          room1_id: true,
-          room2_id: true,
+          room1Id: true,
+          room2Id: true,
         },
       }),
     };

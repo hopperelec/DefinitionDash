@@ -13,8 +13,8 @@
 
   const doors = data.map.doors.reduce(
     (acc: { [key: number]: number[] }, door) => {
-      acc[door.room1_id] = acc[door.room1_id] || [];
-      acc[door.room1_id].push(door.room2_id);
+      acc[door.room1Id] = acc[door.room1Id] || [];
+      acc[door.room1Id].push(door.room2Id);
       return acc;
     },
     {},
@@ -35,9 +35,9 @@
 
   function canMoveTo(room: number) {
     if (!position) return false;
-    const room1_id = Math.min(position, room);
-    const room2_id = Math.max(position, room);
-    return doors[room1_id] && doors[room1_id].includes(room2_id);
+    const room1Id = Math.min(position, room);
+    const room2Id = Math.max(position, room);
+    return doors[room1Id] && doors[room1Id].includes(room2Id);
   }
 
   function addPointsChangeGlyph(amount: number) {
@@ -143,6 +143,6 @@
   }
 
   .button {
-      margin: 5px;
+    margin: 5px;
   }
 </style>

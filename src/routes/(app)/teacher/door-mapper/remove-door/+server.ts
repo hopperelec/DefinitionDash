@@ -5,14 +5,14 @@ import type { LocalDoor } from "$lib/types";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const door: LocalDoor = await request.json();
-  const map_id = (await getMapFor(locals.user))?.id;
-  if (!map_id) throw error(403, "You do not have access to any maps!");
+  const mapId = (await getMapFor(locals.user))?.id;
+  if (!mapId) throw error(403, "You do not have access to any maps!");
   await prisma.door.delete({
     where: {
-      map_id_room1_id_room2_id: {
-        map_id,
-        room1_id: door.room1_id,
-        room2_id: door.room2_id,
+      mapId_room1Id_room2Id: {
+        mapId,
+        room1Id: door.room1Id,
+        room2Id: door.room2Id,
       },
     },
   });

@@ -4,14 +4,14 @@ import { toBuffer } from "uuid-buffer";
 import type { RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = async ({ cookies }) => {
-  const session_uuid = cookies.get(SESSION_COOKIE_KEY);
-  if (session_uuid) {
+  const sessionUUID = cookies.get(SESSION_COOKIE_KEY);
+  if (sessionUUID) {
     await prisma.session.update({
       data: {
         expires: new Date(),
       },
       where: {
-        uuid_bin: toBuffer(session_uuid),
+        uuidBin: toBuffer(sessionUUID),
       },
     });
     cookies.delete(SESSION_COOKIE_KEY);

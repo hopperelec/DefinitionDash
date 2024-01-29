@@ -13,11 +13,11 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
   const token = params.get("credential");
   if (!token) throw error(400, "No credential passed");
-  const csrf_cookie = params.get("g_csrf_token");
-  if (!csrf_cookie) throw error(400, "No CSRF token in Cookie.");
-  const csrf_body = params.get("g_csrf_token");
-  if (!csrf_body) throw error(400, "No CSRF token in post body.");
-  if (csrf_cookie != csrf_body) throw error(400, "Failed to verify CSRF token");
+  const csrfCookie = params.get("g_csrf_token");
+  if (!csrfCookie) throw error(400, "No CSRF token in Cookie.");
+  const csrfBody = params.get("g_csrf_token");
+  if (!csrfBody) throw error(400, "No CSRF token in post body.");
+  if (csrfCookie != csrfBody) throw error(400, "Failed to verify CSRF token");
 
   const client = new OAuth2Client(PUBLIC_GOOGLE_CLIENT_ID);
   const ticket = await client.verifyIdToken({
@@ -30,7 +30,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   }
 
   let user: { id: number } | null = await prisma.user.findFirst({
-    where: { google_sub: payload.sub },
+    where: { googleSub: payload.sub },
     select: { id: true },
   });
   if (!user) {
@@ -47,8 +47,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     }
     user = await prisma.user.create({
       data: {
-        school_id: school.id,
-        google_sub: payload.sub,
+        schoolId: school.id,
+        googleSub: payload.sub,
         allowed: payload.hd === ALLOWED_DOMAIN,
       },
       select: { id: true },
@@ -64,18 +64,18 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     },
   });
 
-  const session_uuid: string = crypto.randomUUID();
+  const sessionUUID: string = crypto.randomUUID();
   const expiry = new Date();
   expiry.setDate(expiry.getDate() + SESSION_DURATION_DAYS);
   await prisma.session.create({
     data: {
-      user_id: user.id,
-      uuid_bin: toBuffer(session_uuid),
+      userId: user.id,
+      uuidBin: toBuffer(sessionUUID),
       expires: expiry,
     },
   });
 
-  cookies.set(SESSION_COOKIE_KEY, session_uuid, {
+  cookies.set(SESSION_COOKIE_KEY, sessionUUID, {
     path: "/",
     httpOnly: true,
     secure: !dev,

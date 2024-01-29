@@ -11,11 +11,11 @@ export const GET: RequestHandler = async ({ url }) => {
       id: +id,
     },
     select: {
-      answer_regex: true,
+      answerRegex: true,
     },
   });
   if (!res) throw error(400, "Invalid question ID");
-  const correct = new RegExp("^" + res.answer_regex + "$", "i").test(answer);
+  const correct = new RegExp("^" + res.answerRegex + "$", "i").test(answer);
   return new Response(JSON.stringify({ correct }), {
     headers: {
       "Content-Type": "application/json",

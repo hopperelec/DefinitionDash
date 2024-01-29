@@ -7,7 +7,7 @@
 
   export let data: PageData;
   if (!data.map) throw error(403, "You do not have access to any maps!");
-  const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1_id, second key is room2_id
+  const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
   let map: SVGMap;
   let firstRoom: number;
   let firstRoomCenter: DOMPoint | undefined;
@@ -26,8 +26,8 @@
       line.setAttribute("x2", secondRoomCenter.x.toString());
       line.setAttribute("y2", secondRoomCenter.y.toString());
       line.classList.add("door-line");
-      if (!lines[door.room1_id]) lines[door.room1_id] = {};
-      lines[door.room1_id][door.room2_id] = line;
+      if (!lines[door.room1Id]) lines[door.room1Id] = {};
+      lines[door.room1Id][door.room2Id] = line;
     }
   }
 
@@ -38,12 +38,12 @@
     } else {
       const secondRoomCenter = map.getCenterOf(clickedRoom);
       const door = {
-        room1_id: Math.min(firstRoom, clickedRoom),
-        room2_id: Math.max(firstRoom, clickedRoom),
+        room1Id: Math.min(firstRoom, clickedRoom),
+        room2Id: Math.max(firstRoom, clickedRoom),
       };
-      if (lines[door.room1_id] && lines[door.room1_id][door.room2_id]) {
-        lines[door.room1_id][door.room2_id].remove();
-        delete lines[door.room1_id][door.room2_id];
+      if (lines[door.room1Id] && lines[door.room1Id][door.room2Id]) {
+        lines[door.room1Id][door.room2Id].remove();
+        delete lines[door.room1Id][door.room2Id];
         await fetch("/teacher/door-mapper/remove-door", {
           method: "POST",
           body: JSON.stringify(door),
@@ -66,8 +66,8 @@
       for (const door of data.map.doors) {
         drawLine(
           door,
-          map.getCenterOf(door.room1_id),
-          map.getCenterOf(door.room2_id),
+          map.getCenterOf(door.room1Id),
+          map.getCenterOf(door.room2Id),
         );
       }
     }

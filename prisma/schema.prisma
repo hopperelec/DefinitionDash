@@ -16,56 +16,56 @@ model School {
 }
 
 model User {
-  id           Int       @id @default(autoincrement()) @db.UnsignedInt
-  name         String?
-  picture      String?   @db.Text
-  school       School    @relation(fields: [school_id], references: [id])
-  school_id    Int       @db.UnsignedInt
-  google_sub   String    @db.VarChar(255)
-  is_teacher   Boolean   @default(false)
-  allowed      Boolean   @default(false)
-  sessions     Session[]
-  created_maps Map[]
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  name        String?
+  picture     String?   @db.Text
+  school      School    @relation(fields: [schoolId], references: [id])
+  schoolId    Int       @db.UnsignedInt
+  googleSub   String    @db.VarChar(255)
+  isTeacher   Boolean   @default(false)
+  allowed     Boolean   @default(false)
+  sessions    Session[]
+  createdMaps Map[]
 }
 
 model Session {
-  uuid_bin  Bytes    @unique @db.Binary(16)
-  user      User     @relation(fields: [user_id], references: [id])
-  user_id   Int      @db.UnsignedInt
+  uuidBin   Bytes    @unique @db.Binary(16)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @db.UnsignedInt
   createdAt DateTime @default(now())
   expires   DateTime @db.Timestamp(0)
 }
 
 model Map {
-  id         Int     @id @default(autoincrement()) @db.UnsignedInt
-  creator    User    @relation(fields: [creator_id], references: [id])
-  creator_id Int     @db.UnsignedInt
-  img_url    String  @db.Text
-  name       String?
-  rooms      Room[]
-  doors      Door[]
+  id        Int     @id @default(autoincrement()) @db.UnsignedInt
+  creator   User    @relation(fields: [creatorId], references: [id])
+  creatorId Int     @db.UnsignedInt
+  imgURL    String  @db.Text
+  name      String?
+  rooms     Room[]
+  doors     Door[]
 }
 
 model Room {
-  id              Int     @default(autoincrement()) @db.UnsignedInt
-  map             Map     @relation(fields: [map_id], references: [id])
-  map_id          Int     @db.UnsignedInt
-  name            String?
-  primary_doors   Door[]  @relation("room1")
-  secondary_doors Door[]  @relation("room2")
+  id             Int     @default(autoincrement()) @db.UnsignedInt
+  map            Map     @relation(fields: [mapId], references: [id])
+  mapId          Int     @db.UnsignedInt
+  name           String?
+  primaryDoors   Door[]  @relation("room1")
+  secondaryDoors Door[]  @relation("room2")
 
-  @@id([id, map_id])
+  @@id([id, mapId])
 }
 
 model Door {
-  map      Map  @relation(fields: [map_id], references: [id])
-  room1    Room @relation("room1", fields: [map_id, room1_id], references: [map_id, id])
-  room2    Room @relation("room2", fields: [map_id, room2_id], references: [map_id, id])
-  map_id   Int  @db.UnsignedInt
-  room1_id Int  @db.UnsignedInt
-  room2_id Int  @db.UnsignedInt
+  map     Map  @relation(fields: [mapId], references: [id])
+  room1   Room @relation("room1", fields: [mapId, room1Id], references: [mapId, id])
+  room2   Room @relation("room2", fields: [mapId, room2Id], references: [mapId, id])
+  mapId   Int  @db.UnsignedInt
+  room1Id Int  @db.UnsignedInt
+  room2Id Int  @db.UnsignedInt
 
-  @@id([map_id, room1_id, room2_id])
+  @@id([mapId, room1Id, room2Id])
 }
 
 model Topic {
@@ -75,10 +75,10 @@ model Topic {
 }
 
 model Definition {
-  id           Int    @id @default(autoincrement()) @db.UnsignedInt
-  topic        Topic  @relation(fields: [topic_id], references: [id])
-  topic_id     Int    @db.UnsignedInt
-  definition   String @db.Text
-  difficulty   Int    @db.TinyInt
-  answer_regex String
+  id          Int    @id @default(autoincrement()) @db.UnsignedInt
+  topic       Topic  @relation(fields: [topicId], references: [id])
+  topicId     Int    @db.UnsignedInt
+  definition  String @db.Text
+  difficulty  Int    @db.TinyInt
+  answerRegex String
 }
