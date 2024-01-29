@@ -3,6 +3,7 @@
   import SVGMap from "$lib/SVGMap.svelte";
   import { error } from "@sveltejs/kit";
   import type { Question } from "$lib/types";
+  import "$lib/button.css";
 
   export let data: PageData;
   if (!data.map) throw error(403, "You do not have access to any maps!");
@@ -108,6 +109,7 @@
   }
 </script>
 
+<a class="button" href="shop">Shop</a>
 <p id="pts-indicator">Points: <span>{points}</span></p>
 <div id="pts-change-container"></div>
 <SVGMap bind:this={map} mapData={data.map?.data} {onClickRoom} {onSuccess} />
@@ -137,7 +139,10 @@
   p {
     font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
     font-size: 2em;
-    margin: 10px;
     display: inline;
+  }
+
+  .button {
+      margin: 5px;
   }
 </style>
