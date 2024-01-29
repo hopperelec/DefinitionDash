@@ -136,19 +136,6 @@
 
 <div id="map-container"></div>
 
-<style>
-  #map-container {
-    position: fixed;
-    top: 0;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-</style>
-
 <svelte:head>
   <style>
     [data-room]:hover {
@@ -161,3 +148,16 @@
     }
   </style>
 </svelte:head>
+
+<style>
+  #map-container {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
