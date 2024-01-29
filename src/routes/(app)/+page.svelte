@@ -8,6 +8,7 @@
   if (!data.map) throw error(403, "You do not have access to any maps!");
   let map: SVGMap;
   let position: number | undefined;
+  let points = 0;
 
   const doors = data.map.doors.reduce(
     (acc: { [key: number]: number[] }, door) => {
@@ -38,6 +39,31 @@
     return doors[room1_id] && doors[room1_id].includes(room2_id);
   }
 
+  function addPointsChangeGlyph(amount: number) {
+    const pointsIndicator = document.getElementById("points-indicator");
+    if (!pointsIndicator) return;
+    const pointsChangeContainer = document.getElementById("points-change-container");
+    if (!pointsChangeContainer) return;
+    const elm = pointsChangeContainer.appendChild(document.createElement("span"));
+    if (amount > 0) {
+      elm.innerText = "+"+amount;
+      elm.style.color = "green";
+    } else {
+      elm.innerText = amount.toString();
+      elm.style.color = "red";
+    }
+    elm.classList.add("points-change");
+    const rect = pointsIndicator.getBoundingClientRect();
+    elm.style.left = `${rect.x + Math.floor(Math.random() * rect.width)}px`;
+    setTimeout(() => elm.remove(), 1000);
+  }
+
+  function claimRoom(roomId: number) {
+    position = roomId;
+    points += 1;
+    addPointsChangeGlyph(1);
+  }
+
   async function askQuestion(question: Question): Promise<boolean> {
     const answer = prompt(question.question);
     const res = await fetch(`/check-answer?id=${question.id}&answer=${answer}`);
@@ -61,7 +87,7 @@
       while (askAgain) {
         if (await askQuestion(question)) askAgain = false;
       }
-      position = clickedRoom;
+      claimRoom(clickedRoom);
     }
   }
 
@@ -82,12 +108,36 @@
   }
 </script>
 
+<p id="points-indicator">Points: <span>{points}</span></p>
+<div id="points-change-container"></div>
 <SVGMap bind:this={map} mapData={data.map?.data} {onClickRoom} {onSuccess} />
+
+<style>
+  p {
+    font-family: Arial Black,Arial Bold,Gadget,sans-serif;
+    font-size: 2em;
+    margin: 10px;
+    display: inline;
+  }
+</style>
 
 <svelte:head>
   <style>
     [data-player] {
       clip-path: inset(0% round 50%);
+    }
+
+    #points-change-container > * {
+        position: absolute;
+        font-size: 18px;
+        animation: flyUpAndFadeOut 1s ease-out forwards;
+    }
+
+    @keyframes flyUpAndFadeOut {
+        100% {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
     }
   </style>
 </svelte:head>
