@@ -135,11 +135,7 @@
 
 <style>
   p {
-    font-family:
-      "Arial Black",
-      "Arial Bold",
-      Gadget,
-      sans-serif;
+    font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
     font-size: 2em;
     margin: 10px;
     display: inline;
