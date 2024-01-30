@@ -26,6 +26,7 @@ model User {
   allowed     Boolean   @default(false)
   sessions    Session[]
   createdMaps Map[]
+  players     Player[]
 }
 
 model Session {
@@ -44,16 +45,19 @@ model Map {
   name      String?
   rooms     Room[]
   doors     Door[]
+  games     Game[]
 }
 
 model Room {
-  id             Int     @id @default(autoincrement()) @db.UnsignedInt
-  map            Map     @relation(fields: [mapId], references: [id])
-  mapId          Int     @db.UnsignedInt
-  svgRef         Int     @db.UnsignedInt
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  map            Map      @relation(fields: [mapId], references: [id])
+  mapId          Int      @db.UnsignedInt
+  svgRef         Int      @db.UnsignedInt
   name           String?
-  primaryDoors   Door[]  @relation("room1")
-  secondaryDoors Door[]  @relation("room2")
+  isSpawnpoint   Boolean  @default(false)
+  primaryDoors   Door[]   @relation("room1")
+  secondaryDoors Door[]   @relation("room2")
+  playersInside  Player[]
 
   @@unique([mapId, svgRef])
 }
@@ -77,10 +81,34 @@ model Topic {
 }
 
 model Definition {
-  id          Int    @id @default(autoincrement()) @db.UnsignedInt
-  topic       Topic  @relation(fields: [topicId], references: [id])
-  topicId     Int    @db.UnsignedInt
-  definition  String @db.Text
-  difficulty  Int    @db.TinyInt
-  answerRegex String
+  id               Int      @id @default(autoincrement()) @db.UnsignedInt
+  topic            Topic    @relation(fields: [topicId], references: [id])
+  topicId          Int      @db.UnsignedInt
+  definition       String   @db.Text
+  difficulty       Int      @db.TinyInt
+  answerRegex      String
+  playersAnswering Player[]
+}
+
+model Game {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  map       Map      @relation(fields: [mapId], references: [id])
+  mapId     Int      @db.UnsignedInt
+  createdAt DateTime @default(now())
+  players   Player[]
+}
+
+model Player {
+  id             Int         @id @default(autoincrement()) @db.UnsignedInt
+  user           User        @relation(fields: [userId], references: [id])
+  userId         Int         @db.UnsignedInt
+  game           Game        @relation(fields: [gameId], references: [id])
+  gameId         Int         @db.UnsignedInt
+  currRoom       Room        @relation(fields: [currRoomId], references: [id])
+  currRoomId     Int         @db.UnsignedInt
+  currQuestion   Definition? @relation(fields: [currQuestionId], references: [id])
+  currQuestionId Int?        @db.UnsignedInt
+  points         Int         @default(0) @db.UnsignedInt
+
+  @@unique([userId, gameId])
 }

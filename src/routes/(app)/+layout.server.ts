@@ -1,32 +1,33 @@
 import type { LayoutServerLoad } from "./$types";
-import type { User } from "@prisma/client";
-import { getMapFor } from "$lib/get-map-for";
+import getPlayerFor from "$lib/get-player-for";
 import prisma from "$lib/prisma";
-import type { DefinitionDashMap } from "$lib/types";
+import { error } from "@sveltejs/kit";
 
-type Props = {
-  user: User;
-  map?: DefinitionDashMap;
-};
-export const load: LayoutServerLoad = async ({ locals }) => {
-  const data: Props = {
-    user: locals.user,
-  };
-  const map = await getMapFor(locals.user);
-  if (map) {
-    data.map = {
-      id: map.id,
-      data: await (await fetch(map.imgURL)).text(),
-      doors: await prisma.door.findMany({
-        where: {
-          mapId: map.id,
-        },
+export const load: LayoutServerLoad = async ({ url, locals }) => {
+  const player = await getPlayerFor(locals.user, url);
+  const playerData = await prisma.player.findUnique({
+    where: {
+      id: player.id,
+    },
+    include: {
+      game: {
         select: {
-          svgRef1Id: true,
-          svgRef2Id: true,
+          map: {
+            select: { imgURL: true, doors: true },
+          },
         },
-      }),
-    };
-  }
-  return data;
+      },
+    },
+  });
+  if (!playerData)
+    throw error(
+      500,
+      "An unexpected error occurred while trying to retrieve your player data",
+    );
+  return {
+    picture: locals.user.picture,
+    player: playerData,
+    mapData: await (await fetch(playerData.game.map.imgURL)).text(),
+    doors: playerData.game.map.doors,
+  };
 };

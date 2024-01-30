@@ -1,17 +1,15 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import SVGMap from "$lib/SVGMap.svelte";
-  import { error } from "@sveltejs/kit";
   import type { Question } from "$lib/types";
   import "$lib/button.css";
 
   export let data: PageData;
-  if (!data.map) throw error(403, "You do not have access to any maps!");
   let map: SVGMap;
   let position: number | undefined;
   let points = 0;
 
-  const doors = data.map.doors.reduce(
+  const doors = data.doors.reduce(
     (acc: { [key: number]: number[] }, door) => {
       acc[door.svgRef1Id] = acc[door.svgRef1Id] || [];
       acc[door.svgRef1Id].push(door.svgRef2Id);
@@ -105,14 +103,14 @@
   }
 
   $: if (position !== undefined) {
-    movePlayerIcon(data.user.id, data.user.picture, position);
+    movePlayerIcon(data.player.id, data.picture, position);
   }
 </script>
 
 <a class="button" href="shop">Shop</a>
 <p id="pts-indicator">Points: <span>{points}</span></p>
 <div id="pts-change-container"></div>
-<SVGMap bind:this={map} mapData={data.map?.data} {onClickRoom} {onSuccess} />
+<SVGMap bind:this={map} mapData={data.mapData} {onClickRoom} {onSuccess} />
 
 <svelte:head>
   <style>
