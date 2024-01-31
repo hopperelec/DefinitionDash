@@ -74,7 +74,12 @@
   }
 </script>
 
-<SVGMap bind:this={map} mapData={data.mapData} {onClickRoom} onSuccess={onMapSuccess} />
+<SVGMap
+  bind:this={map}
+  mapData={data.mapData}
+  {onClickRoom}
+  onSuccess={onMapSuccess}
+/>
 
 <svelte:head>
   <style>

@@ -24,14 +24,11 @@
     return await fetch(url);
   }
 
-  const doors = data.doors.reduce(
-    (acc: { [key: number]: number[] }, door) => {
-      acc[door.svgRef1Id] = acc[door.svgRef1Id] || [];
-      acc[door.svgRef1Id].push(door.svgRef2Id);
-      return acc;
-    },
-    {},
-  );
+  const doors = data.doors.reduce((acc: { [key: number]: number[] }, door) => {
+    acc[door.svgRef1Id] = acc[door.svgRef1Id] || [];
+    acc[door.svgRef1Id].push(door.svgRef2Id);
+    return acc;
+  }, {});
 
   function movePlayerIcon(
     playerId: number,
@@ -84,7 +81,10 @@
   }
 
   async function getNextQuestion(): Promise<string> {
-    return "What vocabulary is being defined: " + await (await apiGet("/get-definition")).text();
+    return (
+      "What vocabulary is being defined: " +
+      (await (await apiGet("/get-definition")).text())
+    );
   }
 
   async function onClickRoom(clickedRoom: number) {
