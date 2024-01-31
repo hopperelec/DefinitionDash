@@ -23,8 +23,9 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
     where: {
       uuidBin: toBuffer(sessionUUID),
     },
-    include: {
+    select: {
       user: true,
+      expires: true,
     },
   });
   if (!session) throw error(400, "Invalid session UUID");

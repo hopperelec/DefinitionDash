@@ -11,7 +11,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     where: {
       id: player.id,
     },
-    include: {
+    select: {
       currQuestion: {
         select: {
           answerRegex: true,

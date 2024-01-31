@@ -2,11 +2,9 @@
   import type { PageData } from "./$types";
   import SVGMap from "$lib/SVGMap.svelte";
   import { SVG_NS } from "$lib/constants";
-  import { error } from "@sveltejs/kit";
   import type { LocalDoor } from "$lib/types";
 
   export let data: PageData;
-  if (!data.map) throw error(403, "You do not have access to any maps!");
   const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
   let map: SVGMap;
   let firstRoom: number;
@@ -38,12 +36,12 @@
     } else {
       const secondRoomCenter = map.getCenterOf(clickedRoom);
       const door = {
-        room1Id: Math.min(firstRoom, clickedRoom),
-        room2Id: Math.max(firstRoom, clickedRoom),
+        svgRef1Id: Math.min(firstRoom, clickedRoom),
+        svgRef2Id: Math.max(firstRoom, clickedRoom),
       };
-      if (lines[door.room1Id] && lines[door.room1Id][door.room2Id]) {
-        lines[door.room1Id][door.room2Id].remove();
-        delete lines[door.room1Id][door.room2Id];
+      if (lines[door.svgRef1Id] && lines[door.svgRef1Id][door.svgRef2Id]) {
+        lines[door.svgRef1Id][door.svgRef2Id].remove();
+        delete lines[door.svgRef1Id][door.svgRef2Id];
         await fetch("/teacher/door-mapper/remove-door", {
           method: "POST",
           body: JSON.stringify(door),
@@ -62,14 +60,12 @@
   }
 
   function onMapSuccess() {
-    if (data.map) {
-      for (const door of data.map.doors) {
-        drawLine(
-          door,
-          map.getCenterOf(door.room1Id),
-          map.getCenterOf(door.room2Id),
-        );
-      }
+    for (const door of data.doors) {
+      drawLine(
+        door,
+        map.getCenterOf(door.svgRef1Id),
+        map.getCenterOf(door.svgRef2Id),
+      );
     }
   }
 </script>
