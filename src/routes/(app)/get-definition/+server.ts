@@ -10,9 +10,15 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       id: player.id,
     },
     select: {
+      currRoomId: true,
       currQuestion: {
         select: {
           definition: true,
+        },
+      },
+      game: {
+        select: {
+          mapId: true,
         },
       },
     },
@@ -24,17 +30,24 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     );
   if (playerData.currQuestion)
     return new Response(playerData.currQuestion.definition);
-  // const roomRequested = url.searchParams.get("room");
-  // if (!roomRequested) throw error(400, "You must select a room you wish to move to");
-  // const room1Id = Math.min(playerData.currRoomId, roomRequested);
-  // const room2Id = Math.max(playerData.currRoomId, roomRequested);
-  // const door = await prisma.door.findUnique({
-  //   where: {
-  //     mapId: playerData.game()
-  //     room1Id,
-  //     room2Id,
-  //   }
-  // });
+  const roomRequested = url.searchParams.get("room");
+  if (!roomRequested)
+    throw error(400, "You must select a room you wish to move to");
+  const door = await prisma.door.findUnique({
+    where: {
+      mapId_svgRef1Id_svgRef2Id: {
+        mapId: playerData.game.mapId,
+        svgRef1Id: Math.min(playerData.currRoomId, +roomRequested),
+        svgRef2Id: Math.max(playerData.currRoomId, +roomRequested),
+      },
+    },
+    select: { id: true },
+  });
+  if (!door)
+    throw error(
+      400,
+      "There is no door between the room you are currently in and the room you selected!",
+    );
   const definitions: { id: bigint; definition: string }[] =
     await prisma.$queryRaw`SELECT id,definition FROM Definition ORDER BY rand() LIMIT 1`;
   await prisma.player.update({
@@ -43,6 +56,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     },
     data: {
       currQuestionId: Number(definitions[0].id),
+      currMoveId: +roomRequested,
     },
   });
   return new Response(definitions[0].definition);

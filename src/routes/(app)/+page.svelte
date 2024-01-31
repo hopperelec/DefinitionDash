@@ -80,21 +80,23 @@
     return (await res.json()).correct;
   }
 
-  async function getNextQuestion(): Promise<string> {
-    return (
-      "What vocabulary is being defined: " +
-      (await (await apiGet("/get-definition")).text())
-    );
+  async function getNextQuestion(roomToMoveTo: number): Promise<string | undefined> {
+    const res = await apiGet("/get-definition?room="+roomToMoveTo);
+    if (res.ok) return "What vocabulary is being defined: " + (await res.text());
   }
 
   async function onClickRoom(clickedRoom: number) {
     if (canMoveTo(clickedRoom)) {
-      const question = await getNextQuestion();
-      let askAgain = true;
-      while (askAgain) {
-        if (await askQuestion(question)) askAgain = false;
+      const question = await getNextQuestion(clickedRoom);
+      if (question) {
+        let askAgain = true;
+        while (askAgain) {
+          if (await askQuestion(question)) askAgain = false;
+        }
+        claimRoom(clickedRoom);
+      } else {
+        alert("An unexpected error occured while trying to choose a question for you.");
       }
-      claimRoom(clickedRoom);
     }
   }
 

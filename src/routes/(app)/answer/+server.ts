@@ -17,6 +17,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
           answerRegex: true,
         },
       },
+      currMoveId: true,
     },
   });
   if (!playerData?.currQuestion)
@@ -35,6 +36,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         points: {
           increment: 1,
         },
+        currRoomId: playerData.currMoveId,
+        currMoveId: null,
       },
     });
   }
