@@ -29,39 +29,28 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     throw error(400, "Failed to verify ID token");
   }
 
-  let user: { id: number } | null = await prisma.user.findFirst({
-    where: { googleSub: payload.sub },
-    select: { id: true },
-  });
-  if (!user) {
-    const domain = payload.hd || ALLOWED_DOMAIN;
-    let school: { id: number } | null = await prisma.school.findUnique({
-      where: { domain },
-      select: { id: true },
-    });
-    if (!school) {
-      school = await prisma.school.create({
-        data: { domain },
-        select: { id: true },
-      });
-    }
-    user = await prisma.user.create({
-      data: {
-        schoolId: school.id,
-        googleSub: payload.sub,
-        allowed: payload.hd === ALLOWED_DOMAIN,
-      },
-      select: { id: true },
-    });
-  }
-  await prisma.user.update({
+  const domain = payload.hd || ALLOWED_DOMAIN;
+  const user = await prisma.user.upsert({
     where: {
-      id: user.id,
+      googleSub: payload.sub,
     },
-    data: {
+    create: {
+      school: {
+        connectOrCreate: {
+          where: { domain },
+          create: { domain },
+        },
+      },
+      googleSub: payload.sub,
+      allowed: payload.hd === ALLOWED_DOMAIN,
       name: payload.name,
       picture: payload.picture,
     },
+    update: {
+      name: payload.name,
+      picture: payload.picture,
+    },
+    select: { id: true },
   });
 
   const sessionUUID: string = crypto.randomUUID();

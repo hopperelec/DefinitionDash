@@ -21,7 +21,7 @@ model User {
   picture     String?   @db.Text
   school      School    @relation(fields: [schoolId], references: [id])
   schoolId    Int       @db.UnsignedInt
-  googleSub   String    @db.VarChar(255)
+  googleSub   String    @unique @db.VarChar(255)
   isTeacher   Boolean   @default(false)
   allowed     Boolean   @default(false)
   sessions    Session[]
