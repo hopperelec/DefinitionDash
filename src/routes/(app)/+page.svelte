@@ -80,9 +80,12 @@
     return (await res.json()).correct;
   }
 
-  async function getNextQuestion(roomToMoveTo: number): Promise<string | undefined> {
-    const res = await apiGet("/get-definition?room="+roomToMoveTo);
-    if (res.ok) return "What vocabulary is being defined: " + (await res.text());
+  async function getNextQuestion(
+    roomToMoveTo: number,
+  ): Promise<string | undefined> {
+    const res = await apiGet("/get-definition?room=" + roomToMoveTo);
+    if (res.ok)
+      return "What vocabulary is being defined: " + (await res.text());
   }
 
   async function onClickRoom(clickedRoom: number) {
@@ -95,7 +98,9 @@
         }
         claimRoom(clickedRoom);
       } else {
-        alert("An unexpected error occured while trying to choose a question for you.");
+        alert(
+          "An unexpected error occured while trying to choose a question for you.",
+        );
       }
     }
   }
