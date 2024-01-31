@@ -57,7 +57,8 @@ model Room {
   isSpawnpoint   Boolean  @default(false)
   primaryDoors   Door[]   @relation("room1")
   secondaryDoors Door[]   @relation("room2")
-  playersInside  Player[]
+  playersInside  Player[] @relation("currRoom")
+  queuedPlayers  Player[] @relation("roomQueue")
 
   @@unique([mapId, svgRef])
 }
@@ -104,10 +105,12 @@ model Player {
   userId         Int         @db.UnsignedInt
   game           Game        @relation(fields: [gameId], references: [id])
   gameId         Int         @db.UnsignedInt
-  currRoom       Room        @relation(fields: [currRoomId], references: [id])
+  currRoom       Room        @relation("currRoom", fields: [currRoomId], references: [id])
   currRoomId     Int         @db.UnsignedInt
   currQuestion   Definition? @relation(fields: [currQuestionId], references: [id])
   currQuestionId Int?        @db.UnsignedInt
+  currMove       Room?       @relation("roomQueue", fields: [currMoveId], references: [id])
+  currMoveId     Int?        @db.UnsignedInt
   points         Int         @default(0) @db.UnsignedInt
 
   @@unique([userId, gameId])

@@ -1,13 +1,28 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import SVGMap from "$lib/SVGMap.svelte";
-  import type { Question } from "$lib/types";
   import "$lib/button.css";
+  import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
 
   export let data: PageData;
   let map: SVGMap;
   let position: number | undefined;
-  let points = 0;
+  let points = data.player.points;
+
+  if ($page.url.searchParams.get("game") === null) {
+    $page.url.searchParams.set("game", data.player.gameId.toString());
+    onMount(async () => {
+      await goto($page.url);
+    });
+  }
+
+  async function apiGet(href: string) {
+    const url = new URL(href, $page.url);
+    url.searchParams.set("game", data.player.gameId.toString());
+    return await fetch(url);
+  }
 
   const doors = data.doors.reduce(
     (acc: { [key: number]: number[] }, door) => {
@@ -63,20 +78,13 @@
     addPointsChangeGlyph(1);
   }
 
-  async function askQuestion(question: Question): Promise<boolean> {
-    const answer = prompt(question.question);
-    const res = await fetch(`/check-answer?id=${question.id}&answer=${answer}`);
+  async function askQuestion(question: string): Promise<boolean> {
+    const res = await apiGet(`/answer?answer=${prompt(question)}`);
     return (await res.json()).correct;
   }
 
-  async function getNextQuestion(): Promise<Question> {
-    const res: { id: number; definition: string } = await (
-      await fetch("/get-definition")
-    ).json();
-    return {
-      id: res.id,
-      question: "What vocabulary is being defined: " + res.definition,
-    };
+  async function getNextQuestion(): Promise<string> {
+    return "What vocabulary is being defined: " + await (await apiGet("/get-definition")).text();
   }
 
   async function onClickRoom(clickedRoom: number) {
@@ -91,7 +99,7 @@
   }
 
   function onSuccess() {
-    position = 1;
+    position = data.player.currRoomId;
     map.getSVG().addEventListener("mousemove", (event) => {
       const hoveredRoom = map.getEventRoom(event);
       map.getSVG().style.cursor = hoveredRoom

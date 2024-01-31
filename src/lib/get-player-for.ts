@@ -26,6 +26,21 @@ async function chooseSpawnpoint(mapId: number) {
   return room?.id || 1;
 }
 
+async function getExistingPlayerForGame(user: { id: number }, gameId: number) {
+  return prisma.player.findFirst({
+    where: {
+      userId: user.id,
+      gameId: gameId,
+    },
+    select: { id: true },
+  });
+}
+
+export function getExistingPlayerForURL(user: { id: number }, url: URL) {
+  const gameId = Number(url.searchParams.get("game"));
+  if (gameId) return getExistingPlayerForGame(user, gameId);
+}
+
 export default async function getPlayerFor(
   user: { id: number; schoolId: number },
   url: URL,
@@ -33,13 +48,7 @@ export default async function getPlayerFor(
   let gameId: number = Number(url.searchParams.get("game"));
   let mapId: number;
   if (gameId) {
-    const player = await prisma.player.findFirst({
-      where: {
-        userId: user.id,
-        gameId: gameId,
-      },
-      select: { id: true },
-    });
+    const player = await getExistingPlayerForGame(user, gameId);
     if (player) return player;
     mapId = (await getGameFor(gameId, user.schoolId)).mapId;
   } else {
@@ -53,7 +62,6 @@ export default async function getPlayerFor(
     gameId = game.id;
   }
   const spawnpoint = await chooseSpawnpoint(mapId);
-  console.log(spawnpoint);
   return prisma.player.create({
     data: {
       userId: user.id,
