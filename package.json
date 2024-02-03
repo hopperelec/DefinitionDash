@@ -6,7 +6,6 @@
     "dev": "cross-env PUBLIC_BASE_URL=http://localhost:5173 vite dev",
     "build": "cross-env PUBLIC_BASE_URL=http://localhost:4173 vite build",
     "preview": "vite preview",
-    "preview:host": "vite preview --host",
     "eslint": "eslint .",
     "stylelint": "stylelint '**/*.{css,html,scss,svelte}'",
     "format": "prettier --write .",
