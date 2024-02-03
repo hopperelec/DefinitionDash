@@ -154,8 +154,4 @@
     font-size: 2em;
     display: inline;
   }
-
-  .button {
-    margin: 5px;
-  }
 </style>
