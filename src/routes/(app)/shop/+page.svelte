@@ -89,8 +89,18 @@
 
   li {
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
   }
+
+  .description {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin: 0;
+  }
+
 
   h3 {
     margin: 0;
