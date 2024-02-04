@@ -7,5 +7,5 @@
   padding: 10px;
   margin: 5px;
   border-radius: 5px;
-  font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+  font-family: var(--default-font-family-bold);
 }

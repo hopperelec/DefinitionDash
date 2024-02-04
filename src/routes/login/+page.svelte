@@ -43,7 +43,7 @@
 
   header {
     text-align: center;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: var(--default-font-family);
     font-weight: bold;
     font-size: 40px;
   }

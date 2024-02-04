@@ -150,7 +150,7 @@
 
 <style>
   p {
-    font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+    font-family: var(--default-font-family-bold);
     font-size: 2em;
     display: inline;
   }
