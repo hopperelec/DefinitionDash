@@ -115,3 +115,11 @@ model Player {
 
   @@unique([userId, gameId])
 }
+
+model ShopItem {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String  @unique
+  description String? @db.Text
+  cost        Int     @db.UnsignedInt
+  action      String
+}

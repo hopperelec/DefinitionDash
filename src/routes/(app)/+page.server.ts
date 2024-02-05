@@ -1,11 +1,10 @@
-import type { LayoutServerLoad } from "./$types";
 import getPlayerFor from "$lib/get-player-for";
 import prisma from "$lib/prisma";
 import { error } from "@sveltejs/kit";
 import type { LocalDoor } from "$lib/types";
 import type { Player } from "@prisma/client";
 
-export const load: LayoutServerLoad = async ({ url, locals }) => {
+export const load = async ({ url, locals }) => {
   const player = await getPlayerFor(locals.user, url);
   const ret = await prisma.player.findUnique({
     where: {

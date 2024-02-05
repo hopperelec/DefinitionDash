@@ -1,12 +1,11 @@
 <script lang="ts">
-  import type { PageData } from "./$types";
   import SVGMap from "$lib/SVGMap.svelte";
   import "$lib/button.css";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
 
-  export let data: PageData;
+  export let data;
   let map: SVGMap;
   let position: number | undefined;
   let points = data.player.points;
@@ -122,7 +121,7 @@
   }
 </script>
 
-<a class="button" href="shop">Shop</a>
+<a class="button" href="shop?game={data.player.gameId}">Shop</a>
 <p id="pts-indicator">Points: <span>{points}</span></p>
 <div id="pts-change-container"></div>
 <SVGMap bind:this={map} mapData={data.mapData} {onClickRoom} {onSuccess} />

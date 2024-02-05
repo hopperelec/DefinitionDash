@@ -21,9 +21,9 @@ async function getGameFor(gameId: number, schoolId: number) {
 }
 
 async function chooseSpawnpoint(mapId: number) {
-  const room: { id: number } | undefined =
+  const room: { id: bigint }[] =
     await prisma.$queryRaw`SELECT id FROM Room WHERE mapId = ${mapId} AND isSpawnpoint = true ORDER BY rand() LIMIT 1`;
-  return room?.id || 1;
+  return room.length === 0 ? 1 : Number(room[0].id);
 }
 
 async function getExistingPlayerForGame(user: { id: number }, gameId: number) {

@@ -1,8 +1,8 @@
-import { error, type RequestHandler } from "@sveltejs/kit";
+import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/prisma";
 import { getExistingPlayerForURL } from "$lib/get-player-for";
 
-export const GET: RequestHandler = async ({ url, locals }) => {
+export const GET = async ({ url, locals }) => {
   const answer = url.searchParams.get("answer");
   if (!answer) throw error(400, "Answer not provided");
   const player = await getExistingPlayerForURL(locals.user, url);
@@ -41,9 +41,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       },
     });
   }
-  return new Response(JSON.stringify({ correct }), {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  return json({ correct });
 };

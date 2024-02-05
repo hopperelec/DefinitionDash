@@ -1,38 +1,10 @@
 <script lang="ts">
   import "$lib/button.css";
-  import type { PageData } from "./$types";
 
-  export let data: PageData;
-  type ShopItem = {
-    name: string;
-    description?: string;
-    cost: number;
-  };
+  export let data;
 
-  const items: ShopItem[] = [
-    {
-      name: "Example first item",
-      description: "Example first description",
-      cost: 10,
-    },
-    {
-      name: "Example item without a description",
-      cost: 5,
-    },
-    {
-      name: "Example item with long description",
-      description:
-        "This is an overly long description designed to test the overflow handling of the CSS on Definition Dash's shop page. This text should not break out of it's container but instead cause the container to display a scrollbar to scroll through the text.",
-      cost: 999,
-    },
-  ];
-  for (let i = 4; i <= 30; i++) {
-    items.push({
-      name: "Example item " + i,
-      description:
-        "This is just a filler item to see how well this shop scales with more items",
-      cost: 1,
-    });
+  async function buyItem(itemId: number) {
+    data.player = await (await fetch(`/shop/buy-item?item=${itemId}&game=${data.player.gameId}`)).json();
   }
 </script>
 
@@ -40,16 +12,16 @@
   <h2>Shop</h2>
   <p id="points">Points: <span>{data.player.points}</span></p>
   <ul>
-    {#each items as item}
+    {#each data.shopItems as item}
       <li>
         <h3>{item.name}</h3>
         <p class="description">{item.description || ""}</p>
         <p>Cost: <span>{item.cost}</span> point{item.cost === 1 ? "" : "s"}</p>
-        <button type="button">Buy</button>
+        <button type="button" on:click={() => buyItem(item.id)}>Buy</button>
       </li>
     {/each}
   </ul>
-  <a class="button" href="/">Back to game</a>
+  <a class="button" href="/?game={data.player.gameId}">Back to game</a>
 </div>
 
 <style>
@@ -100,7 +72,6 @@
     overflow-y: auto;
     margin: 0;
   }
-
 
   h3 {
     margin: 0;
