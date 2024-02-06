@@ -98,7 +98,7 @@
     return icon;
   }
 
-  export let mapData: string | undefined;
+  export let imgURL: string | undefined;
   export let onSuccess = () => {};
   export let onError = (message: string) => {
     (container || document.body).appendChild(
@@ -107,13 +107,13 @@
   };
   export let onClickRoom: ((clickedRoom: number) => void) | undefined;
 
-  onMount(() => {
-    if (mapData) {
+  onMount(async () => {
+    if (imgURL) {
       const tempMapContainer = document.getElementById("map-container");
       if (!tempMapContainer) onError("Failed to get map container");
       container = tempMapContainer!;
       const tempMapElm = new DOMParser().parseFromString(
-        mapData,
+        await (await fetch(imgURL)).text(),
         "image/svg+xml",
       ).documentElement;
       if (tempMapElm instanceof SVGSVGElement) {
@@ -129,7 +129,7 @@
         onError("Invalid map! Must be SVG.");
       }
     } else {
-      onError("Not given any map data");
+      onError("Not given map image URL");
     }
   });
 </script>

@@ -1,9 +1,9 @@
 import type { Player, ShopItem } from "@prisma/client";
-import getPlayerFor from "$lib/get-player-for";
-import prisma from "$lib/prisma";
+import getPlayer from "$lib/server/get-player";
+import prisma from "$lib/server/prisma";
 
-export const load = async ({ url, locals }) => {
-  const player = await getPlayerFor(locals.user, url);
+export const load = async ({ params, locals }) => {
+  const player = await getPlayer(locals.user, +params.gameId);
   const props: {
     shopItems: ShopItem[];
     player: Player;

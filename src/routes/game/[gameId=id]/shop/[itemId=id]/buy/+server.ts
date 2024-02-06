@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
-import prisma from "$lib/prisma";
-import { getExistingPlayerForURL } from "$lib/get-player-for";
+import prisma from "$lib/server/prisma";
+import { getExistingPlayer } from "$lib/server/get-player";
 
 const ACTIONS: { [key: string]: (playerId: number) => Promise<boolean> } = {
   randomTeleport: async (playerId) => {
@@ -31,21 +31,19 @@ const ACTIONS: { [key: string]: (playerId: number) => Promise<boolean> } = {
   },
 };
 
-export const GET = async ({ url, locals }) => {
-  const itemId = url.searchParams.get("item");
-  if (!itemId) throw error(400, "You must choose an item to buy!");
-  const player = await getExistingPlayerForURL(locals.user, url);
+export const GET = async ({ params, locals }) => {
+  const player = await getExistingPlayer(locals.user, +params.gameId);
   if (!player) throw error(400, "You must be in a game to answer a question!");
   const shopItem = await prisma.shopItem.findUnique({
     where: {
-      id: +itemId,
+      id: +params.itemId,
     },
     select: {
       cost: true,
       action: true,
     },
   });
-  if (!shopItem) throw error(404, "An item by the given ID does not exist!");
+  if (!shopItem) throw error(404, "This item does not exist!");
   const playerData = await prisma.player.findUnique({
     where: {
       id: player.id,

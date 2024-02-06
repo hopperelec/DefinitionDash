@@ -1,5 +1,5 @@
 import { SESSION_COOKIE_KEY } from "$lib/constants";
-import prisma from "$lib/prisma";
+import prisma from "$lib/server/prisma";
 import { toBuffer } from "uuid-buffer";
 import type { RequestHandler } from "@sveltejs/kit";
 

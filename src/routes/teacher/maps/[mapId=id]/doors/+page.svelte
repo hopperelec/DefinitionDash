@@ -1,10 +1,9 @@
 <script lang="ts">
-  import type { PageData } from "./$types";
   import SVGMap from "$lib/SVGMap.svelte";
   import { SVG_NS } from "$lib/constants";
   import type { LocalDoor } from "$lib/types";
 
-  export let data: PageData;
+  export let data;
   const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
   let map: SVGMap;
   let firstRoom: number;
@@ -42,17 +41,13 @@
       if (lines[door.svgRef1Id] && lines[door.svgRef1Id][door.svgRef2Id]) {
         lines[door.svgRef1Id][door.svgRef2Id].remove();
         delete lines[door.svgRef1Id][door.svgRef2Id];
-        await fetch("/teacher/door-mapper/remove-door", {
-          method: "POST",
-          body: JSON.stringify(door),
-          headers: { "content-type": "application/json" },
+        await fetch(door.svgRef1Id + "/" + door.svgRef2Id, {
+          method: "DELETE",
         });
       } else if (clickedRoom !== firstRoom) {
         drawLine(door, firstRoomCenter, secondRoomCenter);
-        await fetch("/teacher/door-mapper/add-door", {
-          method: "POST",
-          body: JSON.stringify(door),
-          headers: { "content-type": "application/json" },
+        await fetch(door.svgRef1Id + "/" + door.svgRef2Id, {
+          method: "PUT",
         });
       }
       firstRoomCenter = undefined;
@@ -60,7 +55,7 @@
   }
 
   function onMapSuccess() {
-    for (const door of data.doors) {
+    for (const door of data.map.doors) {
       drawLine(
         door,
         map.getCenterOf(door.svgRef1Id),
@@ -72,7 +67,7 @@
 
 <SVGMap
   bind:this={map}
-  mapData={data.mapData}
+  imgURL={data.map.imgURL}
   {onClickRoom}
   onSuccess={onMapSuccess}
 />

@@ -1,33 +1,20 @@
 <script lang="ts">
   import SVGMap from "$lib/SVGMap.svelte";
   import "$lib/button.css";
-  import { page } from "$app/stores";
-  import { goto } from "$app/navigation";
-  import { onMount } from "svelte";
 
   export let data;
   let map: SVGMap;
   let position: number | undefined;
   let points = data.player.points;
 
-  if ($page.url.searchParams.get("game") === null) {
-    $page.url.searchParams.set("game", data.player.gameId.toString());
-    onMount(async () => {
-      await goto($page.url);
-    });
-  }
-
-  async function apiGet(href: string) {
-    const url = new URL(href, $page.url);
-    url.searchParams.set("game", data.player.gameId.toString());
-    return await fetch(url);
-  }
-
-  const doors = data.doors.reduce((acc: { [key: number]: number[] }, door) => {
-    acc[door.svgRef1Id] = acc[door.svgRef1Id] || [];
-    acc[door.svgRef1Id].push(door.svgRef2Id);
-    return acc;
-  }, {});
+  const doors = data.map.doors.reduce(
+    (acc: { [key: number]: number[] }, door) => {
+      acc[door.svgRef1Id] = acc[door.svgRef1Id] || [];
+      acc[door.svgRef1Id].push(door.svgRef2Id);
+      return acc;
+    },
+    {},
+  );
 
   function movePlayerIcon(
     playerId: number,
@@ -75,14 +62,17 @@
   }
 
   async function askQuestion(question: string): Promise<boolean> {
-    const res = await apiGet(`/answer?answer=${prompt(question)}`);
+    const res = await fetch("answer", {
+      method: "POST",
+      body: prompt(question),
+    });
     return (await res.json()).correct;
   }
 
   async function getNextQuestion(
     roomToMoveTo: number,
   ): Promise<string | undefined> {
-    const res = await apiGet("/get-definition?room=" + roomToMoveTo);
+    const res = await fetch("get-definition?room=" + roomToMoveTo);
     if (res.ok)
       return "What vocabulary is being defined: " + (await res.text());
   }
@@ -121,10 +111,10 @@
   }
 </script>
 
-<a class="button" href="shop?game={data.player.gameId}">Shop</a>
+<a class="button" href="shop">Shop</a>
 <p id="pts-indicator">Points: <span>{points}</span></p>
 <div id="pts-change-container"></div>
-<SVGMap bind:this={map} mapData={data.mapData} {onClickRoom} {onSuccess} />
+<SVGMap bind:this={map} imgURL={data.map.imgURL} {onClickRoom} {onSuccess} />
 
 <svelte:head>
   <style>

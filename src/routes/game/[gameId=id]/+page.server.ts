@@ -1,11 +1,11 @@
-import getPlayerFor from "$lib/get-player-for";
-import prisma from "$lib/prisma";
+import getPlayer from "$lib/server/get-player";
+import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 import type { LocalDoor } from "$lib/types";
 import type { Player } from "@prisma/client";
 
-export const load = async ({ url, locals }) => {
-  const player = await getPlayerFor(locals.user, url);
+export const load = async ({ params, locals }) => {
+  const player = await getPlayer(locals.user, +params.gameId);
   const ret = await prisma.player.findUnique({
     where: {
       id: player.id,
@@ -29,13 +29,14 @@ export const load = async ({ url, locals }) => {
   const props: {
     picture: string;
     player: Player;
-    mapData: string;
-    doors: LocalDoor[];
+    map: {
+      imgURL: string;
+      doors: LocalDoor[];
+    };
   } = {
     picture: locals.user.picture,
     player: playerData,
-    mapData: await (await fetch(game.map.imgURL)).text(),
-    doors: game.map.doors,
+    map: game.map,
   };
   return props;
 };

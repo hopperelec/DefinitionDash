@@ -1,8 +1,8 @@
-import prisma from "$lib/prisma";
+import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 
 export default async function getAnyMapFor(schoolId: number) {
-  const map = await prisma.map.findFirst({
+  const map: { id: number } = await prisma.map.findFirst({
     where: {
       creator: {
         schoolId: schoolId,

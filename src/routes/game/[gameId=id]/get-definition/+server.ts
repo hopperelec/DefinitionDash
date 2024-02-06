@@ -1,9 +1,9 @@
-import prisma from "$lib/prisma";
+import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
-import { getExistingPlayerForURL } from "$lib/get-player-for";
+import { getExistingPlayer } from "$lib/server/get-player";
 
-export const GET = async ({ url, locals }) => {
-  const player = await getExistingPlayerForURL(locals.user, url);
+export const GET = async ({ url, params, locals }) => {
+  const player = await getExistingPlayer(locals.user, +params.gameId);
   if (!player) throw error(400, "You must be in a game to get a definition!");
   const playerData = await prisma.player.findUnique({
     where: {

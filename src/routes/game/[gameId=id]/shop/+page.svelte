@@ -4,7 +4,7 @@
   export let data;
 
   async function buyItem(itemId: number) {
-    data.player = await (await fetch(`/shop/buy-item?item=${itemId}&game=${data.player.gameId}`)).json();
+    data.player = await (await fetch(`${itemId}/buy`)).json();
   }
 </script>
 
@@ -21,7 +21,7 @@
       </li>
     {/each}
   </ul>
-  <a class="button" href="/?game={data.player.gameId}">Back to game</a>
+  <a class="button" href="../">Back to game</a>
 </div>
 
 <style>
