@@ -1,1 +1,1 @@
-export type LocalDoor = { svgRef1Id: number; svgRef2Id: number };
+export type LocalDoor = { svgRef1: number; svgRef2: number };

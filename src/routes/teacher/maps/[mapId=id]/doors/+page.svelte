@@ -23,8 +23,8 @@
       line.setAttribute("x2", secondRoomCenter.x.toString());
       line.setAttribute("y2", secondRoomCenter.y.toString());
       line.classList.add("door-line");
-      if (!lines[door.svgRef1Id]) lines[door.svgRef1Id] = {};
-      lines[door.svgRef1Id][door.svgRef2Id] = line;
+      if (!lines[door.svgRef1]) lines[door.svgRef1] = {};
+      lines[door.svgRef1][door.svgRef2] = line;
     }
   }
 
@@ -35,18 +35,18 @@
     } else {
       const secondRoomCenter = map.getCenterOf(clickedRoom);
       const door = {
-        svgRef1Id: Math.min(firstRoom, clickedRoom),
-        svgRef2Id: Math.max(firstRoom, clickedRoom),
+        svgRef1: Math.min(firstRoom, clickedRoom),
+        svgRef2: Math.max(firstRoom, clickedRoom),
       };
-      if (lines[door.svgRef1Id] && lines[door.svgRef1Id][door.svgRef2Id]) {
-        lines[door.svgRef1Id][door.svgRef2Id].remove();
-        delete lines[door.svgRef1Id][door.svgRef2Id];
-        await fetch(door.svgRef1Id + "/" + door.svgRef2Id, {
+      if (lines[door.svgRef1] && lines[door.svgRef1][door.svgRef2]) {
+        lines[door.svgRef1][door.svgRef2].remove();
+        delete lines[door.svgRef1][door.svgRef2];
+        await fetch(door.svgRef1 + "/" + door.svgRef2, {
           method: "DELETE",
         });
       } else if (clickedRoom !== firstRoom) {
         drawLine(door, firstRoomCenter, secondRoomCenter);
-        await fetch(door.svgRef1Id + "/" + door.svgRef2Id, {
+        await fetch(door.svgRef1 + "/" + door.svgRef2, {
           method: "PUT",
         });
       }
@@ -58,8 +58,8 @@
     for (const door of data.map.doors) {
       drawLine(
         door,
-        map.getCenterOf(door.svgRef1Id),
-        map.getCenterOf(door.svgRef2Id),
+        map.getCenterOf(door.svgRef1),
+        map.getCenterOf(door.svgRef2),
       );
     }
   }

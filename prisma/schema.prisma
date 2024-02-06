@@ -64,15 +64,15 @@ model Room {
 }
 
 model Door {
-  id        Int  @id @default(autoincrement()) @db.UnsignedInt
-  map       Map  @relation(fields: [mapId], references: [id])
-  svgRef1   Room @relation("room1", fields: [mapId, svgRef1Id], references: [mapId, svgRef])
-  svgRef2   Room @relation("room2", fields: [mapId, svgRef2Id], references: [mapId, svgRef])
-  mapId     Int  @db.UnsignedInt
-  svgRef1Id Int  @db.UnsignedInt
-  svgRef2Id Int  @db.UnsignedInt
+  id      Int  @id @default(autoincrement()) @db.UnsignedInt
+  map     Map  @relation(fields: [mapId], references: [id])
+  room1   Room @relation("room1", fields: [mapId, svgRef1], references: [mapId, svgRef])
+  room2   Room @relation("room2", fields: [mapId, svgRef2], references: [mapId, svgRef])
+  mapId   Int  @db.UnsignedInt
+  svgRef1 Int  @db.UnsignedInt
+  svgRef2 Int  @db.UnsignedInt
 
-  @@unique([mapId, svgRef1Id, svgRef2Id])
+  @@unique([mapId, svgRef1, svgRef2])
 }
 
 model Topic {

@@ -35,10 +35,10 @@ export const GET = async ({ url, params, locals }) => {
     throw error(400, "You must select a room you wish to move to");
   const door = await prisma.door.findUnique({
     where: {
-      mapId_svgRef1Id_svgRef2Id: {
+      mapId_svgRef1_svgRef2: {
         mapId: playerData.game.mapId,
-        svgRef1Id: Math.min(playerData.currRoomId, +roomRequested),
-        svgRef2Id: Math.max(playerData.currRoomId, +roomRequested),
+        svgRef1: Math.min(playerData.currRoomId, +roomRequested),
+        svgRef2: Math.max(playerData.currRoomId, +roomRequested),
       },
     },
     select: { id: true },
