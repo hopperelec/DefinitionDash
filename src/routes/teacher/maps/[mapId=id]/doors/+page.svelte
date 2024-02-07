@@ -76,6 +76,7 @@
 />
 
 <svelte:head>
+  <link as="fetch" crossorigin="anonymous" href="/maps/{data.mapId}/doors" rel="preload">
   <style>
     /* noinspection CssUnusedSymbol */
     .door-line {
