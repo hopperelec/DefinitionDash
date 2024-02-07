@@ -25,5 +25,5 @@ export const GET = async ({ locals }) => {
       gameId: true,
     },
   });
-  redirect(302, "/game/" + playerData.gameId);
+  redirect(302, "/game/" + playerData.gameId + "/");
 };
