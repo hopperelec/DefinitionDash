@@ -12,12 +12,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   const params = new URLSearchParams(await request.text());
 
   const token = params.get("credential");
-  if (!token) throw error(400, "No credential passed");
+  if (!token) error(400, "No credential passed");
   const csrfCookie = params.get("g_csrf_token");
-  if (!csrfCookie) throw error(400, "No CSRF token in Cookie.");
+  if (!csrfCookie) error(400, "No CSRF token in Cookie.");
   const csrfBody = params.get("g_csrf_token");
-  if (!csrfBody) throw error(400, "No CSRF token in post body.");
-  if (csrfCookie != csrfBody) throw error(400, "Failed to verify CSRF token");
+  if (!csrfBody) error(400, "No CSRF token in post body.");
+  if (csrfCookie != csrfBody) error(400, "Failed to verify CSRF token");
 
   const client = new OAuth2Client(PUBLIC_GOOGLE_CLIENT_ID);
   const ticket = await client.verifyIdToken({
@@ -25,9 +25,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     audience: PUBLIC_GOOGLE_CLIENT_ID,
   });
   const payload = ticket.getPayload();
-  if (!payload) {
-    throw error(400, "Failed to verify ID token");
-  }
+  if (!payload) error(400, "Failed to verify ID token");
 
   const domain = payload.hd || ALLOWED_DOMAIN;
   const user = await prisma.user.upsert({

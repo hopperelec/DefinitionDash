@@ -28,17 +28,17 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
       expires: true,
     },
   });
-  if (!session) throw error(400, "Invalid session UUID");
+  if (!session) error(400, "Invalid session UUID");
   if (new Date() > session.expires) return false;
   if (!session.user.allowed)
-    throw error(
+    error(
       403,
       "Currently, only accounts registered with my school are allowed to access Definition Dash",
     );
   event.locals.user = session.user;
   if (!event.url.pathname.startsWith("/teacher") || session.user.isTeacher)
     return true;
-  throw error(403, "Only teachers can access this page!");
+  error(403, "Only teachers can access this page!");
 }
 
 export const handle: Handle = async ({ event, resolve }) => {

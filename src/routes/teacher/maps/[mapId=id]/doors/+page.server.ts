@@ -13,5 +13,5 @@ export const load = async ({ params, locals }) => {
     select: { imgURL: true },
   });
   if (map) return { mapId, mapURL: map.imgURL };
-  throw error(403, "You do not have access to this map!");
+  error(403, "You do not have access to this map!");
 };

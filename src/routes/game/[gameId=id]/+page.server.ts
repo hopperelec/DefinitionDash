@@ -20,13 +20,13 @@ export const load = async ({ params, locals }) => {
     },
   });
   if (!ret)
-    throw error(
+    error(
       500,
       "An unexpected error occurred while trying to retrieve your player data",
     );
   const { game, ...playerData } = ret; // So that playerData doesn't contain duplicate data from game
   const props: {
-    picture: string;
+    picture: string | null;
     player: Player;
     mapURL: string;
     mapId: number;

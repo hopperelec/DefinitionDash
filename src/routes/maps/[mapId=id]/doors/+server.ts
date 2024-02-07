@@ -19,6 +19,6 @@ export const GET = async ({ params, locals }) => {
       },
     },
   });
-  if (!map) throw error(403, "You do not have access to a game with this ID!");
+  if (!map) error(403, "You do not have access to a game with this ID!");
   return new Response(encodeDoors(map.doors));
 };

@@ -4,7 +4,7 @@ import { getExistingPlayer } from "$lib/server/get-player";
 
 export const GET = async ({ url, params, locals }) => {
   const player = await getExistingPlayer(locals.user, +params.gameId);
-  if (!player) throw error(400, "You must be in a game to get a definition!");
+  if (!player) error(400, "You must be in a game to get a definition!");
   const playerData = await prisma.player.findUnique({
     where: {
       id: player.id,
@@ -24,15 +24,14 @@ export const GET = async ({ url, params, locals }) => {
     },
   });
   if (!playerData)
-    throw error(
+    error(
       500,
       "An unexpected error occurred while trying to retrieve your player data",
     );
   if (playerData.currQuestion)
     return new Response(playerData.currQuestion.definition);
   const roomRequested = url.searchParams.get("room");
-  if (!roomRequested)
-    throw error(400, "You must select a room you wish to move to");
+  if (!roomRequested) error(400, "You must select a room you wish to move to");
   const door = await prisma.door.findUnique({
     where: {
       mapId_svgRef1_svgRef2: {
@@ -44,7 +43,7 @@ export const GET = async ({ url, params, locals }) => {
     select: { id: true },
   });
   if (!door)
-    throw error(
+    error(
       400,
       "There is no door between the room you are currently in and the room you selected!",
     );

@@ -14,7 +14,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
         uuidBin: toBuffer(sessionUUID),
       },
     });
-    cookies.delete(SESSION_COOKIE_KEY);
+    cookies.delete(SESSION_COOKIE_KEY, { path: "/" });
   }
   return new Response("Redirect", {
     status: 303,

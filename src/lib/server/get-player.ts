@@ -34,7 +34,7 @@ export default async function getPlayer(
       mapId: true,
     },
   });
-  if (!game) throw error(403, "You do not have access to this game!");
+  if (!game) error(403, "You do not have access to this game!");
   return prisma.player.create({
     data: {
       userId: user.id,
