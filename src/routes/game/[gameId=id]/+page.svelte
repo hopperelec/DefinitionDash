@@ -1,20 +1,13 @@
 <script lang="ts">
   import SVGMap from "$lib/SVGMap.svelte";
   import "$lib/button.css";
+  import decodeDoors from "$lib/decode-doors";
 
   export let data;
   let map: SVGMap;
   let position: number | undefined;
   let points = data.player.points;
-
-  const doors = data.map.doors.reduce(
-    (acc: { [key: number]: number[] }, door) => {
-      acc[door.svgRef1] = acc[door.svgRef1] || [];
-      acc[door.svgRef1].push(door.svgRef2);
-      return acc;
-    },
-    {},
-  );
+  let doors: { [key: number]: number[] };
 
   function movePlayerIcon(
     playerId: number,
@@ -94,7 +87,10 @@
     }
   }
 
-  function onSuccess() {
+  async function onMapSuccess() {
+    doors = await fetch("/maps/" + data.mapId + "/doors")
+      .then((response) => response.arrayBuffer())
+      .then(decodeDoors);
     position = data.player.currRoomId;
     map.getSVG().addEventListener("mousemove", (event) => {
       const hoveredRoom = map.getEventRoom(event);
@@ -114,7 +110,12 @@
 <a class="button" href="shop">Shop</a>
 <p id="pts-indicator">Points: <span>{points}</span></p>
 <div id="pts-change-container"></div>
-<SVGMap bind:this={map} imgURL={data.map.imgURL} {onClickRoom} {onSuccess} />
+<SVGMap
+  bind:this={map}
+  imgURL={data.mapURL}
+  {onClickRoom}
+  onSuccess={onMapSuccess}
+/>
 
 <svelte:head>
   <style>

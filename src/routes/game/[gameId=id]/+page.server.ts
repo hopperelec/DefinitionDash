@@ -1,7 +1,6 @@
 import getPlayer from "$lib/server/get-player";
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
-import type { LocalDoor } from "$lib/types";
 import type { Player } from "@prisma/client";
 
 export const load = async ({ params, locals }) => {
@@ -14,7 +13,7 @@ export const load = async ({ params, locals }) => {
       game: {
         select: {
           map: {
-            select: { imgURL: true, doors: true },
+            select: { imgURL: true, id: true },
           },
         },
       },
@@ -29,14 +28,13 @@ export const load = async ({ params, locals }) => {
   const props: {
     picture: string;
     player: Player;
-    map: {
-      imgURL: string;
-      doors: LocalDoor[];
-    };
+    mapURL: string;
+    mapId: number;
   } = {
     picture: locals.user.picture,
     player: playerData,
-    map: game.map,
+    mapURL: game.map.imgURL,
+    mapId: game.map.id,
   };
   return props;
 };

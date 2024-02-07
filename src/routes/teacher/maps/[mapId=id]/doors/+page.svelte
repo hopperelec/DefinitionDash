@@ -2,6 +2,7 @@
   import SVGMap from "$lib/SVGMap.svelte";
   import { SVG_NS } from "$lib/constants";
   import type { LocalDoor } from "$lib/types";
+  import decodeDoors from "$lib/decode-doors";
 
   export let data;
   const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
@@ -54,20 +55,22 @@
     }
   }
 
-  function onMapSuccess() {
-    for (const door of data.map.doors) {
-      drawLine(
-        door,
-        map.getCenterOf(door.svgRef1),
-        map.getCenterOf(door.svgRef2),
-      );
+  async function onMapSuccess() {
+    const doors = await fetch("/maps/" + data.mapId + "/doors")
+      .then((response) => response.arrayBuffer())
+      .then(decodeDoors);
+    for (const [svgRef1, svgRef2s] of Object.entries(doors)) {
+      for (const svgRef2 of svgRef2s) {
+        const door = { svgRef1: +svgRef1, svgRef2 };
+        drawLine(door, map.getCenterOf(door.svgRef1), map.getCenterOf(svgRef2));
+      }
     }
   }
 </script>
 
 <SVGMap
   bind:this={map}
-  imgURL={data.map.imgURL}
+  imgURL={data.mapURL}
   {onClickRoom}
   onSuccess={onMapSuccess}
 />
