@@ -8,8 +8,8 @@ export default async function getMap(schoolId: number, mapId: number) {
       creator: {
         schoolId: schoolId,
       },
-      select: { id: true },
     },
+    select: { id: true },
   });
   if (map) return map;
   error(403, "You do not have access to this map!");

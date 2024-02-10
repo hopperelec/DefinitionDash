@@ -1,6 +1,6 @@
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
-import encodeDoors from "$lib/encode-doors";
+import encodeDoors from "$lib/server/encode-doors";
 
 export const GET = async ({ params, locals }) => {
   const map = await prisma.map.findFirst({

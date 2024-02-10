@@ -17,7 +17,11 @@
         <h3>{item.name}</h3>
         <p class="description">{item.description || ""}</p>
         <p>Cost: <span>{item.cost}</span> point{item.cost === 1 ? "" : "s"}</p>
-        <button type="button" on:click={() => buyItem(item.id)} disabled={item.cost > data.player.points}>Buy</button>
+        <button
+          type="button"
+          on:click={() => buyItem(item.id)}
+          disabled={item.cost > data.player.points}>Buy</button
+        >
       </li>
     {/each}
   </ul>

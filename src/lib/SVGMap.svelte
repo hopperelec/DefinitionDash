@@ -137,7 +137,7 @@
 <div id="map-container"></div>
 
 <svelte:head>
-  <link as="fetch" crossorigin="anonymous" href="{imgURL}" rel="preload">
+  <link as="fetch" crossorigin="anonymous" href={imgURL} rel="preload" />
   <style>
     [data-room]:hover {
       filter: brightness(1.5);

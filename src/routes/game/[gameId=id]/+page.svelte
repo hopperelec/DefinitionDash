@@ -118,8 +118,13 @@
 />
 
 <svelte:head>
-  <link as="fetch" crossorigin="anonymous" href="/maps/{data.mapId}/doors" rel="preload">
-  <link as="image" href="{data.picture || '/default_pfp.svg'}" rel="preload">
+  <link
+    as="fetch"
+    crossorigin="anonymous"
+    href="/maps/{data.mapId}/doors"
+    rel="preload"
+  />
+  <link as="image" href={data.picture || "/default_pfp.svg"} rel="preload" />
   <style>
     [data-player] {
       clip-path: inset(0% round 50%);
