@@ -117,6 +117,7 @@
         "image/svg+xml",
       ).documentElement;
       if (tempMapElm instanceof SVGSVGElement) {
+        container.innerHTML = "";
         svg = container.appendChild(tempMapElm);
         svg.addEventListener("click", (event) => {
           if (onClickRoom) {
@@ -134,7 +135,9 @@
   });
 </script>
 
-<div id="map-container"></div>
+<div id="map-container">
+  <p>Loading map...</p>
+</div>
 
 <svelte:head>
   <link as="fetch" crossorigin="anonymous" href={imgURL} rel="preload" />
@@ -150,7 +153,7 @@
   </style>
 </svelte:head>
 
-<style>
+<style lang="scss">
   #map-container {
     position: fixed;
     top: 0;
@@ -161,5 +164,10 @@
     align-items: center;
     justify-content: center;
     z-index: -1;
+
+    & > p {
+      font-family: var(--default-font-family-bold);
+      font-size: 4em;
+    }
   }
 </style>
