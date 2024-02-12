@@ -3,29 +3,43 @@
   import "$lib/button.css";
   import decodeDoors from "$lib/decode-doors";
 
+  type ClientPlayerData = {
+    currRoomId: number,
+    picture: string | null,
+  };
+
   export let data;
   let map: SVGMap;
-  let position: number | undefined;
-  let points = data.player.points;
   let doors: { [key: number]: number[] };
 
-  function movePlayerIcon(
-    playerId: number,
-    playerPicture: string | null,
-    roomId: number,
-  ) {
+  const players = data.players.reduce((acc, player) => {
+    acc[player.user.id] = {
+      currRoomId: player.currRoomId,
+      picture: player.user.picture,
+    };
+    return acc;
+  }, {} as { [ key: number ]: ClientPlayerData });
+  const uniquePictures = data.players.reduce((acc, player) => {
+    acc.add(player.user.picture);
+    return acc
+  }, new Set<string | null>);
+
+  function movePlayerIcon(playerId: number) {
     const prevIcon = map.getElmWhere("player", playerId) as SVGImageElement;
     if (prevIcon) map.removeIcon(prevIcon);
-    const newIcon = map.addIconTo(roomId, playerPicture || "/default_pfp.svg");
+    const player = players[playerId];
+    const newIcon = map.addIconTo(
+      player.currRoomId,
+      player.picture || "/default_pfp.svg"
+    );
     if (newIcon) {
       newIcon.dataset.player = playerId.toString();
     }
   }
 
   function canMoveTo(room: number) {
-    if (!position) return false;
-    const room1Id = Math.min(position, room);
-    const room2Id = Math.max(position, room);
+    const room1Id = Math.min(data.player.currRoomId, room);
+    const room2Id = Math.max(data.player.currRoomId, room);
     return doors[room1Id] && doors[room1Id].includes(room2Id);
   }
 
@@ -49,8 +63,10 @@
   }
 
   function claimRoom(roomId: number) {
-    position = roomId;
-    points += 1;
+    players[data.player.userId].currRoomId = roomId
+    data.player.currRoomId = roomId;
+    data.player.points += 1;
+    movePlayerIcon(data.player.userId);
     addPointsChangeGlyph(1);
   }
 
@@ -81,17 +97,19 @@
         claimRoom(clickedRoom);
       } else {
         alert(
-          "An unexpected error occured while trying to choose a question for you.",
+          "An unexpected error occurred while trying to choose a question for you.",
         );
       }
     }
   }
 
   async function onMapSuccess() {
+    for (const player of data.players) {
+      movePlayerIcon(player.user.id);
+    }
     doors = await fetch("/maps/" + data.mapId + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
-    position = data.player.currRoomId;
     map.getSVG().addEventListener("mousemove", (event) => {
       const hoveredRoom = map.getEventRoom(event);
       map.getSVG().style.cursor = hoveredRoom
@@ -101,14 +119,10 @@
         : "";
     });
   }
-
-  $: if (position !== undefined) {
-    movePlayerIcon(data.player.id, data.picture, position);
-  }
 </script>
 
 <a class="button" href="shop">Shop</a>
-<p id="pts-indicator">Points: <span>{points}</span></p>
+<p id="pts-indicator">Points: <span>{data.player.points}</span></p>
 <div id="pts-change-container"></div>
 <SVGMap
   bind:this={map}
@@ -124,7 +138,9 @@
     href="/maps/{data.mapId}/doors"
     rel="preload"
   />
-  <link as="image" href={data.picture || "/default_pfp.svg"} rel="preload" />
+  {#each uniquePictures as picture}
+    <link as="image" href="{picture || '/default_pfp.svg'}" rel="preload">
+  {/each}
   <style>
     [data-player] {
       clip-path: inset(0% round 50%);

@@ -15,6 +15,17 @@ export const load = async ({ params, locals }) => {
           map: {
             select: { imgURL: true, id: true },
           },
+          players: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  picture: true,
+                },
+              },
+              currRoomId: true,
+            },
+          },
         },
       },
     },
@@ -26,13 +37,19 @@ export const load = async ({ params, locals }) => {
     );
   const { game, ...playerData } = ret; // So that playerData doesn't contain duplicate data from game
   const props: {
-    picture: string | null;
     player: Player;
+    players: {
+      user: {
+        id: number;
+        picture: string | null;
+      };
+      currRoomId: number;
+    }[];
     mapURL: string;
     mapId: number;
   } = {
-    picture: locals.user.picture,
     player: playerData,
+    players: game.players,
     mapURL: game.map.imgURL,
     mapId: game.map.id,
   };

@@ -75,16 +75,21 @@
       }
     }
 
-    let iconContainer = getElmWhere("icon-for", roomId);
-    if (!iconContainer) {
-      iconContainer = svg.appendChild(document.createElementNS(SVG_NS, "g"));
-      iconContainer.dataset.iconFor = roomId.toString();
-    }
-
     const icon = document.createElementNS(SVG_NS, "image");
     icon.href.baseVal = iconSrc;
     icon.setAttribute("width", ICON_SIZE.toString());
     icon.setAttribute("height", ICON_SIZE.toString());
+
+    let iconContainer = getElmWhere("icon-for", roomId);
+    if (iconContainer) {
+      icon.setAttribute(
+        "transform",
+        `translate(${iconContainer.childElementCount * ICON_SIZE / 2})`, // Overlap icons slightly
+      );
+    } else {
+      iconContainer = svg.appendChild(document.createElementNS(SVG_NS, "g"));
+      iconContainer.dataset.iconFor = roomId.toString();
+    }
     iconContainer.appendChild(icon);
 
     const iconContainerBBox = iconContainer.getBBox();
