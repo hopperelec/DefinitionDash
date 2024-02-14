@@ -43,7 +43,7 @@
     return doors[room1Id] && doors[room1Id].includes(room2Id);
   }
 
-  function addPointsChangeGlyph(amount: number) {
+  function addPtsChangeGlyph(amount: number) {
     const ptsIndicator = document.getElementById("pts-indicator");
     if (!ptsIndicator) return;
     const ptsChangeContainer = document.getElementById("pts-change-container");
@@ -56,10 +56,10 @@
       elm.innerText = amount.toString();
       elm.style.color = "red";
     }
-    elm.classList.add("points-change");
+    elm.classList.add("pts-change");
     const rect = ptsIndicator.getBoundingClientRect();
     elm.style.left = `${rect.x + Math.floor(Math.random() * rect.width)}px`;
-    setTimeout(() => elm.remove(), 1000);
+    // setTimeout(() => elm.remove(), 1000);
   }
 
   function claimRoom(roomId: number) {
@@ -67,7 +67,7 @@
     data.player.currRoomId = roomId;
     data.player.points += 1;
     movePlayerIcon(data.player.userId);
-    addPointsChangeGlyph(1);
+    addPtsChangeGlyph(1);
   }
 
   async function askQuestion(question: string): Promise<boolean> {
@@ -146,7 +146,7 @@
       clip-path: inset(0% round 50%);
     }
 
-    #points-change-container > * {
+    #pts-change-container > * {
       position: absolute;
       font-size: 18px;
       animation: fly-up-and-fade-out 1s ease-out forwards;
