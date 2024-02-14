@@ -1,4 +1,9 @@
 import { type Callback, getGameEventEmitter } from "$lib/server/events";
+import type { Config } from "@sveltejs/adapter-vercel";
+
+export const config: Config = {
+  runtime: "edge",
+};
 
 export const GET = ({ params, locals }) => {
   const eventEmitter = getGameEventEmitter(+params.gameId);
