@@ -38,7 +38,7 @@ const ACTIONS: { [key: string]: (playerId: number) => Promise<boolean> } = {
 
 export const GET = async ({ params, locals }) => {
   const player = await getExistingPlayer(locals.user, +params.gameId);
-  if (!player) error(400, "You must be in a game to answer a question!");
+  if (!player) error(400, "You are not in this game!");
   const shopItem = await prisma.shopItem.findUnique({
     where: {
       id: +params.itemId,

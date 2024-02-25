@@ -2,6 +2,8 @@
   import SVGMap from "$lib/SVGMap.svelte";
   import "$lib/button.css";
   import decodeDoors from "$lib/decode-doors";
+  import { onMount } from "svelte";
+  import ably from "ably";
 
   type ClientPlayerData = {
     currRoomId: number,
@@ -11,6 +13,15 @@
   export let data;
   let map: SVGMap;
   let doors: { [key: number]: number[] };
+
+  onMount(async () => {
+      await new ably.Realtime.Promise({ authUrl: "/ably-auth" })
+        .channels.get("game:" + data.player.gameId)
+        .subscribe((message) => {
+          console.log(message);
+        })
+    }
+  );
 
   const players = data.players.reduce((acc, player) => {
     acc[player.user.id] = {
@@ -59,7 +70,7 @@
     elm.classList.add("pts-change");
     const rect = ptsIndicator.getBoundingClientRect();
     elm.style.left = `${rect.x + Math.floor(Math.random() * rect.width)}px`;
-    // setTimeout(() => elm.remove(), 1000);
+    setTimeout(() => elm.remove(), 1000);
   }
 
   function claimRoom(roomId: number) {

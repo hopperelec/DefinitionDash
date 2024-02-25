@@ -4,7 +4,7 @@ import { getExistingPlayer } from "$lib/server/get-player";
 
 export const POST = async ({ request, params, locals }) => {
   const player = await getExistingPlayer(locals.user, +params.gameId);
-  if (!player) error(400, "You must be in a game to answer a question!");
+  if (!player) error(400, "You are not in this game!");
   const playerData = await prisma.player.findUnique({
     where: {
       id: player.id,
