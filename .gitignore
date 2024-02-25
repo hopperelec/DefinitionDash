@@ -4,6 +4,4 @@
 /.svelte-kit/
 /test-results/
 /vite.config.ts.timestamp-*.mjs
-/.replit
-/replit.nix
 /.env
