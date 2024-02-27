@@ -6,8 +6,8 @@
   import ably from "ably";
 
   type ClientPlayerData = {
-    currRoomId: number,
-    picture: string | null,
+    currRoomId: number;
+    picture: string | null;
   };
 
   export let data;
@@ -15,25 +15,27 @@
   let doors: { [key: number]: number[] };
 
   onMount(async () => {
-      await new ably.Realtime.Promise({ authUrl: "/ably-auth" })
-        .channels.get("game:" + data.player.gameId)
-        .subscribe((message) => {
-          console.log(message);
-        })
-    }
-  );
+    await new ably.Realtime.Promise({ authUrl: "/ably-auth" }).channels
+      .get("game:" + data.player.gameId)
+      .subscribe((message) => {
+        console.log(message);
+      });
+  });
 
-  const players = data.players.reduce((acc, player) => {
-    acc[player.user.id] = {
-      currRoomId: player.currRoomId,
-      picture: player.user.picture,
-    };
-    return acc;
-  }, {} as { [ key: number ]: ClientPlayerData });
+  const players = data.players.reduce(
+    (acc, player) => {
+      acc[player.user.id] = {
+        currRoomId: player.currRoomId,
+        picture: player.user.picture,
+      };
+      return acc;
+    },
+    {} as { [key: number]: ClientPlayerData },
+  );
   const uniquePictures = data.players.reduce((acc, player) => {
     acc.add(player.user.picture);
-    return acc
-  }, new Set<string | null>);
+    return acc;
+  }, new Set<string | null>());
 
   function movePlayerIcon(playerId: number) {
     const prevIcon = map.getElmWhere("player", playerId) as SVGImageElement;
@@ -41,7 +43,7 @@
     const player = players[playerId];
     const newIcon = map.addIconTo(
       player.currRoomId,
-      player.picture || "/default_pfp.svg"
+      player.picture || "/default_pfp.svg",
     );
     if (newIcon) {
       newIcon.dataset.player = playerId.toString();
@@ -74,7 +76,7 @@
   }
 
   function claimRoom(roomId: number) {
-    players[data.player.userId].currRoomId = roomId
+    players[data.player.userId].currRoomId = roomId;
     data.player.currRoomId = roomId;
     data.player.points += 1;
     movePlayerIcon(data.player.userId);
@@ -150,7 +152,7 @@
     rel="preload"
   />
   {#each uniquePictures as picture}
-    <link as="image" href="{picture || '/default_pfp.svg'}" rel="preload">
+    <link as="image" href={picture || "/default_pfp.svg"} rel="preload" />
   {/each}
   <style>
     [data-player] {

@@ -84,7 +84,7 @@
     if (iconContainer) {
       icon.setAttribute(
         "transform",
-        `translate(${iconContainer.childElementCount * ICON_SIZE / 2})`, // Overlap icons slightly
+        `translate(${(iconContainer.childElementCount * ICON_SIZE) / 2})`, // Overlap icons slightly
       );
     } else {
       iconContainer = svg.appendChild(document.createElementNS(SVG_NS, "g"));

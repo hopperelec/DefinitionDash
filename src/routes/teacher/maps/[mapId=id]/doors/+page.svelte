@@ -12,7 +12,8 @@
     const firstRoomCenter = map.getCenterOf(svgRef1);
     const secondRoomCenter = map.getCenterOf(svgRef2);
     if (firstRoomCenter && secondRoomCenter) {
-      const line = map.getSVG()
+      const line = map
+        .getSVG()
         .appendChild(document.createElementNS(SVG_NS, "line"));
       line.setAttribute("x1", firstRoomCenter.x.toString());
       line.setAttribute("y1", firstRoomCenter.y.toString());
