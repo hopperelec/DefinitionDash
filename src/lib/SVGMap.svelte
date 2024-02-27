@@ -64,11 +64,11 @@
     return center;
   }
 
-  export function addIconTo(roomId: number, iconSrc: string) {
-    const center = getCenterOf(roomId);
+  export function addIconTo(svgRef: number, iconSrc: string) {
+    const center = getCenterOf(svgRef);
     if (!center) return;
 
-    const labels = getLabelsFor(roomId);
+    const labels = getLabelsFor(svgRef);
     if (labels) {
       for (const label of labels) {
         label.style.display = "none";
@@ -80,7 +80,7 @@
     icon.setAttribute("width", ICON_SIZE.toString());
     icon.setAttribute("height", ICON_SIZE.toString());
 
-    let iconContainer = getElmWhere("icon-for", roomId);
+    let iconContainer = getElmWhere("icon-for", svgRef);
     if (iconContainer) {
       icon.setAttribute(
         "transform",
@@ -88,7 +88,7 @@
       );
     } else {
       iconContainer = svg.appendChild(document.createElementNS(SVG_NS, "g"));
-      iconContainer.dataset.iconFor = roomId.toString();
+      iconContainer.dataset.iconFor = svgRef.toString();
     }
     iconContainer.appendChild(icon);
 

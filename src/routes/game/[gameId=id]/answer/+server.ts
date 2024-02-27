@@ -1,6 +1,7 @@
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
 import { getExistingPlayer } from "$lib/server/get-player";
+import ablyServer from "$lib/server/ably-server";
 
 export const POST = async ({ request, params, locals }) => {
   const player = await getExistingPlayer(locals.user, +params.gameId);
@@ -43,6 +44,12 @@ export const POST = async ({ request, params, locals }) => {
         currMoveId: null,
       },
     });
+    await ablyServer.channels
+      .get("game:" + params.gameId)
+      .publish("move", {
+        userId: locals.user.id,
+        roomId: playerData.currMoveId,
+      });
   }
   return json({ correct });
 };

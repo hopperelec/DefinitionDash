@@ -18,7 +18,11 @@
     await new ably.Realtime.Promise({ authUrl: "/ably-auth" }).channels
       .get("game:" + data.player.gameId)
       .subscribe((message) => {
-        console.log(message);
+        switch(message.name) {
+          case "move":
+            movePlayer(message.data.userId, message.data.roomId);
+            break;
+        }
       });
   });
 
@@ -37,16 +41,25 @@
     return acc;
   }, new Set<string | null>());
 
-  function movePlayerIcon(playerId: number) {
-    const prevIcon = map.getElmWhere("player", playerId) as SVGImageElement;
+  const roomToSvgRef = data.map.rooms.reduce(
+    (acc, room) => {
+      acc[room.id] = room.svgRef;
+      return acc;
+    },
+    {} as { [key: number]: number },
+  );
+
+  function movePlayer(userId: number, roomId: number) {
+    players[userId].currRoomId = roomId;
+    const prevIcon = map.getElmWhere("user", userId) as SVGImageElement;
     if (prevIcon) map.removeIcon(prevIcon);
-    const player = players[playerId];
+    const player = players[userId];
     const newIcon = map.addIconTo(
-      player.currRoomId,
+      roomToSvgRef[player.currRoomId],
       player.picture || "/default_pfp.svg",
     );
     if (newIcon) {
-      newIcon.dataset.player = playerId.toString();
+      newIcon.dataset.user = userId.toString();
     }
   }
 
@@ -76,10 +89,9 @@
   }
 
   function claimRoom(roomId: number) {
-    players[data.player.userId].currRoomId = roomId;
     data.player.currRoomId = roomId;
     data.player.points += 1;
-    movePlayerIcon(data.player.userId);
+    movePlayer(data.player.userId, roomId);
     addPtsChangeGlyph(1);
   }
 
@@ -118,9 +130,9 @@
 
   async function onMapSuccess() {
     for (const player of data.players) {
-      movePlayerIcon(player.user.id);
+      movePlayer(player.user.id, player.currRoomId);
     }
-    doors = await fetch("/maps/" + data.mapId + "/doors")
+    doors = await fetch("/maps/" + data.map.id + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
     map.getSVG().addEventListener("mousemove", (event) => {
@@ -139,7 +151,7 @@
 <div id="pts-change-container"></div>
 <SVGMap
   bind:this={map}
-  imgURL={data.mapURL}
+  imgURL={data.map.imgURL}
   {onClickRoom}
   onSuccess={onMapSuccess}
 />
@@ -148,7 +160,7 @@
   <link
     as="fetch"
     crossorigin="anonymous"
-    href="/maps/{data.mapId}/doors"
+    href="/maps/{data.map.id}/doors"
     rel="preload"
   />
   {#each uniquePictures as picture}

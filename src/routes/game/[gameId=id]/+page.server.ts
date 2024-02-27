@@ -2,7 +2,6 @@ import getPlayer from "$lib/server/get-player";
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 import type { Player } from "@prisma/client";
-import ablyServer from "$lib/server/ably-server";
 
 export const load = async ({ params, locals }) => {
   const player = await getPlayer(locals.user, +params.gameId);
@@ -14,7 +13,16 @@ export const load = async ({ params, locals }) => {
       game: {
         select: {
           map: {
-            select: { imgURL: true, id: true },
+            select: {
+              id: true,
+              imgURL: true,
+              rooms: {
+                select: {
+                  id: true,
+                  svgRef: true,
+                },
+              },
+            },
           },
           players: {
             select: {
@@ -36,9 +44,6 @@ export const load = async ({ params, locals }) => {
       500,
       "An unexpected error occurred while trying to retrieve your player data",
     );
-  await ablyServer.channels
-    .get("game:" + params.gameId)
-    .publish("connect", locals.user.id.toString());
   const { game, ...playerData } = ret; // So that playerData doesn't contain duplicate data from game
   const props: {
     player: Player;
@@ -49,13 +54,18 @@ export const load = async ({ params, locals }) => {
       };
       currRoomId: number;
     }[];
-    mapURL: string;
-    mapId: number;
+    map: {
+      id: number;
+      imgURL: string;
+      rooms: {
+        id: number;
+        svgRef: number;
+      }[];
+    };
   } = {
     player: playerData,
     players: game.players,
-    mapURL: game.map.imgURL,
-    mapId: game.map.id,
+    map: game.map,
   };
   return props;
 };
