@@ -2,24 +2,17 @@ import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 import chooseSpawnpoint from "$lib/server/choose-spawnpoint";
 
-export async function getExistingPlayer(
+export default async function getPlayer(
   user: { id: number; schoolId: number },
   gameId: number,
-) {
-  return prisma.player.findFirst({
+): Promise<{ id: number }> {
+  const player = await prisma.player.findFirst({
     where: {
       userId: user.id,
       gameId: gameId,
     },
     select: { id: true },
   });
-}
-
-export default async function getPlayer(
-  user: { id: number; schoolId: number },
-  gameId: number,
-): Promise<{ id: number }> {
-  const player = await getExistingPlayer(user, gameId);
   if (player) return player;
   const game = await prisma.game.findFirst({
     where: {

@@ -1,44 +1,57 @@
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import { getExistingPlayer } from "$lib/server/get-player";
+import ablyServer from "$lib/server/ably-server";
+import type { User } from "@prisma/client";
 
-const ACTIONS: { [key: string]: (playerId: number) => Promise<boolean> } = {
-  randomTeleport: async (playerId) => {
-    const playerData = await prisma.player.findUnique({
-      where: {
-        id: playerId,
-      },
-      select: {
-        game: {
-          select: {
-            mapId: true,
-          },
-        },
-      },
-    });
-    if (!playerData)
-      error(
-        500,
-        "An unexpected error occurred while trying to retrieve your player data",
-      );
-    const room: { id: bigint }[] =
-      await prisma.$queryRaw`SELECT id FROM Room WHERE mapId = ${playerData.game.mapId} ORDER BY rand() LIMIT 1`;
-    if (room.length === 0) return false;
-    await prisma.player.update({
-      where: {
-        id: playerId,
-      },
-      data: {
-        currRoomId: Number(room[0].id),
-      },
-    });
-    return true;
-  },
+type ActionDetails = {
+  playerId: number;
+  playerPoints: number;
+  user: User;
+  itemId: number;
+  itemCost: number;
 };
 
+const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
+  {
+    randomTeleport: async ({ playerId, user }) => {
+      const player = await prisma.player.findUnique({
+        where: {
+          id: playerId,
+        },
+        select: {
+          game: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (!player)
+        error(
+          500,
+          "An unexpected error occurred while trying to retrieve your player data",
+        );
+      const room: { id: bigint }[] =
+        await prisma.$queryRaw`SELECT id FROM Room WHERE mapId = (SELECT mapId from Game WHERE id=${player.game.id}) ORDER BY rand() LIMIT 1`;
+      if (room.length === 0) return false;
+      const roomId = Number(room[0].id);
+      await prisma.player.update({
+        where: {
+          id: playerId,
+        },
+        data: {
+          currRoomId: roomId,
+        },
+      });
+      await ablyServer.channels.get("game:" + player.game.id).publish("move", {
+        userId: user.id,
+        roomId: roomId,
+      });
+      return true;
+    },
+  };
+
 export const GET = async ({ params, locals }) => {
-  const player = await getExistingPlayer(locals.user, +params.gameId);
-  if (!player) error(400, "You are not in this game!");
   const shopItem = await prisma.shopItem.findUnique({
     where: {
       id: +params.itemId,
@@ -49,23 +62,23 @@ export const GET = async ({ params, locals }) => {
     },
   });
   if (!shopItem) error(404, "This item does not exist!");
-  const playerData = await prisma.player.findUnique({
+  const player = await prisma.player.findUnique({
     where: {
-      id: player.id,
+      userId_gameId: {
+        userId: locals.user.id,
+        gameId: +params.gameId,
+      },
     },
     select: {
+      id: true,
       currQuestionId: true,
       points: true,
     },
   });
-  if (!playerData)
-    error(
-      500,
-      "An unexpected error occurred while trying to retrieve your player data",
-    );
-  if (playerData.currQuestionId)
+  if (!player) error(400, "You are not in this game!");
+  if (player.currQuestionId)
     error(400, "You can not buy an item while answering a question!");
-  if (playerData.points < shopItem.cost)
+  if (player.points < shopItem.cost)
     error(400, "You do not have enough points to buy this item");
   const action = ACTIONS[shopItem.action];
   if (!action)
@@ -73,7 +86,15 @@ export const GET = async ({ params, locals }) => {
       500,
       "An unexpected error occurred trying to find find the reward for this item",
     );
-  if (await action(player.id)) {
+  if (
+    await action({
+      playerId: player.id,
+      playerPoints: player.points,
+      user: locals.user,
+      itemId: +params.itemId,
+      itemCost: shopItem.cost,
+    })
+  ) {
     const newPlayerData = await prisma.player.update({
       where: {
         id: player.id,

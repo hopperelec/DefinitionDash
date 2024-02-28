@@ -5,7 +5,7 @@ import chooseSpawnpoint from "$lib/server/choose-spawnpoint";
 
 export const GET = async ({ locals }) => {
   const map = await getAnyMapFor(locals.user.schoolId);
-  const playerData = await prisma.player.create({
+  const player = await prisma.player.create({
     data: {
       user: {
         connect: {
@@ -25,5 +25,5 @@ export const GET = async ({ locals }) => {
       gameId: true,
     },
   });
-  redirect(302, "/game/" + playerData.gameId + "/");
+  redirect(302, "/game/" + player.gameId + "/");
 };

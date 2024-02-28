@@ -1,15 +1,16 @@
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
-import { getExistingPlayer } from "$lib/server/get-player";
 
 export const GET = async ({ url, params, locals }) => {
-  const player = await getExistingPlayer(locals.user, +params.gameId);
-  if (!player) error(400, "You are not in this game!");
-  const playerData = await prisma.player.findUnique({
+  const player = await prisma.player.findUnique({
     where: {
-      id: player.id,
+      userId_gameId: {
+        userId: locals.user.id,
+        gameId: +params.gameId,
+      },
     },
     select: {
+      id: true,
       currRoomId: true,
       currQuestion: {
         select: {
@@ -23,21 +24,16 @@ export const GET = async ({ url, params, locals }) => {
       },
     },
   });
-  if (!playerData)
-    error(
-      500,
-      "An unexpected error occurred while trying to retrieve your player data",
-    );
-  if (playerData.currQuestion)
-    return new Response(playerData.currQuestion.definition);
+  if (!player) error(400, "You are not in this game!");
+  if (player.currQuestion) return new Response(player.currQuestion.definition);
   const roomRequested = url.searchParams.get("room");
   if (!roomRequested) error(400, "You must select a room you wish to move to");
   const door = await prisma.door.findUnique({
     where: {
       mapId_svgRef1_svgRef2: {
-        mapId: playerData.game.mapId,
-        svgRef1: Math.min(playerData.currRoomId, +roomRequested),
-        svgRef2: Math.max(playerData.currRoomId, +roomRequested),
+        mapId: player.game.mapId,
+        svgRef1: Math.min(player.currRoomId, +roomRequested),
+        svgRef2: Math.max(player.currRoomId, +roomRequested),
       },
     },
     select: { id: true },

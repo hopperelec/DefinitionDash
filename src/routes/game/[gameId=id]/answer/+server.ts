@@ -1,16 +1,17 @@
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import { getExistingPlayer } from "$lib/server/get-player";
 import ablyServer from "$lib/server/ably-server";
 
 export const POST = async ({ request, params, locals }) => {
-  const player = await getExistingPlayer(locals.user, +params.gameId);
-  if (!player) error(400, "You are not in this game!");
-  const playerData = await prisma.player.findUnique({
+  const player = await prisma.player.findUnique({
     where: {
-      id: player.id,
+      userId_gameId: {
+        userId: locals.user.id,
+        gameId: +params.gameId,
+      },
     },
     select: {
+      id: true,
       currQuestion: {
         select: {
           answerRegex: true,
@@ -19,15 +20,16 @@ export const POST = async ({ request, params, locals }) => {
       currMoveId: true,
     },
   });
-  if (!playerData?.currQuestion)
+  if (!player) error(400, "You are not in this game!");
+  if (!player.currQuestion)
     error(400, "You currently have no question to answer!");
-  if (!playerData.currMoveId)
+  if (!player.currMoveId)
     error(
       500,
       "An unexpected error occurred while trying to get the room you were trying to move to",
     );
   const correct = new RegExp(
-    "^" + playerData.currQuestion.answerRegex + "$",
+    "^" + player.currQuestion.answerRegex + "$",
     "i",
   ).test(await request.text());
   if (correct) {
@@ -40,16 +42,14 @@ export const POST = async ({ request, params, locals }) => {
         points: {
           increment: 1,
         },
-        currRoomId: playerData.currMoveId,
+        currRoomId: player.currMoveId,
         currMoveId: null,
       },
     });
-    await ablyServer.channels
-      .get("game:" + params.gameId)
-      .publish("move", {
-        userId: locals.user.id,
-        roomId: playerData.currMoveId,
-      });
+    await ablyServer.channels.get("game:" + params.gameId).publish("move", {
+      userId: locals.user.id,
+      roomId: player.currMoveId,
+    });
   }
   return json({ correct });
 };
