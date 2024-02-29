@@ -16,6 +16,7 @@ async function moveRoom(
   gameId: number,
   playerId: number,
   roomId: number,
+  svgRef: number,
 ) {
   await prisma.player.update({
     where: { id: playerId },
@@ -23,7 +24,7 @@ async function moveRoom(
   });
   await ablyServer.channels.get("game:" + gameId).publish("move", {
     userId: userId,
-    roomId: roomId,
+    svgRef: svgRef,
   });
 }
 
@@ -41,10 +42,22 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
           500,
           "An unexpected error occurred while trying to retrieve your player data",
         );
-      const rooms: { id: bigint }[] =
-        await prisma.$queryRaw`SELECT id FROM Room WHERE mapId = ${player.game.mapId} ORDER BY rand() LIMIT 1`;
+      const rooms: {
+        id: bigint;
+        svgRef: bigint;
+      }[] = await prisma.$queryRaw`
+        SELECT id,svgRef
+        FROM Room
+        WHERE mapId = ${player.game.mapId}
+        ORDER BY rand() LIMIT 1`;
       if (rooms.length === 0) return false;
-      await moveRoom(user.id, playerId, player.game.id, Number(rooms[0].id));
+      await moveRoom(
+        user.id,
+        playerId,
+        player.game.id,
+        Number(rooms[0].id),
+        Number(rooms[0].svgRef),
+      );
       return true;
     },
 
@@ -52,7 +65,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
       const player = await prisma.player.findUnique({
         where: { id: playerId },
         select: {
-          currRoomId: true,
+          currRoom: { select: { id: true, svgRef: true } },
           game: { select: { id: true } },
         },
       });
@@ -61,21 +74,35 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
           500,
           "An unexpected error occurred while trying to retrieve your player data",
         );
-      const randPlayers: { id: bigint; userId: bigint; currRoomId: bigint }[] =
-        await prisma.$queryRaw`SELECT id,userId,currRoomId FROM Player where gameId = ${player.game.id} ORDER BY rand() LIMIT 1`;
-      if (randPlayers.length === 0) return false;
+      const randPlayers: {
+        id: bigint;
+        userId: bigint;
+        currRoomId: bigint;
+        svgRef: bigint;
+      }[] = await prisma.$queryRaw`
+        SELECT Player.id,userId,currRoomId,svgRef
+        FROM Player
+         INNER JOIN Room
+            ON Room.id = Player.currRoomId
+        WHERE gameId = ${player.game.id}
+          AND Player.id <> ${playerId}
+        ORDER BY rand() LIMIT 1`;
+      if (randPlayers.length === 0)
+        error(400, "There are no other players in this game!");
       const randPlayer = randPlayers[0];
       await moveRoom(
         user.id,
         player.game.id,
         playerId,
         Number(randPlayer.currRoomId),
+        Number(randPlayer.svgRef),
       );
       await moveRoom(
         Number(randPlayer.userId),
         player.game.id,
         Number(randPlayer.id),
-        player.currRoomId,
+        player.currRoom.id,
+        player.currRoom.svgRef,
       );
       return true;
     },

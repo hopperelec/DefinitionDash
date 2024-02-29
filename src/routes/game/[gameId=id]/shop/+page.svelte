@@ -4,7 +4,13 @@
   export let data;
 
   async function buyItem(itemId: number) {
-    data.player = await (await fetch(`${itemId}/buy`)).json();
+    const res = await fetch(`${itemId}/buy`);
+    const json = await res.json();
+    if (res.ok) {
+      data.player = json;
+    } else {
+      alert(json.message);
+    }
   }
 </script>
 
