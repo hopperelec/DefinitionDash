@@ -6,9 +6,7 @@ import { error } from "@sveltejs/kit";
 export const load = async ({ params, locals }) => {
   const player = await getPlayer(locals.user, +params.gameId);
   const playerData = await prisma.player.findUnique({
-    where: {
-      id: player.id,
-    },
+    where: { id: player.id },
   });
   if (!playerData)
     error(

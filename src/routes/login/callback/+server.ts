@@ -29,9 +29,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
   const domain = payload.hd || ALLOWED_DOMAIN;
   const user = await prisma.user.upsert({
-    where: {
-      googleSub: payload.sub,
-    },
+    where: { googleSub: payload.sub },
     create: {
       school: {
         connectOrCreate: {
@@ -44,10 +42,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       name: payload.name,
       picture: payload.picture,
     },
-    update: {
-      name: payload.name,
-      picture: payload.picture,
-    },
+    update: { name: payload.name, picture: payload.picture },
     select: { id: true },
   });
 
@@ -55,11 +50,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   const expiry = new Date();
   expiry.setDate(expiry.getDate() + SESSION_DURATION_DAYS);
   await prisma.session.create({
-    data: {
-      userId: user.id,
-      uuidBin: toBuffer(sessionUUID),
-      expires: expiry,
-    },
+    data: { userId: user.id, uuidBin: toBuffer(sessionUUID), expires: expiry },
   });
 
   cookies.set(SESSION_COOKIE_KEY, sessionUUID, {

@@ -20,13 +20,8 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
   const sessionUUID = event.cookies.get(SESSION_COOKIE_KEY);
   if (!sessionUUID) return false;
   const session = await prisma.session.findUnique({
-    where: {
-      uuidBin: toBuffer(sessionUUID),
-    },
-    select: {
-      user: true,
-      expires: true,
-    },
+    where: { uuidBin: toBuffer(sessionUUID) },
+    select: { user: true, expires: true },
   });
   if (!session) error(400, "Invalid session UUID");
   if (new Date() > session.expires) return false;

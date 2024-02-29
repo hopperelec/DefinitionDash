@@ -5,9 +5,7 @@ export default async function getMap(schoolId: number, mapId: number) {
   const map: { id: number } | null = await prisma.map.findFirst({
     where: {
       id: mapId,
-      creator: {
-        schoolId: schoolId,
-      },
+      creator: { schoolId: schoolId },
     },
     select: { id: true },
   });

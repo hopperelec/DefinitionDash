@@ -1,38 +1,22 @@
 import getPlayer from "$lib/server/get-player";
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
-import type { Player } from "@prisma/client";
 
 export const load = async ({ params, locals }) => {
   const player = await getPlayer(locals.user, +params.gameId);
   const ret = await prisma.player.findUnique({
-    where: {
-      id: player.id,
-    },
-    include: {
+    where: { id: player.id },
+    select: {
+      points: true,
+      user: { select: { id: true } },
       game: {
         select: {
-          map: {
-            select: {
-              id: true,
-              imgURL: true,
-              rooms: {
-                select: {
-                  id: true,
-                  svgRef: true,
-                },
-              },
-            },
-          },
+          id: true,
+          map: { select: { id: true, imgURL: true } },
           players: {
             select: {
-              user: {
-                select: {
-                  id: true,
-                  picture: true,
-                },
-              },
-              currRoomId: true,
+              user: { select: { id: true, picture: true } },
+              currRoom: { select: { svgRef: true } },
             },
           },
         },
@@ -44,28 +28,35 @@ export const load = async ({ params, locals }) => {
       500,
       "An unexpected error occurred while trying to retrieve your player data",
     );
-  const { game, ...playerData } = ret; // So that playerData doesn't contain duplicate data from game
-  const props: {
-    player: Player;
-    players: {
-      user: {
-        id: number;
-        picture: string | null;
-      };
-      currRoomId: number;
-    }[];
-    map: {
-      id: number;
-      imgURL: string;
-      rooms: {
-        id: number;
-        svgRef: number;
-      }[];
+  type Opponents = {
+    [key: number]: {
+      picture: string | null;
+      currSvgRef: number;
     };
+  };
+  const players: Opponents = {};
+  for (const player of ret.game.players) {
+    players[player.user.id] = {
+      picture: player.user.picture,
+      currSvgRef: player.currRoom.svgRef,
+    };
+  }
+  const props: {
+    players: Opponents;
+    game: {
+      id: number;
+      map: {
+        id: number;
+        imgURL: string;
+      };
+    };
+    userId: number;
+    currPoints: number;
   } = {
-    player: playerData,
-    players: game.players,
-    map: game.map,
+    players,
+    game: ret.game,
+    userId: ret.user.id,
+    currPoints: ret.points,
   };
   return props;
 };

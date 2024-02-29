@@ -26,9 +26,7 @@ export const DELETE = async ({ params, locals }) => {
   };
   await getMap(locals.user.schoolId, door.mapId);
   await prisma.door.delete({
-    where: {
-      mapId_svgRef1_svgRef2: door,
-    },
+    where: { mapId_svgRef1_svgRef2: door },
   });
   return new Response();
 };

@@ -3,11 +3,7 @@ import { error } from "@sveltejs/kit";
 
 export default async function getAnyMapFor(schoolId: number) {
   const map: { id: number } | null = await prisma.map.findFirst({
-    where: {
-      creator: {
-        schoolId: schoolId,
-      },
-    },
+    where: { creator: { schoolId: schoolId } },
     select: { id: true },
   });
   if (map) return map;

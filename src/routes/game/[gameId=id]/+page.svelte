@@ -5,57 +5,29 @@
   import { onMount } from "svelte";
   import ably from "ably";
 
-  type ClientPlayerData = {
-    currRoomId: number;
-    picture: string | null;
-  };
-
   export let data;
   let map: SVGMap;
   let doors: { [key: number]: number[] };
 
   onMount(async () => {
     await new ably.Realtime.Promise({ authUrl: "/ably-auth" }).channels
-      .get("game:" + data.player.gameId)
+      .get("game:" + data.game.id)
       .subscribe((message) => {
-        switch(message.name) {
+        switch (message.name) {
           case "move":
-            movePlayer(message.data.userId, message.data.roomId);
+            movePlayer(message.data.userId, message.data.svgRef);
             break;
         }
       });
   });
 
-  const players = data.players.reduce(
-    (acc, player) => {
-      acc[player.user.id] = {
-        currRoomId: player.currRoomId,
-        picture: player.user.picture,
-      };
-      return acc;
-    },
-    {} as { [key: number]: ClientPlayerData },
-  );
-  const uniquePictures = data.players.reduce((acc, player) => {
-    acc.add(player.user.picture);
-    return acc;
-  }, new Set<string | null>());
-
-  const roomToSvgRef = data.map.rooms.reduce(
-    (acc, room) => {
-      acc[room.id] = room.svgRef;
-      return acc;
-    },
-    {} as { [key: number]: number },
-  );
-
-  function movePlayer(userId: number, roomId: number) {
-    players[userId].currRoomId = roomId;
+  function movePlayer(userId: number, svgRef: number) {
+    data.players[userId].currSvgRef = svgRef;
     const prevIcon = map.getElmWhere("user", userId) as SVGImageElement;
     if (prevIcon) map.removeIcon(prevIcon);
-    const player = players[userId];
+    const player = data.players[userId];
     const newIcon = map.addIconTo(
-      roomToSvgRef[player.currRoomId],
+      player.currSvgRef,
       player.picture || "/default_pfp.svg",
     );
     if (newIcon) {
@@ -63,10 +35,10 @@
     }
   }
 
-  function canMoveTo(room: number) {
-    const room1Id = Math.min(data.player.currRoomId, room);
-    const room2Id = Math.max(data.player.currRoomId, room);
-    return doors[room1Id] && doors[room1Id].includes(room2Id);
+  function canMoveTo(svgRef: number) {
+    const svgRef1 = Math.min(data.players[data.userId].currSvgRef, svgRef);
+    const svgRef2 = Math.max(data.players[data.userId].currSvgRef, svgRef);
+    return doors[svgRef1] && doors[svgRef1].includes(svgRef2);
   }
 
   function addPtsChangeGlyph(amount: number) {
@@ -88,10 +60,9 @@
     setTimeout(() => elm.remove(), 1000);
   }
 
-  function claimRoom(roomId: number) {
-    data.player.currRoomId = roomId;
-    data.player.points += 1;
-    movePlayer(data.player.userId, roomId);
+  function claimRoom(svgRef: number) {
+    data.currPoints += 1;
+    movePlayer(data.userId, svgRef);
     addPtsChangeGlyph(1);
   }
 
@@ -104,22 +75,22 @@
   }
 
   async function getNextQuestion(
-    roomToMoveTo: number,
+    svgRefToMoveTo: number,
   ): Promise<string | undefined> {
-    const res = await fetch("get-definition?room=" + roomToMoveTo);
+    const res = await fetch("get-definition?svgRef=" + svgRefToMoveTo);
     if (res.ok)
       return "What vocabulary is being defined: " + (await res.text());
   }
 
-  async function onClickRoom(clickedRoom: number) {
-    if (canMoveTo(clickedRoom)) {
-      const question = await getNextQuestion(clickedRoom);
+  async function onClickRoom(clickedSvgRef: number) {
+    if (canMoveTo(clickedSvgRef)) {
+      const question = await getNextQuestion(clickedSvgRef);
       if (question) {
         let askAgain = true;
         while (askAgain) {
           if (await askQuestion(question)) askAgain = false;
         }
-        claimRoom(clickedRoom);
+        claimRoom(clickedSvgRef);
       } else {
         alert(
           "An unexpected error occurred while trying to choose a question for you.",
@@ -129,16 +100,16 @@
   }
 
   async function onMapSuccess() {
-    for (const player of data.players) {
-      movePlayer(player.user.id, player.currRoomId);
+    for (const [userId, player] of Object.entries(data.players)) {
+      movePlayer(+userId, player.currSvgRef);
     }
-    doors = await fetch("/maps/" + data.map.id + "/doors")
+    doors = await fetch("/maps/" + data.game.map.id + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
     map.getSVG().addEventListener("mousemove", (event) => {
-      const hoveredRoom = map.getEventRoom(event);
-      map.getSVG().style.cursor = hoveredRoom
-        ? canMoveTo(hoveredRoom)
+      const hoveredSvgRef = map.getEventRoom(event);
+      map.getSVG().style.cursor = hoveredSvgRef
+        ? canMoveTo(hoveredSvgRef)
           ? "pointer"
           : "not-allowed"
         : "";
@@ -147,11 +118,11 @@
 </script>
 
 <a class="button" href="shop">Shop</a>
-<p id="pts-indicator">Points: <span>{data.player.points}</span></p>
+<p id="pts-indicator">Points: <span>{data.currPoints}</span></p>
 <div id="pts-change-container"></div>
 <SVGMap
   bind:this={map}
-  imgURL={data.map.imgURL}
+  imgURL={data.game.map.imgURL}
   {onClickRoom}
   onSuccess={onMapSuccess}
 />
@@ -160,10 +131,10 @@
   <link
     as="fetch"
     crossorigin="anonymous"
-    href="/maps/{data.map.id}/doors"
+    href="/maps/{data.game.map.id}/doors"
     rel="preload"
   />
-  {#each uniquePictures as picture}
+  {#each new Set(Object.values(data.players).map((player) => player.picture)) as picture}
     <link as="image" href={picture || "/default_pfp.svg"} rel="preload" />
   {/each}
   <style>

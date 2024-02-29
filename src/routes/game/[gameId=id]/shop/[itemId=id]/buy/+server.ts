@@ -18,12 +18,8 @@ async function moveRoom(
   roomId: number,
 ) {
   await prisma.player.update({
-    where: {
-      id: playerId,
-    },
-    data: {
-      currRoomId: roomId,
-    },
+    where: { id: playerId },
+    data: { currRoomId: roomId },
   });
   await ablyServer.channels.get("game:" + gameId).publish("move", {
     userId: userId,
@@ -35,15 +31,9 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
   {
     randomTeleport: async ({ playerId, user }) => {
       const player = await prisma.player.findUnique({
-        where: {
-          id: playerId,
-        },
+        where: { id: playerId },
         select: {
-          game: {
-            select: {
-              id: true,
-            },
-          },
+          game: { select: { id: true } },
         },
       });
       if (!player)
@@ -60,16 +50,10 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
 
     swapRandPlayer: async ({ playerId, user }) => {
       const player = await prisma.player.findUnique({
-        where: {
-          id: playerId,
-        },
+        where: { id: playerId },
         select: {
           currRoomId: true,
-          game: {
-            select: {
-              id: true,
-            },
-          },
+          game: { select: { id: true } },
         },
       });
       if (!player)
@@ -99,27 +83,15 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
 
 export const GET = async ({ params, locals }) => {
   const shopItem = await prisma.shopItem.findUnique({
-    where: {
-      id: +params.itemId,
-    },
-    select: {
-      cost: true,
-      action: true,
-    },
+    where: { id: +params.itemId },
+    select: { cost: true, action: true },
   });
   if (!shopItem) error(404, "This item does not exist!");
   const player = await prisma.player.findUnique({
     where: {
-      userId_gameId: {
-        userId: locals.user.id,
-        gameId: +params.gameId,
-      },
+      userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
     },
-    select: {
-      id: true,
-      currQuestionId: true,
-      points: true,
-    },
+    select: { id: true, currQuestionId: true, points: true },
   });
   if (!player) error(400, "You are not in this game!");
   if (player.currQuestionId)
@@ -142,14 +114,8 @@ export const GET = async ({ params, locals }) => {
     })
   ) {
     const newPlayerData = await prisma.player.update({
-      where: {
-        id: player.id,
-      },
-      data: {
-        points: {
-          decrement: shopItem.cost,
-        },
-      },
+      where: { id: player.id },
+      data: { points: { decrement: shopItem.cost } },
     });
     return json(newPlayerData);
   } else

@@ -7,25 +7,16 @@ export default async function getPlayer(
   gameId: number,
 ): Promise<{ id: number }> {
   const player = await prisma.player.findFirst({
-    where: {
-      userId: user.id,
-      gameId: gameId,
-    },
+    where: { userId: user.id, gameId: gameId },
     select: { id: true },
   });
   if (player) return player;
   const game = await prisma.game.findFirst({
     where: {
       id: gameId,
-      map: {
-        creator: {
-          schoolId: user.schoolId,
-        },
-      },
+      map: { creator: { schoolId: user.schoolId } },
     },
-    select: {
-      mapId: true,
-    },
+    select: { mapId: true },
   });
   if (!game) error(403, "You do not have access to this game!");
   return prisma.player.create({

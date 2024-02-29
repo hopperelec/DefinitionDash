@@ -6,9 +6,7 @@ export const load = async ({ params, locals }) => {
   const map = await prisma.map.findUnique({
     where: {
       id: mapId,
-      creator: {
-        schoolId: locals.user.schoolId,
-      },
+      creator: { schoolId: locals.user.schoolId },
     },
     select: { imgURL: true },
   });

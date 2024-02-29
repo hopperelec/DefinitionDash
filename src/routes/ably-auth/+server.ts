@@ -4,15 +4,9 @@ import prisma from "$lib/server/prisma";
 
 export const GET = async ({ locals }) => {
   const userData = await prisma.user.findUnique({
-    where: {
-      id: locals.user.id,
-    },
+    where: { id: locals.user.id },
     include: {
-      players: {
-        select: {
-          gameId: true,
-        },
-      },
+      players: { select: { gameId: true } },
     },
   });
   if (!userData)

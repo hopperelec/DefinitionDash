@@ -7,23 +7,11 @@ export const GET = async ({ locals }) => {
   const map = await getAnyMapFor(locals.user.schoolId);
   const player = await prisma.player.create({
     data: {
-      user: {
-        connect: {
-          id: locals.user.id,
-        },
-      },
-      game: {
-        create: { mapId: map.id },
-      },
-      currRoom: {
-        connect: {
-          id: await chooseSpawnpoint(map.id),
-        },
-      },
+      user: { connect: { id: locals.user.id } },
+      game: { create: { mapId: map.id } },
+      currRoom: { connect: { id: await chooseSpawnpoint(map.id) } },
     },
-    select: {
-      gameId: true,
-    },
+    select: { gameId: true },
   });
   redirect(302, "/game/" + player.gameId + "/");
 };
