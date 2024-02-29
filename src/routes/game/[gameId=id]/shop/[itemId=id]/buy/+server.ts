@@ -33,7 +33,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
       const player = await prisma.player.findUnique({
         where: { id: playerId },
         select: {
-          game: { select: { id: true } },
+          game: { select: { id: true, mapId: true } },
         },
       });
       if (!player)
@@ -42,7 +42,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<boolean> } =
           "An unexpected error occurred while trying to retrieve your player data",
         );
       const rooms: { id: bigint }[] =
-        await prisma.$queryRaw`SELECT id FROM Room WHERE mapId = (SELECT mapId from Game WHERE id=${player.game.id}) ORDER BY rand() LIMIT 1`;
+        await prisma.$queryRaw`SELECT id FROM Room WHERE mapId = ${player.game.mapId} ORDER BY rand() LIMIT 1`;
       if (rooms.length === 0) return false;
       await moveRoom(user.id, playerId, player.game.id, Number(rooms[0].id));
       return true;
