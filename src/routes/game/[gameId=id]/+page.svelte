@@ -3,19 +3,28 @@
   import "$lib/button.css";
   import decodeDoors from "$lib/decode-doors";
   import { onMount } from "svelte";
-  import ably from "ably";
+  import { getAblyClient } from "$lib/ablyClient";
 
   export let data;
   let map: SVGMap;
   let doors: { [key: number]: number[] };
 
   onMount(async () => {
-    await new ably.Realtime.Promise({ authUrl: "/ably-auth" }).channels
-      .get("game:" + data.game.id)
+    const ablyClient = getAblyClient();
+    await ablyClient.channels.get("game:" + data.game.id)
       .subscribe((message) => {
         switch (message.name) {
           case "move":
             movePlayer(message.data.userId, message.data.svgRef);
+            break;
+        }
+      });
+    await ablyClient.channels.get("game:" + data.game.id + ":" + data.userId)
+      .subscribe((message) => {
+        switch (message.name) {
+          case "points":
+            addPtsChangeGlyph(message.data.points-data.currPoints);
+            data.currPoints = message.data.points;
             break;
         }
       });

@@ -6,7 +6,7 @@ export const GET = async ({ locals }) => {
   const userData = await prisma.user.findUnique({
     where: { id: locals.user.id },
     include: {
-      players: { select: { gameId: true } },
+      players: { select: { id: true, gameId: true } },
     },
   });
   if (!userData)
@@ -17,9 +17,9 @@ export const GET = async ({ locals }) => {
   return json(
     await ablyServer.auth.createTokenRequest({
       capability: userData.players.reduce(
-        (acc, item) => {
-          const key = "game:" + item.gameId;
-          acc[key] = ["subscribe"];
+        (acc, player) => {
+          acc["game:" + player.gameId] = ["subscribe"];
+          acc["game:" + player.gameId + ":" + locals.user.id] = ["subscribe"];
           return acc;
         },
         {} as { [key: string]: ["subscribe"] },

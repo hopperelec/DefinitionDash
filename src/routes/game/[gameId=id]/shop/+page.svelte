@@ -1,22 +1,40 @@
 <script lang="ts">
   import "$lib/button.css";
+  import { onMount } from "svelte";
+  import { getAblyClient } from "$lib/ablyClient";
 
   export let data;
 
+  const itemCosts = data.shopItems.reduce((acc, item) => {
+    acc[item.id] = item.cost;
+    return acc;
+  }, {} as { [key: number] : number });
+
+  onMount(async () => {
+    const ablyClient = getAblyClient();
+    await ablyClient.channels.get("game:" + data.gameId + ":" + data.userId)
+      .subscribe((message) => {
+        switch (message.name) {
+          case "points":
+            data.points = message.data.points;
+            break;
+        }
+      });
+  });
+
   async function buyItem(itemId: number) {
     const res = await fetch(`${itemId}/buy`);
-    const json = await res.json();
     if (res.ok) {
-      data.player = json;
+      data.points -= itemCosts[itemId];
     } else {
-      alert(json.message);
+      alert((await res.json()).message);
     }
   }
 </script>
 
 <div id="shop-container">
   <h2>Shop</h2>
-  <p id="points">Points: <span>{data.player.points}</span></p>
+  <p id="points">Points: <span>{data.points}</span></p>
   <ul>
     {#each data.shopItems as item}
       <li>
@@ -26,7 +44,7 @@
         <button
           type="button"
           on:click={() => buyItem(item.id)}
-          disabled={item.cost > data.player.points}>Buy</button
+          disabled={item.cost > data.points}>Buy</button
         >
       </li>
     {/each}
