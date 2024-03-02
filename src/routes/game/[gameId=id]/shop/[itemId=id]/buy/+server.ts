@@ -161,10 +161,6 @@ export const GET = async ({ params, locals }) => {
       500,
       "An unexpected error occurred trying to find find the reward for this item",
     );
-  await prisma.player.update({
-    where: { id: player.id },
-    data: { points: { decrement: shopItem.cost } },
-  });
   await action({
     playerId: player.id,
     playerPoints: player.points,
@@ -173,6 +169,10 @@ export const GET = async ({ params, locals }) => {
     itemId: +params.itemId,
     itemCost: shopItem.cost,
     actionParams: actionParts[1],
+  });
+  await prisma.player.update({
+    where: { id: player.id },
+    data: { points: { decrement: shopItem.cost } },
   });
   return new Response();
 };
