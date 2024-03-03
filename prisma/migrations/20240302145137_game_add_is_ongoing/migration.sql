@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Game` ADD COLUMN `isOngoing` BOOLEAN NOT NULL DEFAULT true;

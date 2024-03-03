@@ -58,8 +58,8 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       );
     await moveRoom(
       user.id,
-      playerId,
       gameId,
+      playerId,
       Number(rooms[0].id),
       Number(rooms[0].svgRef),
     );
@@ -145,10 +145,11 @@ export const GET = async ({ params, locals }) => {
   const player = await prisma.player.findUnique({
     where: {
       userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
+      game: { isOngoing: true },
     },
     select: { id: true, currQuestionId: true, points: true },
   });
-  if (!player) error(400, "You are not in this game!");
+  if (!player) error(403, "You are not in this game or or the game has ended!");
   if (player.currQuestionId)
     error(400, "You can not buy an item while answering a question!");
   if (player.points < shopItem.cost)

@@ -8,10 +8,10 @@ export const load = async ({ params, locals }) => {
     where: { id: player.id },
     select: {
       points: true,
+      isHost: true,
       user: { select: { id: true } },
       game: {
         select: {
-          id: true,
           map: { select: { id: true, imgURL: true } },
           players: {
             select: {
@@ -43,19 +43,18 @@ export const load = async ({ params, locals }) => {
   }
   const props: {
     players: Opponents;
-    game: {
+    map: {
       id: number;
-      map: {
-        id: number;
-        imgURL: string;
-      };
+      imgURL: string;
     };
     userId: number;
+    isHost: boolean;
     currPoints: number;
   } = {
     players,
-    game: ret.game,
+    map: ret.game.map,
     userId: ret.user.id,
+    isHost: ret.isHost,
     currPoints: ret.points,
   };
   return props;

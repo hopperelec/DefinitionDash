@@ -6,6 +6,7 @@ export const POST = async ({ request, params, locals }) => {
   const player = await prisma.player.findUnique({
     where: {
       userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
+      game: { isOngoing: true },
     },
     select: {
       id: true,
@@ -13,7 +14,7 @@ export const POST = async ({ request, params, locals }) => {
       currMove: { select: { id: true, svgRef: true } },
     },
   });
-  if (!player) error(400, "You are not in this game!");
+  if (!player) error(403, "You are not in this game or the game has ended!");
   if (!player.currQuestion)
     error(400, "You currently have no question to answer!");
   if (!player.currMove)

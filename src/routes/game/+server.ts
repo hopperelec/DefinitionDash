@@ -10,6 +10,7 @@ export const GET = async ({ locals }) => {
       user: { connect: { id: locals.user.id } },
       game: { create: { mapId: map.id } },
       currRoom: { connect: { id: await chooseSpawnpoint(map.id) } },
+      isHost: true,
     },
     select: { gameId: true },
   });

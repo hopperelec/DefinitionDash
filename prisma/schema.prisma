@@ -96,6 +96,7 @@ model Game {
   map       Map      @relation(fields: [mapId], references: [id])
   mapId     Int      @db.UnsignedInt
   createdAt DateTime @default(now())
+  isOngoing Boolean  @default(true)
   players   Player[]
 }
 
@@ -105,6 +106,7 @@ model Player {
   userId         Int         @db.UnsignedInt
   game           Game        @relation(fields: [gameId], references: [id])
   gameId         Int         @db.UnsignedInt
+  isHost         Boolean     @default(false)
   currRoom       Room        @relation("currRoom", fields: [currRoomId], references: [id])
   currRoomId     Int         @db.UnsignedInt
   currQuestion   Definition? @relation(fields: [currQuestionId], references: [id])

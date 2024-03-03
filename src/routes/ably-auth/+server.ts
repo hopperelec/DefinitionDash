@@ -19,6 +19,7 @@ export const GET = async ({ locals }) => {
       capability: userData.players.reduce(
         (acc, player) => {
           acc["game:" + player.gameId] = ["subscribe"];
+          acc["game:" + player.gameId + ":announcements"] = ["subscribe"];
           acc["game:" + player.gameId + ":" + locals.user.id] = ["subscribe"];
           return acc;
         },

@@ -2,16 +2,17 @@
   import SVGMap from "$lib/SVGMap.svelte";
   import "$lib/button.css";
   import decodeDoors from "$lib/decode-doors";
-  import { onMount } from "svelte";
-  import { getAblyClient } from "$lib/ablyClient";
+  import { page } from "$app/stores";
+  import ablyClientStore from "$lib/ably-client";
 
   export let data;
   let map: SVGMap;
   let doors: { [key: number]: number[] };
 
-  onMount(async () => {
-    const ablyClient = getAblyClient();
-    await ablyClient.channels.get("game:" + data.game.id)
+  ablyClientStore.subscribe(async (ablyClient) => {
+    if (!ablyClient) return;
+    await ablyClient.channels
+      .get("game:" + $page.params.gameId)
       .subscribe((message) => {
         switch (message.name) {
           case "move":
@@ -19,11 +20,12 @@
             break;
         }
       });
-    await ablyClient.channels.get("game:" + data.game.id + ":" + data.userId)
+    await ablyClient.channels
+      .get("game:" + $page.params.gameId + ":" + data.userId)
       .subscribe((message) => {
         switch (message.name) {
           case "points":
-            addPtsChangeGlyph(message.data.points-data.currPoints);
+            addPtsChangeGlyph(message.data.points - data.currPoints);
             data.currPoints = message.data.points;
             break;
         }
@@ -112,7 +114,7 @@
     for (const [userId, player] of Object.entries(data.players)) {
       movePlayer(+userId, player.currSvgRef);
     }
-    doors = await fetch("/maps/" + data.game.map.id + "/doors")
+    doors = await fetch("/maps/" + data.map.id + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
     map.getSVG().addEventListener("mousemove", (event) => {
@@ -129,9 +131,10 @@
 <a class="button" href="shop">Shop</a>
 <p id="pts-indicator">Points: <span>{data.currPoints}</span></p>
 <div id="pts-change-container"></div>
+{#if data.isHost}<a id="end" class="button" href="end">End game</a>{/if}
 <SVGMap
   bind:this={map}
-  imgURL={data.game.map.imgURL}
+  imgURL={data.map.imgURL}
   {onClickRoom}
   onSuccess={onMapSuccess}
 />
@@ -140,14 +143,14 @@
   <link
     as="fetch"
     crossorigin="anonymous"
-    href="/maps/{data.game.map.id}/doors"
+    href="/maps/{data.map.id}/doors"
     rel="preload"
   />
   {#each new Set(Object.values(data.players).map((player) => player.picture)) as picture}
     <link as="image" href={picture || "/default_pfp.svg"} rel="preload" />
   {/each}
   <style>
-    [data-player] {
+    [data-user] {
       clip-path: inset(0% round 50%);
     }
 
@@ -171,5 +174,11 @@
     font-family: var(--default-font-family-bold);
     font-size: 2em;
     display: inline;
+  }
+
+  #end {
+    position: fixed;
+    top: 0;
+    right: 0;
   }
 </style>

@@ -1,18 +1,22 @@
 <script lang="ts">
   import "$lib/button.css";
-  import { onMount } from "svelte";
-  import { getAblyClient } from "$lib/ablyClient";
+  import { page } from "$app/stores";
+  import ablyClientStore from "$lib/ably-client";
 
   export let data;
 
-  const itemCosts = data.shopItems.reduce((acc, item) => {
-    acc[item.id] = item.cost;
-    return acc;
-  }, {} as { [key: number] : number });
+  const itemCosts = data.shopItems.reduce(
+    (acc, item) => {
+      acc[item.id] = item.cost;
+      return acc;
+    },
+    {} as { [key: number]: number },
+  );
 
-  onMount(async () => {
-    const ablyClient = getAblyClient();
-    await ablyClient.channels.get("game:" + data.gameId + ":" + data.userId)
+  ablyClientStore.subscribe(async (ablyClient) => {
+    if (!ablyClient) return;
+    await ablyClient.channels
+      .get("game:" + $page.params.gameId + ":" + data.userId)
       .subscribe((message) => {
         switch (message.name) {
           case "points":

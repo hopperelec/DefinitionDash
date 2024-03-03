@@ -5,6 +5,7 @@ export const GET = async ({ url, params, locals }) => {
   const player = await prisma.player.findUnique({
     where: {
       userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
+      game: { isOngoing: true },
     },
     select: {
       id: true,
@@ -13,7 +14,7 @@ export const GET = async ({ url, params, locals }) => {
       game: { select: { mapId: true } },
     },
   });
-  if (!player) error(400, "You are not in this game!");
+  if (!player) error(403, "You are not in this game or the game has ended!");
   if (player.currQuestion) return new Response(player.currQuestion.definition);
   const roomRequested = url.searchParams.get("svgRef");
   if (!roomRequested) error(400, "You must select a room you wish to move to");

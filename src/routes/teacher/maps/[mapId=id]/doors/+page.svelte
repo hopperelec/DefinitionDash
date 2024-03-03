@@ -2,6 +2,7 @@
   import SVGMap from "$lib/SVGMap.svelte";
   import { SVG_NS } from "$lib/constants";
   import decodeDoors from "$lib/decode-doors";
+  import { page } from "$app/stores";
 
   export let data;
   const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
@@ -48,7 +49,7 @@
   }
 
   async function onMapSuccess() {
-    const doors = await fetch("/maps/" + data.mapId + "/doors")
+    const doors = await fetch("/maps/" + $page.params.mapId + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
     for (const [svgRef1, svgRef2s] of Object.entries(doors)) {
@@ -70,7 +71,7 @@
   <link
     as="fetch"
     crossorigin="anonymous"
-    href="/maps/{data.mapId}/doors"
+    href="/maps/{$page.params.mapId}/doors"
     rel="preload"
   />
   <style>
