@@ -36,10 +36,12 @@ export const POST = async ({ request, params, locals }) => {
         currMoveId: null,
       },
     });
-    await ablyServer.channels.get("game:" + params.gameId).publish("move", {
-      userId: locals.user.id,
-      svgRef: player.currMove.svgRef,
-    });
+    await ablyServer.channels
+      .get("game:" + params.gameId + ":positions")
+      .publish("move", {
+        userId: locals.user.id,
+        svgRef: player.currMove.svgRef,
+      });
   }
   return json({ correct });
 };

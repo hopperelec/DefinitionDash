@@ -16,7 +16,7 @@
   ablyClientStore.subscribe(async (ablyClient) => {
     if (!ablyClient) return;
     await ablyClient.channels
-      .get("game:" + $page.params.gameId + ":" + data.userId)
+      .get("player:" + $page.params.gameId + ":" + data.userId)
       .subscribe((message) => {
         switch (message.name) {
           case "points":

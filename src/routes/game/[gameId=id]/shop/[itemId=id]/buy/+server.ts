@@ -24,10 +24,12 @@ async function moveRoom(
     where: { id: playerId },
     data: { currRoomId: roomId },
   });
-  await ablyServer.channels.get("game:" + gameId).publish("move", {
-    userId: userId,
-    svgRef: svgRef,
-  });
+  await ablyServer.channels
+    .get("game:" + gameId + ":positions")
+    .publish("move", {
+      userId: userId,
+      svgRef: svgRef,
+    });
 }
 
 const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
@@ -129,7 +131,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       data: { points: newPoints },
     });
     await ablyServer.channels
-      .get("game:" + gameId + ":" + randPlayer.userId)
+      .get("player:" + gameId + ":" + randPlayer.userId)
       .publish("points", {
         points: newPoints,
       });

@@ -14,13 +14,15 @@ export const GET = async ({ locals }) => {
       500,
       "An unexpected error occurred while trying to retrieve your user data",
     );
+  const channels = ["player:*:" + locals.user.id];
+  for (const player of userData.players) {
+    channels.push("game:" + player.gameId + ":*");
+  }
   return json(
     await ablyServer.auth.createTokenRequest({
-      capability: userData.players.reduce(
-        (acc, player) => {
-          acc["game:" + player.gameId] = ["subscribe"];
-          acc["game:" + player.gameId + ":announcements"] = ["subscribe"];
-          acc["game:" + player.gameId + ":" + locals.user.id] = ["subscribe"];
+      capability: channels.reduce(
+        (acc, channel) => {
+          acc[channel] = ["subscribe"];
           return acc;
         },
         {} as { [key: string]: ["subscribe"] },
