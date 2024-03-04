@@ -82,6 +82,7 @@
 
     [data-room]:hover {
       cursor: pointer;
+      filter: brightness(1.5);
     }
   </style>
 </svelte:head>

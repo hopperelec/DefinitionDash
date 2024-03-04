@@ -9,6 +9,7 @@ export const load = async ({ params, locals }) => {
     },
     select: {
       isHost: true,
+      points: true,
       game: { select: { isOngoing: true } },
     },
   });
@@ -27,4 +28,48 @@ export const load = async ({ params, locals }) => {
       .get("game:" + +params.gameId + ":announcements")
       .publish("end", null);
   }
+  const ret = await prisma.game.findUnique({
+    where: { id: +params.gameId },
+    select: {
+      map: { select: { imgURL: true } },
+      players: {
+        select: {
+          points: true,
+          user: { select: { id: true, name: true, picture: true } },
+          currRoom: { select: { svgRef: true } },
+        },
+        orderBy: { points: "desc" },
+      },
+      _count: {
+        select: { players: { where: { points: { gt: player.points } } } },
+      },
+    },
+  });
+  if (!ret)
+    error(
+      500,
+      "An unexpected error occurred while trying to retrieve the game data",
+    );
+  const props: {
+    mapImgURL: string;
+    leaderboardPosition: number;
+    players: {
+      points: number;
+      name: string;
+      picture: string | null;
+      currSvgRef: number;
+    }[];
+  } = {
+    mapImgURL: ret.map.imgURL,
+    leaderboardPosition: ret._count.players + 1,
+    players: ret.players.map((player) => {
+      return {
+        points: player.points,
+        name: player.user.name || "User " + player.user.id,
+        picture: player.user.picture,
+        currSvgRef: player.currRoom.svgRef,
+      };
+    }),
+  };
+  return props;
 };

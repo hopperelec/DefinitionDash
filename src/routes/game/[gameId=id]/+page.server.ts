@@ -43,10 +43,7 @@ export const load = async ({ params, locals }) => {
   }
   const props: {
     players: Opponents;
-    map: {
-      id: number;
-      imgURL: string;
-    };
+    map: { id: number; imgURL: string };
     userId: number;
     isHost: boolean;
     currPoints: number;

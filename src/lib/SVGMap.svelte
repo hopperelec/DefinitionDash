@@ -110,13 +110,10 @@
       document.createTextNode("Error: " + message),
     );
   };
-  export let onClickRoom: ((clickedRoom: number) => void) | undefined;
+  export let onClickRoom: ((clickedRoom: number) => void) | null = null;
 
   onMount(async () => {
     if (imgURL) {
-      const tempMapContainer = document.getElementById("map-container");
-      if (!tempMapContainer) onError("Failed to get map container");
-      container = tempMapContainer!;
       const tempMapElm = new DOMParser().parseFromString(
         await (await fetch(imgURL)).text(),
         "image/svg+xml",
@@ -124,12 +121,14 @@
       if (tempMapElm instanceof SVGSVGElement) {
         container.innerHTML = "";
         svg = container.appendChild(tempMapElm);
-        svg.addEventListener("click", (event) => {
-          if (onClickRoom) {
-            let clickedRoom = getEventRoom(event);
-            if (clickedRoom) onClickRoom(clickedRoom);
-          }
-        });
+        if (onClickRoom) {
+          svg.addEventListener("click", (event) => {
+            if (onClickRoom) {
+              let clickedRoom = getEventRoom(event);
+              if (clickedRoom) onClickRoom(clickedRoom);
+            }
+          });
+        }
         onSuccess();
       } else {
         onError("Invalid map! Must be SVG.");
@@ -140,15 +139,15 @@
   });
 </script>
 
-<div id="map-container">
+<div bind:this={container} id="map-container">
   <p>Loading map...</p>
 </div>
 
 <svelte:head>
   <link as="fetch" crossorigin="anonymous" href={imgURL} rel="preload" />
   <style>
-    [data-room]:hover {
-      filter: brightness(1.5);
+    #map-container > svg {
+      height: 100%;
     }
 
     [data-label-for],
@@ -160,15 +159,11 @@
 
 <style lang="scss">
   #map-container {
-    position: fixed;
-    top: 0;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: -1;
 
     & > p {
       font-family: var(--default-font-family-bold);

@@ -11,7 +11,6 @@
     await ablyClient.channels
       .get("game:" + $page.params.gameId + ":announcements")
       .subscribe((message) => {
-        console.log(message);
         switch (message.name) {
           case "end":
             goto("/game/" + $page.params.gameId + "/end/");

@@ -4,9 +4,12 @@
   import decodeDoors from "$lib/decode-doors";
   import { page } from "$app/stores";
   import ablyClientStore from "$lib/ably-client";
+  import { DEFAULT_USER_ICON } from "$lib/constants";
 
   export let data;
   let map: SVGMap;
+  let ptsIndicator: HTMLElement;
+  let ptsChangeContainer: HTMLElement;
   let doors: { [key: number]: number[] };
 
   ablyClientStore.subscribe(async (ablyClient) => {
@@ -39,7 +42,7 @@
     const player = data.players[userId];
     const newIcon = map.addIconTo(
       player.currSvgRef,
-      player.picture || "/default_pfp.svg",
+      player.picture || DEFAULT_USER_ICON,
     );
     if (newIcon) {
       newIcon.dataset.user = userId.toString();
@@ -53,10 +56,6 @@
   }
 
   function addPtsChangeGlyph(amount: number) {
-    const ptsIndicator = document.getElementById("pts-indicator");
-    if (!ptsIndicator) return;
-    const ptsChangeContainer = document.getElementById("pts-change-container");
-    if (!ptsChangeContainer) return;
     const elm = ptsChangeContainer.appendChild(document.createElement("span"));
     if (amount > 0) {
       elm.innerText = "+" + amount;
@@ -129,15 +128,17 @@
 </script>
 
 <a class="button" href="shop">Shop</a>
-<p id="pts-indicator">Points: <span>{data.currPoints}</span></p>
-<div id="pts-change-container"></div>
+<p bind:this={ptsIndicator} id="pts-indicator">Points: <span>{data.currPoints}</span></p>
+<div bind:this={ptsChangeContainer} id="pts-change-container"></div>
 {#if data.isHost}<a id="end" class="button" href="end">End game</a>{/if}
-<SVGMap
-  bind:this={map}
-  imgURL={data.map.imgURL}
-  {onClickRoom}
-  onSuccess={onMapSuccess}
-/>
+<div id="map-container">
+  <SVGMap
+    bind:this={map}
+    imgURL={data.map.imgURL}
+    {onClickRoom}
+    onSuccess={onMapSuccess}
+  />
+</div>
 
 <svelte:head>
   <link
@@ -147,9 +148,13 @@
     rel="preload"
   />
   {#each new Set(Object.values(data.players).map((player) => player.picture)) as picture}
-    <link as="image" href={picture || "/default_pfp.svg"} rel="preload" />
+    <link as="image" href={picture || DEFAULT_USER_ICON} rel="preload" />
   {/each}
   <style>
+    [data-room]:hover {
+      filter: brightness(1.5);
+    }
+
     [data-user] {
       clip-path: inset(0% round 50%);
     }
@@ -174,6 +179,14 @@
     font-family: var(--default-font-family-bold);
     font-size: 2em;
     display: inline;
+  }
+
+  #map-container {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: -1;
   }
 
   #end {
