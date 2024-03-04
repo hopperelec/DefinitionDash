@@ -21,7 +21,7 @@
     } else if (lastDigit === 3) {
       if (lastTwoDigits !== 13) suffix = "rd";
     }
-    return "came "+position+suffix;
+    return "came " + position + suffix;
   }
 
   function onMapSuccess() {
@@ -35,10 +35,10 @@
   <h2>Game over!</h2>
   <p>You {getCardinal(data.leaderboardPosition)}!</p>
   <div id="leaderboard-container">
-    <Leaderboard orderedPlayers={data.players}/>
+    <Leaderboard orderedPlayers={data.players} />
   </div>
   <div id="map-container">
-    <SVGMap bind:this={map} imgURL={data.mapImgURL} onSuccess={onMapSuccess}/>
+    <SVGMap bind:this={map} imgURL={data.mapImgURL} onSuccess={onMapSuccess} />
   </div>
   <a class="button" href="/game">New game</a>
 </div>
@@ -47,7 +47,7 @@
   #end-container {
     height: 100vh;
     display: grid;
-    grid-template-rows: auto auto minmax(0,1fr) auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
     grid-template-columns: 1fr 1fr;
     align-items: center;
     justify-items: center;
@@ -58,7 +58,9 @@
     margin: 0;
   }
 
-  h2, p, a {
+  h2,
+  p,
+  a {
     grid-column-start: 1;
     grid-column-end: 3;
   }

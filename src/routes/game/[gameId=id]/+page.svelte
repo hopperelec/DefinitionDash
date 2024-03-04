@@ -128,7 +128,9 @@
 </script>
 
 <a class="button" href="shop">Shop</a>
-<p bind:this={ptsIndicator} id="pts-indicator">Points: <span>{data.currPoints}</span></p>
+<p bind:this={ptsIndicator} id="pts-indicator">
+  Points: <span>{data.currPoints}</span>
+</p>
 <div bind:this={ptsChangeContainer} id="pts-change-container"></div>
 {#if data.isHost}<a id="end" class="button" href="end">End game</a>{/if}
 <div id="map-container">

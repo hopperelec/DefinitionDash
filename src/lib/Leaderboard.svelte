@@ -10,7 +10,7 @@
   {#each orderedPlayers as player}
     <li>
       <span>{player.name}</span> -
-      <span>{player.points} point{player.points === 1 ? '' : 's'}</span>
+      <span>{player.points} point{player.points === 1 ? "" : "s"}</span>
     </li>
   {/each}
 </ol>
