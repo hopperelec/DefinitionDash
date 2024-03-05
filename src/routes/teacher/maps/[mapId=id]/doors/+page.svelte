@@ -60,12 +60,14 @@
   }
 </script>
 
-<SVGMap
-  bind:this={map}
-  imgURL={data.mapURL}
-  {onClickRoom}
-  onSuccess={onMapSuccess}
-/>
+<div id="map-container">
+  <SVGMap
+    bind:this={map}
+    imgURL={data.mapURL}
+    {onClickRoom}
+    onSuccess={onMapSuccess}
+  />
+</div>
 
 <svelte:head>
   <link
@@ -86,3 +88,11 @@
     }
   </style>
 </svelte:head>
+
+<style>
+  #map-container {
+      position: fixed;
+      height: 100vh;
+      width: 100vw;
+  }
+</style>
