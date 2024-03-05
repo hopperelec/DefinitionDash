@@ -49,8 +49,7 @@
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr) auto;
     grid-template-columns: 1fr 1fr;
-    align-items: center;
-    justify-items: center;
+    place-items: center center;
   }
 
   h2 {
@@ -61,8 +60,7 @@
   h2,
   p,
   a {
-    grid-column-start: 1;
-    grid-column-end: 3;
+    grid-column: 1 / 3;
   }
 
   #map-container {

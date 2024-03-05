@@ -91,8 +91,8 @@
 
 <style>
   #map-container {
-      position: fixed;
-      height: 100vh;
-      width: 100vw;
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
   }
 </style>
