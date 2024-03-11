@@ -26,7 +26,11 @@
 
   function onMapSuccess() {
     for (const player of data.players) {
-      map.addIconTo(player.currSvgRef, player.picture || DEFAULT_USER_ICON);
+      const icon = map.addIconTo(
+        player.currSvgRef,
+        player.picture || DEFAULT_USER_ICON,
+      );
+      if (icon) icon.classList.add("user");
     }
   }
 </script>
@@ -42,6 +46,15 @@
   </div>
   <a class="button" href="/game">New game</a>
 </div>
+
+<svelte:head>
+  <style>
+    /* noinspection CssUnusedSymbol */
+    .user {
+      clip-path: inset(0% round 50%);
+    }
+  </style>
+</svelte:head>
 
 <style>
   #end-container {
