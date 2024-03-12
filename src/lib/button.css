@@ -8,4 +8,8 @@
   margin: 5px;
   border-radius: 5px;
   font-family: var(--default-font-family-bold);
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  text-align: center;
 }

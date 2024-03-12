@@ -120,22 +120,28 @@
   }
 </script>
 
-<a class="button" href="shop">Shop</a>
-<p bind:this={ptsIndicator} id="pts-indicator">
-  Points: <span>{data.currPoints}</span>
-</p>
-<div bind:this={ptsChangeContainer} id="pts-change-container"></div>
-<div id="top-right">
-  <a class="button" href="leaderboard">Leaderboard</a>
-  {#if data.isHost}<a class="button" href="end">End game</a>{/if}
-</div>
-<div id="map-container">
-  <SVGMap
-    bind:this={map}
-    imgURL={data.map.imgURL}
-    {onClickRoom}
-    onSuccess={onMapSuccess}
-  />
+<div id="page-container">
+  <div id="top">
+    <div id="top-left">
+      <a class="button" href="leaderboard"><span>Leader</span><span>board</span></a>
+      <a class="button" href="shop">Shop</a>
+      <p bind:this={ptsIndicator} id="pts-indicator">
+        Points: <span>{data.currPoints}</span>
+      </p>
+      <div bind:this={ptsChangeContainer} id="pts-change-container"></div>
+    </div>
+    <div id="top-right">
+      {#if data.isHost}<a class="button" href="end">End game</a>{/if}
+    </div>
+  </div>
+  <div id="map-container">
+    <SVGMap
+      bind:this={map}
+      imgURL={data.map.imgURL}
+      {onClickRoom}
+      onSuccess={onMapSuccess}
+    />
+  </div>
 </div>
 
 <svelte:head>
@@ -177,20 +183,36 @@
     font-family: var(--default-font-family-bold);
     font-size: 2em;
     display: inline;
+    margin: 0;
+  }
+
+  #page-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   #map-container {
-    position: fixed;
-    top: 0;
-    height: 100vh;
-    width: 100vw;
-    z-index: -1;
+    height: 100%;
+    overflow: auto;
+  }
+
+  #top {
+    display: flex;
+    align-items: start;
+  }
+
+  #top-left, #top-right {
+    display: flex;
+    align-items: center;
+    flex-flow: wrap;
+  }
+
+  #top-left {
+    margin-right: auto;
   }
 
   #top-right {
-    position: fixed;
-    top: 0;
-    right: 0;
-    display: flex;
+    justify-content: end;
   }
 </style>
