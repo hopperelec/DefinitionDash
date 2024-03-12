@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import ablyServer from "$lib/server/ably-server";
+import ablyServer, { updatePoints } from "$lib/server/ably-server";
 import type { User } from "@prisma/client";
 
 type ActionDetails = {
@@ -130,11 +130,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       where: { id: Number(randPlayer.id) },
       data: { points: newPoints },
     });
-    await ablyServer.channels
-      .get("player:" + gameId + ":" + randPlayer.userId)
-      .publish("points", {
-        points: newPoints,
-      });
+    await updatePoints(gameId, Number(randPlayer.userId), newPoints);
   },
 };
 
@@ -177,5 +173,10 @@ export const GET = async ({ params, locals }) => {
     where: { id: player.id },
     data: { points: { decrement: shopItem.cost } },
   });
+  await updatePoints(
+    +params.gameId,
+    locals.user.id,
+    player.points - shopItem.cost,
+  );
   return new Response();
 };

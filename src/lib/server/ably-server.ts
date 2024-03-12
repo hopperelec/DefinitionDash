@@ -1,4 +1,18 @@
 import ably from "ably";
 import { ABLY_API_KEY } from "$env/static/private";
 
-export default new ably.Realtime.Promise({ key: ABLY_API_KEY });
+const ablyServer = new ably.Realtime.Promise({ key: ABLY_API_KEY });
+export default ablyServer;
+
+export async function updatePoints(
+  gameId: number,
+  userId: number,
+  points: number,
+) {
+  await ablyServer.channels
+    .get("player:" + gameId + ":" + userId)
+    .publish("points", { points: points });
+  await ablyServer.channels
+    .get("game:" + gameId + ":points")
+    .publish("points", { userId, points });
+}

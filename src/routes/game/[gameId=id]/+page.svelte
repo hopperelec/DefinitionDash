@@ -70,12 +70,6 @@
     setTimeout(() => elm.remove(), 1000);
   }
 
-  function claimRoom(svgRef: number) {
-    data.currPoints += 1;
-    movePlayer(data.userId, svgRef);
-    addPtsChangeGlyph(1);
-  }
-
   async function askQuestion(question: string): Promise<boolean> {
     const res = await fetch("answer", {
       method: "POST",
@@ -100,7 +94,6 @@
         while (askAgain) {
           if (await askQuestion(question)) askAgain = false;
         }
-        claimRoom(clickedSvgRef);
       } else {
         alert(
           "An unexpected error occurred while trying to choose a question for you.",
@@ -132,7 +125,10 @@
   Points: <span>{data.currPoints}</span>
 </p>
 <div bind:this={ptsChangeContainer} id="pts-change-container"></div>
-{#if data.isHost}<a id="end" class="button" href="end">End game</a>{/if}
+<div id="top-right">
+  <a class="button" href="leaderboard">Leaderboard</a>
+  {#if data.isHost}<a class="button" href="end">End game</a>{/if}
+</div>
 <div id="map-container">
   <SVGMap
     bind:this={map}
@@ -191,9 +187,10 @@
     z-index: -1;
   }
 
-  #end {
+  #top-right {
     position: fixed;
     top: 0;
     right: 0;
+    display: flex;
   }
 </style>

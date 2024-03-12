@@ -5,14 +5,6 @@
 
   export let data;
 
-  const itemCosts = data.shopItems.reduce(
-    (acc, item) => {
-      acc[item.id] = item.cost;
-      return acc;
-    },
-    {} as { [key: number]: number },
-  );
-
   ablyClientStore.subscribe(async (ablyClient) => {
     if (!ablyClient) return;
     await ablyClient.channels
@@ -28,11 +20,7 @@
 
   async function buyItem(itemId: number) {
     const res = await fetch(`${itemId}/buy`);
-    if (res.ok) {
-      data.points -= itemCosts[itemId];
-    } else {
-      alert((await res.json()).message);
-    }
+    if (!res.ok) alert((await res.json()).message);
   }
 </script>
 

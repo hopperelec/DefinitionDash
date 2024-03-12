@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import ablyServer from "$lib/server/ably-server";
+import ablyServer, { updatePoints } from "$lib/server/ably-server";
 
 export const POST = async ({ request, params, locals }) => {
   const player = await prisma.player.findUnique({
@@ -27,7 +27,7 @@ export const POST = async ({ request, params, locals }) => {
     "i",
   ).test(await request.text());
   if (correct) {
-    await prisma.player.update({
+    const newPlayerData = await prisma.player.update({
       where: { id: player.id },
       data: {
         currQuestionId: null,
@@ -35,6 +35,7 @@ export const POST = async ({ request, params, locals }) => {
         currRoomId: player.currMove.id,
         currMoveId: null,
       },
+      select: { points: true },
     });
     await ablyServer.channels
       .get("game:" + params.gameId + ":positions")
@@ -42,6 +43,7 @@ export const POST = async ({ request, params, locals }) => {
         userId: locals.user.id,
         svgRef: player.currMove.svgRef,
       });
+    await updatePoints(+params.gameId, locals.user.id, newPlayerData.points);
   }
   return json({ correct });
 };
