@@ -1,22 +1,14 @@
 <script lang="ts">
   import "$lib/button.css";
   import { page } from "$app/stores";
-  import ablyClientStore from "$lib/ably-client";
+  import { getChannel } from "$lib/ably-client";
 
   export let data;
 
-  ablyClientStore.subscribe(async (ablyClient) => {
-    if (!ablyClient) return;
-    await ablyClient.channels
-      .get("player:" + $page.params.gameId + ":" + data.userId)
-      .subscribe((message) => {
-        switch (message.name) {
-          case "points":
-            data.points = message.data.points;
-            break;
-        }
-      });
-  });
+  const playerMessage = getChannel("player:" + $page.params.gameId + ":" + data.userId)
+  $: if ($playerMessage?.name == "points") {
+    data.points = $playerMessage.data.points
+  }
 
   async function buyItem(itemId: number) {
     const res = await fetch(`${itemId}/buy`);

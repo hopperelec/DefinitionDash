@@ -1,15 +1,19 @@
 <script lang="ts">
   import Leaderboard from "$lib/Leaderboard.svelte";
-  import ablyClientStore from "$lib/ably-client";
+  import { getChannel } from "$lib/ably-client";
   import { page } from "$app/stores";
   import "$lib/button.css";
 
   export let data;
 
+  function getDisplayName(userId: number, name: string | null) {
+    return name || "User " + userId;
+  }
+
   const players = data.players.reduce(
     (acc, player) => {
       acc[player.id] = {
-        name: player.name || "User " + player.id,
+        name: getDisplayName(player.id, player.name),
         points: player.points,
       };
       return acc;
@@ -20,18 +24,19 @@
     (a, b) => b.points - a.points,
   );
 
-  ablyClientStore.subscribe(async (ablyClient) => {
-    if (!ablyClient) return;
-    await ablyClient.channels
-      .get("game:" + $page.params.gameId + ":points")
-      .subscribe((message) => {
-        switch (message.name) {
-          case "points":
-            players[message.data.userId].points = message.data.points;
-            break;
+  const pointsMessage = getChannel("game:" + $page.params.gameId + ":points")
+  $: if ($pointsMessage) {
+    switch ($pointsMessage.name) {
+      case "points":
+        players[$pointsMessage.data.userId].points = $pointsMessage.data.points;
+        break;
+      case "create":
+        players[$pointsMessage.data.userId] = {
+          name: getDisplayName($pointsMessage.data.userId, $pointsMessage.data.name),
+          points: 0
         }
-      });
-  });
+    }
+  }
 </script>
 
 <div id="page-container">

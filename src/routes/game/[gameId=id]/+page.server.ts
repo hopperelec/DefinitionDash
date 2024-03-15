@@ -1,11 +1,11 @@
-import getPlayer from "$lib/server/get-player";
+import getPlayerId from "$lib/server/get-player-id";
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 
 export const load = async ({ params, locals }) => {
-  const player = await getPlayer(locals.user, +params.gameId);
+  const playerId = await getPlayerId(locals.user, +params.gameId);
   const ret = await prisma.player.findUnique({
-    where: { id: player.id },
+    where: { id: playerId },
     select: {
       points: true,
       isHost: true,

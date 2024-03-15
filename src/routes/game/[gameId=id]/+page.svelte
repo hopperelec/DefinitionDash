@@ -3,8 +3,8 @@
   import "$lib/button.css";
   import decodeDoors from "$lib/decode-doors";
   import { page } from "$app/stores";
-  import ablyClientStore from "$lib/ably-client";
   import { DEFAULT_USER_ICON } from "$lib/constants";
+  import { getChannel } from "$lib/ably-client";
 
   export let data;
   let map: SVGMap;
@@ -12,28 +12,21 @@
   let ptsChangeContainer: HTMLElement;
   let doors: { [key: number]: number[] };
 
-  ablyClientStore.subscribe(async (ablyClient) => {
-    if (!ablyClient) return;
-    await ablyClient.channels
-      .get("game:" + $page.params.gameId + ":positions")
-      .subscribe((message) => {
-        switch (message.name) {
-          case "move":
-            movePlayer(message.data.userId, message.data.svgRef);
-            break;
-        }
-      });
-    await ablyClient.channels
-      .get("player:" + $page.params.gameId + ":" + data.userId)
-      .subscribe((message) => {
-        switch (message.name) {
-          case "points":
-            addPtsChangeGlyph(message.data.points - data.currPoints);
-            data.currPoints = message.data.points;
-            break;
-        }
-      });
-  });
+  const positionsMessage = getChannel("game:" + $page.params.gameId + ":positions")
+  $: if ($positionsMessage) {
+    if ($positionsMessage.name == "create") {
+      data.players[$positionsMessage.data.userId] = {
+        picture: $positionsMessage.data.picture,
+        currSvgRef: $positionsMessage.data.svgRef
+      }
+    }
+    movePlayer($positionsMessage.data.userId, $positionsMessage.data.svgRef);
+  }
+  const playerMessage = getChannel("player:" + $page.params.gameId + ":" + data.userId)
+  $: if ($playerMessage?.name == "points") {
+    addPtsChangeGlyph($playerMessage.data.points - data.currPoints);
+    data.currPoints = $playerMessage.data.points;
+  }
 
   function movePlayer(userId: number, svgRef: number) {
     data.players[userId].currSvgRef = svgRef;
@@ -199,7 +192,7 @@
 
   #top {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
   }
 
   #top-left, #top-right {
