@@ -12,17 +12,21 @@
   let ptsChangeContainer: HTMLElement;
   let doors: { [key: number]: number[] };
 
-  const positionsMessage = getChannel("game:" + $page.params.gameId + ":positions")
+  const positionsMessage = getChannel(
+    "game:" + $page.params.gameId + ":positions",
+  );
   $: if ($positionsMessage) {
     if ($positionsMessage.name == "create") {
       data.players[$positionsMessage.data.userId] = {
         picture: $positionsMessage.data.picture,
-        currSvgRef: $positionsMessage.data.svgRef
-      }
+        currSvgRef: $positionsMessage.data.svgRef,
+      };
     }
     movePlayer($positionsMessage.data.userId, $positionsMessage.data.svgRef);
   }
-  const playerMessage = getChannel("player:" + $page.params.gameId + ":" + data.userId)
+  const playerMessage = getChannel(
+    "player:" + $page.params.gameId + ":" + data.userId,
+  );
   $: if ($playerMessage?.name == "points") {
     addPtsChangeGlyph($playerMessage.data.points - data.currPoints);
     data.currPoints = $playerMessage.data.points;
@@ -116,7 +120,9 @@
 <div id="page-container">
   <div id="top">
     <div id="top-left">
-      <a class="button" href="leaderboard"><span>Leader</span><span>board</span></a>
+      <a class="button" href="leaderboard"
+        ><span>Leader</span><span>board</span></a
+      >
       <a class="button" href="shop">Shop</a>
       <p bind:this={ptsIndicator} id="pts-indicator">
         Points: <span>{data.currPoints}</span>
@@ -195,7 +201,8 @@
     align-items: flex-start;
   }
 
-  #top-left, #top-right {
+  #top-left,
+  #top-right {
     display: flex;
     align-items: center;
     flex-flow: wrap;

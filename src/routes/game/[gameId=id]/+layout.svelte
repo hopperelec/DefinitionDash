@@ -3,9 +3,11 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
 
-  const announcements = getChannel("game:" + $page.params.gameId + ":announcements");
+  const announcements = getChannel(
+    "game:" + $page.params.gameId + ":announcements",
+  );
   $: if ($announcements?.name == "end") {
-    goto("/game/" + $page.params.gameId + "/end/")
+    goto("/game/" + $page.params.gameId + "/end/");
   }
 </script>
 

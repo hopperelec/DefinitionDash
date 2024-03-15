@@ -5,9 +5,11 @@
 
   export let data;
 
-  const playerMessage = getChannel("player:" + $page.params.gameId + ":" + data.userId)
+  const playerMessage = getChannel(
+    "player:" + $page.params.gameId + ":" + data.userId,
+  );
   $: if ($playerMessage?.name == "points") {
-    data.points = $playerMessage.data.points
+    data.points = $playerMessage.data.points;
   }
 
   async function buyItem(itemId: number) {

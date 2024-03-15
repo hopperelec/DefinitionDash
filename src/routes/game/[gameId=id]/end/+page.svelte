@@ -30,7 +30,9 @@
         player.currSvgRef,
         player.picture || DEFAULT_USER_ICON,
       );
-      if (icon) icon.classList.add("user");
+      if (icon) {
+        icon.classList.add("user");
+      }
     }
   }
 </script>

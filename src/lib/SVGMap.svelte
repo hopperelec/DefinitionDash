@@ -76,6 +76,7 @@
     }
 
     const icon = document.createElementNS(SVG_NS, "image");
+    icon.setAttribute("referrerpolicy", "no-referrer"); // Avoids Google 403
     icon.href.baseVal = iconSrc;
     icon.setAttribute("width", ICON_SIZE.toString());
     icon.setAttribute("height", ICON_SIZE.toString());

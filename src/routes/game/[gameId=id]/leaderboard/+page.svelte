@@ -24,7 +24,7 @@
     (a, b) => b.points - a.points,
   );
 
-  const pointsMessage = getChannel("game:" + $page.params.gameId + ":points")
+  const pointsMessage = getChannel("game:" + $page.params.gameId + ":points");
   $: if ($pointsMessage) {
     switch ($pointsMessage.name) {
       case "points":
@@ -32,9 +32,12 @@
         break;
       case "create":
         players[$pointsMessage.data.userId] = {
-          name: getDisplayName($pointsMessage.data.userId, $pointsMessage.data.name),
-          points: 0
-        }
+          name: getDisplayName(
+            $pointsMessage.data.userId,
+            $pointsMessage.data.name,
+          ),
+          points: 0,
+        };
     }
   }
 </script>
