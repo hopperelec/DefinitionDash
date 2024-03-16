@@ -42,6 +42,7 @@
   }
 </script>
 
+{#if data.isHost}<a id="end" class="button" href="../end">End game</a>{/if}
 <div id="page-container">
   <div id="leaderboard-container">
     <Leaderboard {orderedPlayers} />
@@ -50,6 +51,11 @@
 </div>
 
 <style>
+  #end {
+    position: fixed;
+    right: 0;
+  }
+
   #page-container {
     height: 100vh;
     display: flex;
