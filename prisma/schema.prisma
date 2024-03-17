@@ -86,7 +86,9 @@ model Definition {
   topic            Topic    @relation(fields: [topicId], references: [id])
   topicId          Int      @db.UnsignedInt
   definition       String   @db.Text
+  wordClass        String?  @db.VarChar(15)
   difficulty       Int      @db.TinyInt
+  usageTemplate    String?  @db.Text
   answerRegex      String
   playersAnswering Player[]
 }

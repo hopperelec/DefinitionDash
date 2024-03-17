@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import ablyServer, { updatePoints } from "$lib/server/ably-server";
+import ablyServer, { updateRealtimePoints } from "$lib/server/ably-server";
 
 export const POST = async ({ request, params, locals }) => {
   const player = await prisma.player.findUnique({
@@ -27,23 +27,32 @@ export const POST = async ({ request, params, locals }) => {
     "i",
   ).test(await request.text());
   if (correct) {
+    const currMove = player.currMove;
+    // Done before responding so the client sees the correct number of points
     const newPlayerData = await prisma.player.update({
       where: { id: player.id },
       data: {
         currQuestionId: null,
         points: { increment: 1 },
-        currRoomId: player.currMove.id,
+        currRoomId: currMove.id,
         currMoveId: null,
       },
       select: { points: true },
     });
-    await ablyServer.channels
-      .get("game:" + params.gameId + ":positions")
-      .publish("move", {
-        userId: locals.user.id,
-        svgRef: player.currMove.svgRef,
-      });
-    await updatePoints(+params.gameId, locals.user.id, newPlayerData.points);
+    setTimeout(async () => {
+      // Allow responding to request first
+      await ablyServer.channels
+        .get("game:" + params.gameId + ":positions")
+        .publish("move", {
+          userId: locals.user.id,
+          svgRef: currMove.svgRef,
+        });
+      await updateRealtimePoints(
+        +params.gameId,
+        locals.user.id,
+        newPlayerData.points,
+      );
+    }, 1);
   }
   return json({ correct });
 };

@@ -5,6 +5,7 @@
   import { page } from "$app/stores";
   import { DEFAULT_USER_ICON } from "$lib/constants";
   import { getChannel } from "$lib/ably-client";
+  import { goto } from "$app/navigation";
 
   export let data;
   let map: SVGMap;
@@ -34,15 +35,21 @@
 
   function movePlayer(userId: number, svgRef: number) {
     data.players[userId].currSvgRef = svgRef;
-    const prevIcon = map.getElmWhere("user", userId) as SVGImageElement;
-    if (prevIcon) map.removeIcon(prevIcon);
-    const player = data.players[userId];
-    const newIcon = map.addIconTo(
-      player.currSvgRef,
-      player.picture || DEFAULT_USER_ICON,
-    );
-    if (newIcon) {
-      newIcon.dataset.user = userId.toString();
+    // A position update could occur before the map has finished loading.
+    // This is common for the player's own position after they answer a question
+    // since they are redirected to this page before the new position is published
+    // If the map hasn't loaded yet, movePlayer will be called again in onMapSuccess.
+    if (map) {
+      const prevIcon = map.getElmWhere("user", userId) as SVGImageElement;
+      if (prevIcon) map.removeIcon(prevIcon);
+      const player = data.players[userId];
+      const newIcon = map.addIconTo(
+        player.currSvgRef,
+        player.picture || DEFAULT_USER_ICON,
+      );
+      if (newIcon) {
+        newIcon.dataset.user = userId.toString();
+      }
     }
   }
 
@@ -67,35 +74,9 @@
     setTimeout(() => elm.remove(), 1000);
   }
 
-  async function askQuestion(question: string): Promise<boolean> {
-    const res = await fetch("answer", {
-      method: "POST",
-      body: prompt(question),
-    });
-    return (await res.json()).correct;
-  }
-
-  async function getNextQuestion(
-    svgRefToMoveTo: number,
-  ): Promise<string | undefined> {
-    const res = await fetch("get-definition?svgRef=" + svgRefToMoveTo);
-    if (res.ok)
-      return "What vocabulary is being defined: " + (await res.text());
-  }
-
   async function onClickRoom(clickedSvgRef: number) {
     if (canMoveTo(clickedSvgRef)) {
-      const question = await getNextQuestion(clickedSvgRef);
-      if (question) {
-        let askAgain = true;
-        while (askAgain) {
-          if (await askQuestion(question)) askAgain = false;
-        }
-      } else {
-        alert(
-          "An unexpected error occurred while trying to choose a question for you.",
-        );
-      }
+      await goto("answer/?svgRef=" + clickedSvgRef)
     }
   }
 
@@ -120,9 +101,9 @@
 <div id="page-container">
   <div id="top">
     <div id="top-left">
-      <a class="button" href="leaderboard"
-        ><span>Leader</span><span>board</span></a
-      >
+      <a class="button" href="leaderboard">
+        <span>Leader</span><span>board</span>
+      </a>
       <a class="button" href="shop">Shop</a>
       <p bind:this={ptsIndicator} id="pts-indicator">
         Points: <span>{data.currPoints}</span>

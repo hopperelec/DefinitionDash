@@ -4,7 +4,7 @@ import { ABLY_API_KEY } from "$env/static/private";
 const ablyServer = new ably.Realtime.Promise({ key: ABLY_API_KEY });
 export default ablyServer;
 
-export async function updatePoints(
+export async function updateRealtimePoints(
   gameId: number,
   userId: number,
   points: number,
