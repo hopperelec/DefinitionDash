@@ -76,7 +76,7 @@
 
   async function onClickRoom(clickedSvgRef: number) {
     if (canMoveTo(clickedSvgRef)) {
-      await goto("answer/?svgRef=" + clickedSvgRef)
+      await goto("answer/?svgRef=" + clickedSvgRef);
     }
   }
 

@@ -28,7 +28,6 @@ export const POST = async ({ request, params, locals }) => {
   ).test(await request.text());
   if (correct) {
     const currMove = player.currMove;
-    // Done before responding so the client sees the correct number of points
     const newPlayerData = await prisma.player.update({
       where: { id: player.id },
       data: {
@@ -39,20 +38,13 @@ export const POST = async ({ request, params, locals }) => {
       },
       select: { points: true },
     });
-    setTimeout(async () => {
-      // Allow responding to request first
-      await ablyServer.channels
-        .get("game:" + params.gameId + ":positions")
-        .publish("move", {
-          userId: locals.user.id,
-          svgRef: currMove.svgRef,
-        });
-      await updateRealtimePoints(
-        +params.gameId,
-        locals.user.id,
-        newPlayerData.points,
-      );
-    }, 1);
+    ablyServer.channels
+      .get("game:" + params.gameId + ":positions")
+      .publish("move", {
+        userId: locals.user.id,
+        svgRef: currMove.svgRef,
+      });
+    updateRealtimePoints(+params.gameId, locals.user.id, newPlayerData.points);
   }
   return json({ correct });
 };

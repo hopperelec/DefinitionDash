@@ -39,14 +39,12 @@ export default async function getPlayerId(
       user: { select: { name: true, picture: true } },
     },
   });
-  await ablyServer.channels
-    .get("game:" + gameId + ":positions")
-    .publish("create", {
-      userId: user.id,
-      picture: newPlayer.user.picture,
-      svgRef: newPlayer.currRoom.svgRef,
-    });
-  await ablyServer.channels
+  ablyServer.channels.get("game:" + gameId + ":positions").publish("create", {
+    userId: user.id,
+    picture: newPlayer.user.picture,
+    svgRef: newPlayer.currRoom.svgRef,
+  });
+  ablyServer.channels
     .get("game:" + gameId + ":points")
     .publish("create", { userId: user.id, name: newPlayer.user.name });
   return newPlayer.id;

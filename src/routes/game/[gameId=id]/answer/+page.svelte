@@ -10,13 +10,14 @@
     const emElement = document.createElement("em");
     emElement.textContent = answer;
     usageElm.innerHTML = data.usageTemplate.replaceAll(
-      "{answer}", emElement.outerHTML
-    )
+      "{answer}",
+      emElement.outerHTML,
+    );
   }
 
   async function onKeyUp(event: KeyboardEvent) {
     if (event.key == "Enter") {
-      status = "waiting"
+      status = "waiting";
       const res = await fetch("", { method: "POST", body: answer });
       const json = await res.json();
       if (res.ok) {
@@ -41,10 +42,12 @@
       on:keyup={onKeyUp}
       placeholder="Your answer..."
       type="text"
-    >
+    />
     {#if data.wordClass}<p id="word-class">{data.wordClass}</p>{/if}
     <p id="definition">{data.definition}</p>
-    {#if data.usageTemplate}<p id="usage" bind:this={usageElm}>"{data.usageTemplate}"</p>{/if}
+    {#if data.usageTemplate}<p id="usage" bind:this={usageElm}>
+        "{data.usageTemplate}"
+      </p>{/if}
   </div>
 </div>
 
@@ -73,7 +76,7 @@
   }
 
   #definition-container {
-    @media (min-width: 700px) {
+    @media (width >= 700px) {
       border: 1px solid black;
       padding: 10px;
       width: 600px;
@@ -81,7 +84,7 @@
 
     & > * {
       font-size: 3em;
-      font-family: Times New Roman, Times, serif
+      font-family: "Times New Roman", Times, serif;
     }
   }
 
@@ -94,7 +97,8 @@
     font-weight: bold;
   }
 
-  #word-class, #usage {
+  #word-class,
+  #usage {
     font-style: italic;
   }
 
@@ -105,15 +109,26 @@
 
   .waiting {
     cursor: wait;
+
     & input {
       cursor: wait;
     }
   }
 
-  .shake { animation: shake 0.15s 2; }
+  .shake {
+    animation: shake 0.15s 2;
+  }
   @keyframes shake {
-      25% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
+    25% {
+      transform: translateX(5px);
+    }
+
+    75% {
+      transform: translateX(-5px);
+    }
+
+    100% {
+      transform: translateX(0);
+    }
   }
 </style>

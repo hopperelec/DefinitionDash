@@ -24,7 +24,7 @@ export const load = async ({ params, locals }) => {
       where: { id: +params.gameId },
       data: { isOngoing: false },
     });
-    await ablyServer.channels
+    ablyServer.channels
       .get("game:" + +params.gameId + ":announcements")
       .publish("end", null);
   }

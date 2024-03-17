@@ -18,15 +18,22 @@ export const GET = async ({ locals }) => {
   for (const player of userData.players) {
     channels.push("game:" + player.gameId + ":*");
   }
-  return json(
-    await ablyServer.auth.createTokenRequest({
-      capability: channels.reduce(
-        (acc, channel) => {
-          acc[channel] = ["subscribe"];
-          return acc;
-        },
-        {} as { [key: string]: ["subscribe"] },
-      ),
-    }),
-  );
+  return new Promise((resolve, reject) => {
+    ablyServer.auth.createTokenRequest(
+      {
+        capability: channels.reduce(
+          (acc, channel) => {
+            acc[channel] = ["subscribe"];
+            return acc;
+          },
+          {} as { [key: string]: ["subscribe"] },
+        ),
+      },
+      undefined,
+      (err, tokenRequest) => {
+        if (err) reject(err.message);
+        else resolve(json(tokenRequest));
+      },
+    );
+  });
 };

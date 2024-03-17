@@ -3,30 +3,22 @@ import { type Readable, readable } from "svelte/store";
 import { browser } from "$app/environment";
 
 export const ablyClientConnection =
-  browser && new ably.Realtime.Promise({ authUrl: "/ably-auth" });
+  browser && new ably.Realtime({ authUrl: "/ably-auth" });
 
-const channels: {
-  [key: string]: {
-    ablyPromise: ably.Types.RealtimeChannelPromise;
-    svelteStore: Readable<ably.Types.Message>;
-  };
-} = {};
+const messages: { [key: string]: Readable<ably.Types.Message> } = {};
 
 export function getChannel(name: string) {
   if (!ablyClientConnection) return readable(undefined);
-  if (name in channels) {
-    const channel = channels[name];
-    if (channel.ablyPromise.state != "attached")
-      channel.ablyPromise.attach().then();
-    return channel.svelteStore;
-  }
-  const ablyPromise = ablyClientConnection.channels.get(name);
-  const svelteStore = readable<ably.Types.Message>(undefined, (set) => {
-    ablyPromise.subscribe(set).then();
-    return async () => {
-      await ablyPromise.detach();
+  if (name in messages) return messages[name];
+  const ablyChannel = ablyClientConnection.channels.get(name);
+  const message = readable<ably.Types.Message>(undefined, (set) => {
+    ablyChannel.subscribe(set);
+    return () => {
+      ablyChannel.detach();
+      ablyChannel.unsubscribe(set);
+      delete messages[name];
     };
   });
-  channels[name] = { ablyPromise, svelteStore };
-  return svelteStore;
+  messages[name] = message;
+  return message;
 }

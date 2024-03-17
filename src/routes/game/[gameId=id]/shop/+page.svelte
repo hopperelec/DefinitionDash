@@ -14,7 +14,7 @@
 
   async function buyItem(itemId: number) {
     const res = await fetch(`${itemId}/buy`);
-    if (!res.ok) alert((await res.json()).message);
+    if (!res.ok) res.json().then((json) => alert(json.message));
   }
 </script>
 

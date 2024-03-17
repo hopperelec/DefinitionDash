@@ -24,12 +24,10 @@ async function moveRoom(
     where: { id: playerId },
     data: { currRoomId: roomId },
   });
-  await ablyServer.channels
-    .get("game:" + gameId + ":positions")
-    .publish("move", {
-      userId: userId,
-      svgRef: svgRef,
-    });
+  ablyServer.channels.get("game:" + gameId + ":positions").publish("move", {
+    userId: userId,
+    svgRef: svgRef,
+  });
 }
 
 const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
@@ -130,7 +128,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       where: { id: Number(randPlayer.id) },
       data: { points: newPoints },
     });
-    await updateRealtimePoints(gameId, Number(randPlayer.userId), newPoints);
+    updateRealtimePoints(gameId, Number(randPlayer.userId), newPoints);
   },
 };
 
@@ -173,13 +171,10 @@ export const GET = async ({ params, locals }) => {
     where: { id: player.id },
     data: { points: { decrement: shopItem.cost } },
   });
-  setTimeout(async () => {
-    // Allow responding to the request first
-    await updateRealtimePoints(
-      +params.gameId,
-      locals.user.id,
-      player.points - shopItem.cost,
-    );
-  }, 1);
+  updateRealtimePoints(
+    +params.gameId,
+    locals.user.id,
+    player.points - shopItem.cost,
+  );
   return new Response();
 };
