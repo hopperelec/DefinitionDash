@@ -11,7 +11,7 @@
   let map: SVGMap;
   let ptsIndicator: HTMLElement;
   let ptsChangeContainer: HTMLElement;
-  let doors: { [key: number]: number[] }
+  let doors: { [key: number]: number[] };
 
   const positionsMessage = getChannel(
     "game:" + $page.params.gameId + ":positions",
@@ -37,7 +37,7 @@
     data.players[userId].currSvgRef = svgRef;
     if (!data.claimedRooms.includes(svgRef)) {
       data.claimedRooms.push(svgRef);
-      const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement
+      const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
       if (pointIcon) map.removeIcon(pointIcon);
     }
     // A position update could occur before the map has finished loading.
@@ -49,7 +49,8 @@
       if (prevIcon) map.removeIcon(prevIcon);
       const player = data.players[userId];
       const newIcon = map.addIconTo(
-        svgRef, player.picture || DEFAULT_USER_ICON,
+        svgRef,
+        player.picture || DEFAULT_USER_ICON,
       );
       if (newIcon) {
         newIcon.dataset.user = userId.toString();
@@ -144,7 +145,12 @@
   />
   <link as="image" href={POINT_ICON} rel="preload" />
   {#each new Set(Object.values(data.players).map((player) => player.picture)) as picture}
-    <link as="image" href={picture || DEFAULT_USER_ICON} rel="preload" referrerpolicy="no-referrer" />
+    <link
+      as="image"
+      href={picture || DEFAULT_USER_ICON}
+      rel="preload"
+      referrerpolicy="no-referrer"
+    />
   {/each}
   <style>
     [data-room]:hover {
