@@ -31,16 +31,21 @@
       }
     }
   }
+
+  function focus(elm: HTMLElement) {
+    elm.focus()
+  }
 </script>
 
 <div class:waiting={status === "waiting"} id="page-container">
   <div id="definition-container">
     <input
       bind:value={answer}
+      use:focus
       class:shake={status === "incorrect"}
       disabled={status === "waiting"}
       on:keyup={onKeyUp}
-      placeholder="Your answer..."
+      placeholder="Type answer here..."
       type="text"
     />
     {#if data.wordClass}<p id="word-class">{data.wordClass}</p>{/if}
