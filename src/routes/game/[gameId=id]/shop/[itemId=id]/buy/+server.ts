@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import ablyServer, { updateRealtimePoints } from "$lib/server/ably-server";
+import { moveRoom, updateRealtimePoints } from "$lib/server/ably-server";
 import type { User } from "@prisma/client";
 
 type ActionDetails = {
@@ -12,23 +12,6 @@ type ActionDetails = {
   itemCost: number;
   actionParams: string;
 };
-
-async function moveRoom(
-  userId: number,
-  gameId: number,
-  playerId: number,
-  roomId: number,
-  svgRef: number,
-) {
-  await prisma.player.update({
-    where: { id: playerId },
-    data: { currRoomId: roomId },
-  });
-  ablyServer.channels.get("game:" + gameId + ":positions").publish("move", {
-    userId: userId,
-    svgRef: svgRef,
-  });
-}
 
 const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
   randomTeleport: async ({ playerId, gameId, user }) => {
@@ -57,11 +40,15 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
         "An unexpected error occurred while trying to choose a room to teleport you to",
       );
     await moveRoom(
-      user.id,
-      gameId,
-      playerId,
-      Number(rooms[0].id),
-      Number(rooms[0].svgRef),
+      {
+        id: playerId,
+        userId: user.id,
+        gameId,
+      },
+      {
+        id: Number(rooms[0].id),
+        svgRef: Number(rooms[0].svgRef),
+      },
     );
   },
 
@@ -94,18 +81,23 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       error(400, "There are no other players in this game!");
     const randPlayer = randPlayers[0];
     await moveRoom(
-      user.id,
-      gameId,
-      playerId,
-      Number(randPlayer.currRoomId),
-      Number(randPlayer.svgRef),
+      {
+        id: playerId,
+        userId: user.id,
+        gameId,
+      },
+      {
+        id: Number(randPlayer.currRoomId),
+        svgRef: Number(randPlayer.svgRef),
+      },
     );
     await moveRoom(
-      Number(randPlayer.userId),
-      gameId,
-      Number(randPlayer.id),
-      player.currRoom.id,
-      player.currRoom.svgRef,
+      {
+        id: Number(randPlayer.id),
+        userId: Number(randPlayer.userId),
+        gameId,
+      },
+      player.currRoom,
     );
   },
 

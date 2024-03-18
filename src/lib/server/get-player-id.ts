@@ -27,18 +27,25 @@ export default async function getPlayerId(
     select: { mapId: true },
   });
   if (!game) error(403, "You do not have access to this game!");
+  const spawnpoint = await chooseSpawnpoint(game.mapId);
   const newPlayer = await prisma.player.create({
-    data: {
-      userId: user.id,
-      gameId: gameId,
-      currRoomId: await chooseSpawnpoint(game.mapId),
-    },
+    data: { userId: user.id, gameId, currRoomId: spawnpoint },
     select: {
       id: true,
       currRoom: { select: { svgRef: true } },
       user: { select: { name: true, picture: true } },
+      game: {
+        select: {
+          claimedRooms: { where: { roomId: spawnpoint } },
+        },
+      },
     },
   });
+  if (newPlayer.game.claimedRooms.length == 0) {
+    await prisma.claimedRoom.create({
+      data: { gameId, roomId: spawnpoint },
+    });
+  }
   ablyServer.channels.get("game:" + gameId + ":positions").publish("create", {
     userId: user.id,
     picture: newPlayer.user.picture,

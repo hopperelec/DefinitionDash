@@ -5,11 +5,21 @@ import chooseSpawnpoint from "$lib/server/choose-spawnpoint";
 
 export const GET = async ({ locals }) => {
   const map = await getAnyMapFor(locals.user.schoolId);
+  const spawnpoint = await chooseSpawnpoint(map.id);
   const player = await prisma.player.create({
     data: {
       user: { connect: { id: locals.user.id } },
-      game: { create: { mapId: map.id } },
-      currRoom: { connect: { id: await chooseSpawnpoint(map.id) } },
+      game: {
+        create: {
+          mapId: map.id,
+          claimedRooms: {
+            create: {
+              room: { connect: { id: spawnpoint } },
+            },
+          },
+        },
+      },
+      currRoom: { connect: { id: spawnpoint } },
       isHost: true,
     },
     select: { gameId: true },

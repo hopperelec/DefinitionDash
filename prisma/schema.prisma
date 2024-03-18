@@ -49,16 +49,17 @@ model Map {
 }
 
 model Room {
-  id             Int      @id @default(autoincrement()) @db.UnsignedInt
-  map            Map      @relation(fields: [mapId], references: [id])
-  mapId          Int      @db.UnsignedInt
-  svgRef         Int      @db.UnsignedInt
+  id             Int           @id @default(autoincrement()) @db.UnsignedInt
+  map            Map           @relation(fields: [mapId], references: [id])
+  mapId          Int           @db.UnsignedInt
+  svgRef         Int           @db.UnsignedInt
   name           String?
-  isSpawnpoint   Boolean  @default(false)
-  primaryDoors   Door[]   @relation("room1")
-  secondaryDoors Door[]   @relation("room2")
-  playersInside  Player[] @relation("currRoom")
-  queuedPlayers  Player[] @relation("roomQueue")
+  isSpawnpoint   Boolean       @default(false)
+  primaryDoors   Door[]        @relation("room1")
+  secondaryDoors Door[]        @relation("room2")
+  playersInside  Player[]      @relation("currRoom")
+  queuedPlayers  Player[]      @relation("roomQueue")
+  gamesClaimedIn ClaimedRoom[]
 
   @@unique([mapId, svgRef])
 }
@@ -94,12 +95,13 @@ model Definition {
 }
 
 model Game {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  map       Map      @relation(fields: [mapId], references: [id])
-  mapId     Int      @db.UnsignedInt
-  createdAt DateTime @default(now())
-  isOngoing Boolean  @default(true)
-  players   Player[]
+  id           Int           @id @default(autoincrement()) @db.UnsignedInt
+  map          Map           @relation(fields: [mapId], references: [id])
+  mapId        Int           @db.UnsignedInt
+  createdAt    DateTime      @default(now())
+  isOngoing    Boolean       @default(true)
+  players      Player[]
+  claimedRooms ClaimedRoom[]
 }
 
 model Player {
@@ -118,6 +120,15 @@ model Player {
   points         Int         @default(0) @db.UnsignedInt
 
   @@unique([userId, gameId])
+}
+
+model ClaimedRoom {
+  roomId Int  @db.UnsignedInt
+  room   Room @relation(fields: [roomId], references: [id])
+  gameId Int  @db.UnsignedInt
+  game   Game @relation(fields: [gameId], references: [id])
+
+  @@id([roomId, gameId])
 }
 
 model ShopItem {

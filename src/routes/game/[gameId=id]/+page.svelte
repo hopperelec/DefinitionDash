@@ -3,7 +3,7 @@
   import "$lib/button.css";
   import decodeDoors from "$lib/decode-doors";
   import { page } from "$app/stores";
-  import { DEFAULT_USER_ICON } from "$lib/constants";
+  import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
   import { getChannel } from "$lib/ably-client";
   import { goto } from "$app/navigation";
 
@@ -11,7 +11,7 @@
   let map: SVGMap;
   let ptsIndicator: HTMLElement;
   let ptsChangeContainer: HTMLElement;
-  let doors: { [key: number]: number[] };
+  let doors: { [key: number]: number[] }
 
   const positionsMessage = getChannel(
     "game:" + $page.params.gameId + ":positions",
@@ -35,6 +35,11 @@
 
   function movePlayer(userId: number, svgRef: number) {
     data.players[userId].currSvgRef = svgRef;
+    if (!data.claimedRooms.includes(svgRef)) {
+      data.claimedRooms.push(svgRef);
+      const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement
+      if (pointIcon) map.removeIcon(pointIcon);
+    }
     // A position update could occur before the map has finished loading.
     // This is common for the player's own position after they answer a question
     // since they are redirected to this page before the new position is published
@@ -44,8 +49,7 @@
       if (prevIcon) map.removeIcon(prevIcon);
       const player = data.players[userId];
       const newIcon = map.addIconTo(
-        player.currSvgRef,
-        player.picture || DEFAULT_USER_ICON,
+        svgRef, player.picture || DEFAULT_USER_ICON,
       );
       if (newIcon) {
         newIcon.dataset.user = userId.toString();
@@ -83,6 +87,13 @@
   async function onMapSuccess() {
     for (const [userId, player] of Object.entries(data.players)) {
       movePlayer(+userId, player.currSvgRef);
+    }
+    for (const roomElm of map.getSVG().querySelectorAll("[data-room]")) {
+      const svgRef = (roomElm as HTMLElement).dataset.room;
+      if (svgRef && !data.claimedRooms.includes(+svgRef)) {
+        const icon = map.addIconTo(+svgRef, POINT_ICON);
+        if (icon) icon.dataset.point = svgRef;
+      }
     }
     doors = await fetch("/maps/" + data.map.id + "/doors")
       .then((response) => response.arrayBuffer())
@@ -131,8 +142,9 @@
     href="/maps/{data.map.id}/doors"
     rel="preload"
   />
+  <link as="image" href={POINT_ICON} rel="preload" />
   {#each new Set(Object.values(data.players).map((player) => player.picture)) as picture}
-    <link as="image" href={picture || DEFAULT_USER_ICON} rel="preload" />
+    <link as="image" href={picture || DEFAULT_USER_ICON} rel="preload" referrerpolicy="no-referrer" />
   {/each}
   <style>
     [data-room]:hover {

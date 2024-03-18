@@ -19,6 +19,11 @@ export const load = async ({ params, locals }) => {
               currRoom: { select: { svgRef: true } },
             },
           },
+          claimedRooms: {
+            select: {
+              room: { select: { svgRef: true } },
+            },
+          },
         },
       },
     },
@@ -44,12 +49,16 @@ export const load = async ({ params, locals }) => {
   const props: {
     players: Opponents;
     map: { id: number; imgURL: string };
+    claimedRooms: number[];
     userId: number;
     isHost: boolean;
     currPoints: number;
   } = {
     players,
     map: ret.game.map,
+    claimedRooms: ret.game.claimedRooms.map(
+      (claimedRoom) => claimedRoom.room.svgRef,
+    ),
     userId: ret.user.id,
     isHost: ret.isHost,
     currPoints: ret.points,

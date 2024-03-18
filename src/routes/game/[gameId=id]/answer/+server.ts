@@ -1,17 +1,27 @@
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import ablyServer, { updateRealtimePoints } from "$lib/server/ably-server";
+import { moveRoom } from "$lib/server/ably-server";
 
 export const POST = async ({ request, params, locals }) => {
+  const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
     where: {
-      userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
+      userId_gameId: { userId: locals.user.id, gameId },
       game: { isOngoing: true },
     },
     select: {
       id: true,
       currQuestion: { select: { answerRegex: true } },
-      currMove: { select: { id: true, svgRef: true } },
+      currMove: {
+        select: {
+          id: true,
+          svgRef: true,
+          gamesClaimedIn: {
+            where: { gameId },
+            select: { gameId: true }, // Need to select something
+          },
+        },
+      },
     },
   });
   if (!player) error(403, "You are not in this game or the game has ended!");
@@ -27,24 +37,22 @@ export const POST = async ({ request, params, locals }) => {
     "i",
   ).test(await request.text());
   if (correct) {
-    const currMove = player.currMove;
-    const newPlayerData = await prisma.player.update({
+    await prisma.player.update({
       where: { id: player.id },
       data: {
-        currQuestionId: null,
-        points: { increment: 1 },
-        currRoomId: currMove.id,
-        currMoveId: null,
+        currQuestion: { disconnect: true },
+        currMove: { disconnect: true },
       },
-      select: { points: true },
     });
-    ablyServer.channels
-      .get("game:" + params.gameId + ":positions")
-      .publish("move", {
+    await moveRoom(
+      {
+        id: player.id,
         userId: locals.user.id,
-        svgRef: currMove.svgRef,
-      });
-    updateRealtimePoints(+params.gameId, locals.user.id, newPlayerData.points);
+        gameId,
+      },
+      player.currMove,
+      player.currMove.gamesClaimedIn.length == 0,
+    );
   }
   return json({ correct });
 };
