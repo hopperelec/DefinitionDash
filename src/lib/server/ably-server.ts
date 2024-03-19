@@ -30,7 +30,6 @@ export async function moveRoom(
   },
   canClaimRoom?: boolean,
 ) {
-  console.log(canClaimRoom);
   if (canClaimRoom == undefined) {
     const claimedRoom = await prisma.claimedRoom.findUnique({
       where: { roomId_gameId: { roomId: room.id, gameId: player.gameId } },
