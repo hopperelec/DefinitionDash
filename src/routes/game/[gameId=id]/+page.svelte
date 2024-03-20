@@ -6,6 +6,7 @@
   import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
   import { getChannel } from "$lib/ably-client";
   import { goto } from "$app/navigation";
+  import IconsPreloader from "$lib/IconsPreloader.svelte";
 
   export let data;
   let map: SVGMap;
@@ -135,6 +136,7 @@
     />
   </div>
 </div>
+<IconsPreloader players={Object.values(data.players)} />
 
 <svelte:head>
   <link
@@ -143,15 +145,6 @@
     href="/maps/{data.map.id}/doors"
     rel="preload"
   />
-  <link as="image" href={POINT_ICON} rel="preload" />
-  {#each new Set(Object.values(data.players).map((player) => player.picture)) as picture}
-    <link
-      as="image"
-      href={picture || DEFAULT_USER_ICON}
-      rel="preload"
-      referrerpolicy="no-referrer"
-    />
-  {/each}
   <style>
     [data-room]:hover {
       filter: brightness(1.5);

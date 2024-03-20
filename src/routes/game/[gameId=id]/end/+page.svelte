@@ -3,6 +3,7 @@
   import SVGMap from "$lib/SVGMap.svelte";
   import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
   import "$lib/button.css";
+  import IconsPreloader from "$lib/IconsPreloader.svelte";
 
   export let data;
   let map: SVGMap;
@@ -55,6 +56,7 @@
   </div>
   <a class="button" href="/game">New game</a>
 </div>
+<IconsPreloader players={data.players} />
 
 <svelte:head>
   <style>

@@ -33,7 +33,7 @@
   }
 
   function focus(elm: HTMLElement) {
-    elm.focus()
+    elm.focus();
   }
 </script>
 
