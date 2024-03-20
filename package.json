@@ -18,7 +18,7 @@
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.9.0",
+    "@prisma/client": "^5.11.0",
     "ably": "^1.2.49",
     "google-auth-library": "^9.6.0",
     "html-minifier-terser": "^7.2.0",
@@ -43,7 +43,7 @@
     "prettier": "3.1.0",
     "prettier-plugin-prisma": "5.0.0",
     "prettier-plugin-svelte": "3.1.0",
-    "prisma": "^5.9.1",
+    "prisma": "^5.11.0",
     "sass": "^1.7.0",
     "stylelint": "15.11.0",
     "stylelint-config-html": "1.1.0",
