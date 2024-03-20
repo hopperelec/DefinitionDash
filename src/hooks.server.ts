@@ -3,8 +3,8 @@ import { error } from "@sveltejs/kit";
 import type { Options } from "html-minifier-terser";
 import { minify } from "html-minifier-terser";
 import prisma from "$lib/server/prisma";
-import { toBuffer } from "uuid-buffer";
 import { SESSION_COOKIE_KEY } from "$lib/constants";
+import encodeUUID from "$lib/encode-uuid";
 
 const minificationOptions: Options = {
   collapseInlineTagWhitespace: true,
@@ -20,7 +20,7 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
   const sessionUUID = event.cookies.get(SESSION_COOKIE_KEY);
   if (!sessionUUID) return false;
   const session = await prisma.session.findUnique({
-    where: { uuidBin: toBuffer(sessionUUID) },
+    where: { uuidBin: encodeUUID(sessionUUID) },
     select: { user: true, expires: true },
   });
   if (!session) error(400, "Invalid session UUID");

@@ -45,8 +45,10 @@ export const load = async ({ params, locals, url }) => {
       400,
       "There is no door between the room you are currently in and the room you selected!",
     );
-  const definitions: ({ id: bigint } & Definition)[] =
-    await prisma.$queryRaw`SELECT id,wordClass,definition,usageTemplate FROM Definition ORDER BY rand() LIMIT 1`;
+  const definitions: ({ id: bigint } & Definition)[] = await prisma.$queryRaw`
+      SELECT id,"wordClass",definition,"usageTemplate"
+      FROM "Definition"
+      ORDER BY RANDOM() LIMIT 1`;
   if (definitions.length == 0) error(500, "No questions have been defined!");
   const { id: definitionId, ...definition } = definitions[0];
   await prisma.player.update({

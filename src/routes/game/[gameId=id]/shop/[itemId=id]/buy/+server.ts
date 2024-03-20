@@ -30,10 +30,10 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       id: bigint;
       svgRef: bigint;
     }[] = await prisma.$queryRaw`
-        SELECT id,svgRef
-        FROM Room
-        WHERE mapId = ${player.game.mapId}
-        ORDER BY rand() LIMIT 1`;
+        SELECT id,"svgRef"
+        FROM "Room"
+        WHERE "mapId" = ${player.game.mapId}
+        ORDER BY RANDOM() LIMIT 1`;
     if (rooms.length === 0)
       error(
         500,
@@ -70,13 +70,13 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       currRoomId: bigint;
       svgRef: bigint;
     }[] = await prisma.$queryRaw`
-        SELECT Player.id,userId,currRoomId,svgRef
-        FROM Player
-         INNER JOIN Room
-            ON Room.id = Player.currRoomId
-        WHERE gameId = ${gameId}
-          AND Player.id <> ${playerId}
-        ORDER BY rand() LIMIT 1`;
+        SELECT "Player.id","userId","currRoomId","svgRef"
+        FROM "Player"
+         INNER JOIN "Room"
+            ON "Room.id" = "Player.currRoomId"
+        WHERE "gameId" = ${gameId}
+          AND "Player.id" <> ${playerId}
+        ORDER BY RANDOM() LIMIT 1`;
     if (randPlayers.length === 0)
       error(400, "There are no other players in this game!");
     const randPlayer = randPlayers[0];
@@ -107,11 +107,11 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       userId: bigint;
       points: bigint;
     }[] = await prisma.$queryRaw`
-        SELECT Player.id,userId,points
-        FROM Player
-        WHERE gameId = ${gameId}
-          AND Player.id <> ${playerId}
-        ORDER BY rand() LIMIT 1`;
+        SELECT "Player.id","userId",points
+        FROM "Player"
+        WHERE "gameId" = ${gameId}
+          AND "Player.id" <> ${playerId}
+        ORDER BY RANDOM() LIMIT 1`;
     if (randPlayers.length === 0)
       error(400, "There are no other players in this game!");
     const randPlayer = randPlayers[0];

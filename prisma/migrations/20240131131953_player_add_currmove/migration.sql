@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE `Player` ADD COLUMN `currMoveId` INTEGER UNSIGNED NULL;
-
--- AddForeignKey
-ALTER TABLE `Player` ADD CONSTRAINT `Player_currMoveId_fkey` FOREIGN KEY (`currMoveId`) REFERENCES `Room`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

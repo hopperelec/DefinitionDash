@@ -4,9 +4,9 @@ import { OAuth2Client } from "google-auth-library";
 import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
 import { ALLOWED_DOMAIN } from "$env/static/private";
 import prisma from "$lib/server/prisma";
-import { toBuffer } from "uuid-buffer";
 import { dev } from "$app/environment";
 import { SESSION_COOKIE_KEY, SESSION_DURATION_DAYS } from "$lib/constants";
+import encodeUUID from "$lib/encode-uuid";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   const params = new URLSearchParams(await request.text());
@@ -50,7 +50,11 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   const expiry = new Date();
   expiry.setDate(expiry.getDate() + SESSION_DURATION_DAYS);
   await prisma.session.create({
-    data: { userId: user.id, uuidBin: toBuffer(sessionUUID), expires: expiry },
+    data: {
+      userId: user.id,
+      uuidBin: encodeUUID(sessionUUID),
+      expires: expiry,
+    },
   });
 
   cookies.set(SESSION_COOKIE_KEY, sessionUUID, {
