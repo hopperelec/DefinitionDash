@@ -1,7 +1,7 @@
 <script lang="ts">
   import Leaderboard from "$lib/Leaderboard.svelte";
   import SVGMap from "$lib/SVGMap.svelte";
-  import { DEFAULT_USER_ICON } from "$lib/constants";
+  import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
   import "$lib/button.css";
 
   export let data;
@@ -32,6 +32,13 @@
       );
       if (icon) {
         icon.classList.add("user");
+      }
+    }
+
+    for (const roomElm of map.getSVG().querySelectorAll("[data-room]")) {
+      const svgRef = (roomElm as HTMLElement).dataset.room;
+      if (svgRef && !data.claimedRooms.includes(+svgRef)) {
+        map.addIconTo(+svgRef, POINT_ICON);
       }
     }
   }

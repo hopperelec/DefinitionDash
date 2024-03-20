@@ -32,6 +32,11 @@ export const load = async ({ params, locals }) => {
     where: { id: +params.gameId },
     select: {
       map: { select: { imgURL: true } },
+      claimedRooms: {
+        select: {
+          room: { select: { svgRef: true } },
+        },
+      },
       players: {
         select: {
           points: true,
@@ -53,6 +58,7 @@ export const load = async ({ params, locals }) => {
   const props: {
     mapImgURL: string;
     leaderboardPosition: number;
+    claimedRooms: number[];
     players: {
       points: number;
       name: string;
@@ -62,6 +68,9 @@ export const load = async ({ params, locals }) => {
   } = {
     mapImgURL: ret.map.imgURL,
     leaderboardPosition: ret._count.players + 1,
+    claimedRooms: ret.claimedRooms.map(
+      (claimedRoom) => claimedRoom.room.svgRef,
+    ),
     players: ret.players.map((player) => {
       return {
         points: player.points,
