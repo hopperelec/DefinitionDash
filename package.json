@@ -22,6 +22,7 @@
     "ably": "^1.2.49",
     "google-auth-library": "^9.7.0",
     "html-minifier-terser": "^7.2.0",
+    "panzoom": "^9.4.3",
     "uuid-buffer": "^1.0.3"
   },
   "devDependencies": {

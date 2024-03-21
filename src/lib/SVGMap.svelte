@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { ICON_SIZE, SVG_NS } from "$lib/constants";
+  import createPanZoom, { type PanZoom } from "panzoom";
 
   let container: HTMLElement;
   let svg: SVGSVGElement;
@@ -112,6 +113,13 @@
     );
   };
   export let onClickRoom: ((clickedRoom: number) => void) | null = null;
+  export let allowZooming: boolean = true;
+  let panZoom: PanZoom;
+
+  // noinspection JSUnusedGlobalSymbols
+  export function getPanZoom() {
+    return panZoom;
+  }
 
   onMount(async () => {
     if (imgURL) {
@@ -122,6 +130,15 @@
       if (tempMapElm instanceof SVGSVGElement) {
         container.innerHTML = "";
         svg = container.appendChild(tempMapElm);
+        if (allowZooming) {
+          // TODO: Reduce bounds to size of SVG
+          // TODO: Default zoom fit SVG
+          panZoom = createPanZoom(container, {
+            minZoom: 1,
+            maxZoom: 32,
+            bounds: true,
+          });
+        }
         if (onClickRoom) {
           svg.addEventListener("click", (event) => {
             if (onClickRoom) {
