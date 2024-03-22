@@ -1,6 +1,10 @@
 import { error } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import { moveRoom, updateRealtimePoints } from "$lib/server/ably-server";
+import {
+  moveRoom,
+  unclaimRooms,
+  updateRealtimePoints,
+} from "$lib/server/ably-server";
 import type { User } from "@prisma/client";
 
 type ActionDetails = {
@@ -101,6 +105,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
     );
   },
 
+  // actionParams is an integer number of points to subtract
   subtractRandPlayerPoints: async ({ playerId, gameId, actionParams }) => {
     const randPlayers: {
       id: bigint;
@@ -121,6 +126,33 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
       data: { points: newPoints },
     });
     updateRealtimePoints(gameId, Number(randPlayer.userId), newPoints);
+  },
+
+  // actionParams is an integer number of rooms (e.g: "5" -> unclaim 5 rooms)
+  unclaimAbsoluteRooms: async ({ gameId, actionParams }) => {
+    const rooms: { roomId: bigint; svgRef: bigint }[] = await prisma.$queryRaw`
+        SELECT roomId
+        FROM ClaimedRoom
+        WHERE gameId = ${gameId}
+        ORDER BY rand()
+        LIMIT ${+actionParams}`;
+    if (rooms.length === 0) error(400, "No rooms available to unclaim!");
+    await unclaimRooms(gameId, rooms);
+  },
+
+  // actionParams is a float percentage (e.g: "50" -> unclaim 50% of rooms)
+  unclaimPercentageRooms: async ({ gameId, actionParams }) => {
+    const rooms: { roomId: bigint; svgRef: bigint }[] = await prisma.$queryRaw`
+        SELECT roomId
+        FROM ClaimedRoom
+        WHERE gameId = ${gameId}
+        ORDER BY rand()`;
+    if (rooms.length === 0) error(400, "No rooms available to unclaim!");
+    // MySQL doesn't support dynamic limits, so need to limit from Javascript
+    await unclaimRooms(
+      gameId,
+      rooms.slice(0, (rooms.length * +actionParams) / 100),
+    );
   },
 };
 

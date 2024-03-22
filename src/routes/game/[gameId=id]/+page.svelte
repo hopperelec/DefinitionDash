@@ -24,7 +24,13 @@
         currSvgRef: $positionsMessage.data.svgRef,
       };
     }
-    movePlayer($positionsMessage.data.userId, $positionsMessage.data.svgRef);
+    const svgRef = $positionsMessage.data.svgRef;
+    if (!data.claimedRooms.includes(svgRef)) {
+      data.claimedRooms.push(svgRef);
+      const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
+      if (pointIcon) map.removeIcon(pointIcon);
+    }
+    movePlayer($positionsMessage.data.userId, svgRef);
   }
   const playerMessage = getChannel(
     "player:" + $page.params.gameId + ":" + data.userId,
@@ -36,11 +42,6 @@
 
   function movePlayer(userId: number, svgRef: number) {
     data.players[userId].currSvgRef = svgRef;
-    if (!data.claimedRooms.includes(svgRef)) {
-      data.claimedRooms.push(svgRef);
-      const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
-      if (pointIcon) map.removeIcon(pointIcon);
-    }
     // A position update could occur before the map has finished loading.
     // This is common for the player's own position after they answer a question
     // since they are redirected to this page before the new position is published

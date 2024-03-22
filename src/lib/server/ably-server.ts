@@ -62,3 +62,19 @@ export async function moveRoom(
       svgRef: room.svgRef,
     });
 }
+
+export async function unclaimRooms(
+  gameId: number,
+  rooms: { roomId: bigint; svgRef: bigint }[],
+) {
+  await prisma.claimedRoom.deleteMany({
+    where: {
+      gameId,
+      roomId: { in: rooms.map((room) => Number(room.roomId)) },
+    },
+  });
+  ablyServer.channels.get("game:" + gameId + ":positions").publish(
+    "unclaim",
+    rooms.map((room) => room.svgRef),
+  );
+}
