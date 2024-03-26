@@ -12,7 +12,7 @@
   tabindex="0"
   type="button"
 >
-  <slot/>
+  <slot />
 </button>
 
 <style>

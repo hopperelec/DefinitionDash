@@ -13,7 +13,7 @@
       acc[player.id] = {
         ...player,
         name: getDisplayName(player),
-      }
+      };
       return acc;
     },
     {} as { [key: number]: LeaderboardPlayer },
