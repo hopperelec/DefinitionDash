@@ -13,7 +13,7 @@ export const load = async ({ params, locals }) => {
           players: {
             where: { kicked: false },
             select: {
-              user: { select: { id: true, name: true } },
+              user: { select: { id: true, name: true, picture: true } },
               points: true,
               isHost: true,
             },
@@ -32,11 +32,11 @@ export const load = async ({ params, locals }) => {
     isHost: ret.isHost,
     players: ret.game.players.map((player) => {
       return {
-        points: player.points,
+        ...player,
+        ...player.user,
         kickable: ret.isHost
           ? !player.isHost && player.user.id != locals.user.id
           : undefined,
-        ...player.user,
       };
     }),
   };

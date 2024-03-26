@@ -1,7 +1,7 @@
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 import ablyServer from "$lib/server/ably-server";
-import getDisplayName from "$lib/get-display-name";
+import type { PlayerLabelProps } from "$lib/types";
 
 async function endGame(gameId: number) {
   await prisma.game.update({
@@ -45,6 +45,7 @@ export const load = async ({ params, locals }) => {
       },
       players: {
         select: {
+          isHost: true,
           points: true,
           user: { select: { id: true, name: true, picture: true } },
           currRoom: { select: { svgRef: true } },
@@ -65,12 +66,7 @@ export const load = async ({ params, locals }) => {
     mapImgURL: string;
     leaderboardPosition: number;
     claimedRooms: number[];
-    players: {
-      points: number;
-      name: string;
-      picture: string | null;
-      currSvgRef: number;
-    }[];
+    players: (PlayerLabelProps & { currSvgRef: number })[];
   } = {
     mapImgURL: ret.map.imgURL,
     leaderboardPosition: ret._count.players + 1,
@@ -79,9 +75,8 @@ export const load = async ({ params, locals }) => {
     ),
     players: ret.players.map((player) => {
       return {
-        points: player.points,
-        name: getDisplayName(player.user),
-        picture: player.user.picture,
+        ...player,
+        ...player.user,
         currSvgRef: player.currRoom.svgRef,
       };
     }),

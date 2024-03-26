@@ -49,7 +49,7 @@
   <h2>Game over!</h2>
   <p>You {getCardinal(data.leaderboardPosition)}!</p>
   <div id="leaderboard-container">
-    <Leaderboard orderedPlayers={data.players} />
+    <Leaderboard currentUserId={data.userId} orderedPlayers={data.players} />
   </div>
   <div id="map-container">
     <SVGMap bind:this={map} imgURL={data.mapImgURL} onSuccess={onMapSuccess} />

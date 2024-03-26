@@ -1,5 +1,10 @@
 <script lang="ts">
-  export let userId: number;
+  import PlayerLabel from "$lib/PlayerLabel.svelte";
+  import type { PlayerLabelProps } from "$lib/types";
+
+  export let currentUserId: number;
+  export let allowKicking = false;
+  export let player: PlayerLabelProps;
 
   async function kickPlayer(userId: number) {
     const res = await fetch("../kick/" + userId + "/", { method: "POST" });
@@ -7,13 +12,17 @@
   }
 </script>
 
-<button
-  on:click={async () => await kickPlayer(userId)}
-  tabindex="0"
-  type="button"
->
-  <slot />
-</button>
+{#if allowKicking && player.id !== currentUserId && !player.isHost}
+  <button
+    on:click={async () => await kickPlayer(player.id)}
+    tabindex="0"
+    type="button"
+  >
+    <PlayerLabel {player} {currentUserId} />
+  </button>
+{:else}
+  <PlayerLabel {player} {currentUserId} />
+{/if}
 
 <style>
   button {

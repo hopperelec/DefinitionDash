@@ -1,23 +1,17 @@
 <script lang="ts">
-  import type { LeaderboardPlayer } from "$lib/types";
-  import Kickable from "$lib/Kickable.svelte";
+  import type { PlayerLabelProps } from "$lib/types";
+  import KickablePlayerLabel from "$lib/KickablePlayerLabel.svelte";
 
-  export let orderedPlayers: LeaderboardPlayer[];
+  export let currentUserId: number;
+  export let allowKicking = false;
+  export let orderedPlayers: PlayerLabelProps[];
 </script>
 
 <h3>Leaderboard</h3>
 <ol>
   {#each orderedPlayers as player}
     <li>
-      {#if player.kickable}
-        <Kickable userId={player.id}>
-          <span>{player.name}</span> -
-          <span>{player.points} point{player.points === 1 ? "" : "s"}</span>
-        </Kickable>
-      {:else}
-        <span>{player.name}</span> -
-        <span>{player.points} point{player.points === 1 ? "" : "s"}</span>
-      {/if}
+      <KickablePlayerLabel {currentUserId} {allowKicking} {player} />
     </li>
   {/each}
 </ol>
@@ -31,11 +25,13 @@
   }
 
   ol {
+    font-size: 24px;
     overflow-y: auto;
-    margin-left: 10px; /* Counter li padding */
+    margin: 0 0 0 10px; /* Counter li padding */
   }
 
   li {
+    padding: 5px 0;
     margin-right: 10px; /* Prevent overflow for Kickable hover */
   }
 </style>

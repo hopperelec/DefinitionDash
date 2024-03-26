@@ -1,7 +1,8 @@
 export type LocalDoor = { svgRef1: number; svgRef2: number };
-export type LeaderboardPlayer = {
+export type PlayerLabelProps = {
   id: number;
-  name: string;
-  points: number;
-  kickable?: boolean;
+  name: string | null;
+  picture: string | null;
+  points?: number;
+  isHost: boolean;
 };

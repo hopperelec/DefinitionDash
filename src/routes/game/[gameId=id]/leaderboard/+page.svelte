@@ -3,20 +3,16 @@
   import { getChannel } from "$lib/ably-client";
   import { page } from "$app/stores";
   import "$lib/button.css";
-  import getDisplayName from "$lib/get-display-name";
-  import type { LeaderboardPlayer } from "$lib/types";
+  import type { PlayerLabelProps } from "$lib/types";
 
   export let data;
 
   let players = data.players.reduce(
     (acc, player) => {
-      acc[player.id] = {
-        ...player,
-        name: getDisplayName(player),
-      };
+      acc[player.id] = player;
       return acc;
     },
-    {} as { [key: number]: LeaderboardPlayer },
+    {} as { [key: number]: PlayerLabelProps & { points: number } },
   );
   $: orderedPlayers = Object.values(players).sort(
     (a, b) => b.points - a.points,
@@ -31,9 +27,8 @@
       case "create":
         players[$pointsMessage.data.userId] = {
           id: $pointsMessage.data.userId,
-          name: getDisplayName($pointsMessage.data),
+          ...$pointsMessage.data,
           points: 0,
-          kickable: data.isHost,
         };
     }
   }
@@ -51,7 +46,7 @@
 {#if data.isHost}<a id="end" class="button" href="../end">End game</a>{/if}
 <div id="page-container">
   <div id="leaderboard-container">
-    <Leaderboard {orderedPlayers} />
+    <Leaderboard allowKicking currentUserId={data.userId} {orderedPlayers} />
   </div>
   <a class="button" href="../">Back to game</a>
 </div>

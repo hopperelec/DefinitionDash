@@ -1,27 +1,21 @@
 <script lang="ts">
   import PlayerPicturePreloader from "$lib/PlayerPicturePreloader.svelte";
-  import getDisplayName from "$lib/get-display-name";
   import { DEFAULT_USER_ICON } from "$lib/constants";
   import "$lib/button.css";
   import { getChannel } from "$lib/ably-client";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import Kickable from "$lib/Kickable.svelte";
+  import type { PlayerLabelProps } from "$lib/types";
+  import KickablePlayerLabel from "$lib/KickablePlayerLabel.svelte";
 
   export let data;
 
   let players = data.players.reduce(
     (acc, player) => {
-      acc[player.id] = {
-        name: getDisplayName(player),
-        picture: player.picture || DEFAULT_USER_ICON,
-        isHost: player.isHost,
-      };
+      acc[player.id] = player;
       return acc;
     },
-    {} as {
-      [key: number]: { name: string; picture: string | null; isHost: boolean };
-    },
+    {} as { [key: number]: PlayerLabelProps },
   );
   let isHost = players[data.userId].isHost;
 
@@ -38,6 +32,7 @@
         break;
       case "join":
         players[$lobbyMessage.data.id] = {
+          id: $lobbyMessage.data.id,
           name: $lobbyMessage.data.name,
           picture: $lobbyMessage.data.picture || DEFAULT_USER_ICON,
           isHost: false,
@@ -98,35 +93,13 @@
     </div>
     <ul>
       {#each Object.entries(players) as [id, player]}
-        {#if isHost && data.userId !== +id && !player.isHost}
-          <li>
-            <Kickable userId={+id}>
-              <div class="player-container">
-                <img
-                  width="32"
-                  height="32"
-                  src={player.picture}
-                  alt="{player.name}'s picture"
-                />
-                <span>{player.name}</span>
-              </div>
-            </Kickable>
-          </li>
-        {:else}
-          <li
-            class="player-container"
-            class:host={player.isHost}
-            class:current-user={data.userId === +id}
-          >
-            <img
-              width="32"
-              height="32"
-              src={player.picture}
-              alt="{player.name}'s picture"
-            />
-            <span>{player.name}</span>
-          </li>
-        {/if}
+        <li>
+          <KickablePlayerLabel
+            currentUserId={data.userId}
+            allowKicking={isHost}
+            {player}
+          />
+        </li>
       {/each}
     </ul>
   </div>
@@ -172,31 +145,5 @@
   li {
     list-style-type: none;
     padding: 5px 0;
-  }
-
-  .player-container {
-    display: flex;
-    align-items: center;
-    font-size: 24px;
-
-    & > img {
-      clip-path: inset(0% round 50%);
-    }
-
-    & > span {
-      margin-left: 10px;
-      margin-right: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  .host {
-    color: orange;
-  }
-
-  .current-user {
-    color: blue;
   }
 </style>
