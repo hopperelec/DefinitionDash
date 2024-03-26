@@ -100,9 +100,15 @@ model Game {
   map          Map           @relation(fields: [mapId], references: [id])
   mapId        Int           @db.UnsignedInt
   createdAt    DateTime      @default(now())
-  isOngoing    Boolean       @default(true)
+  state        GameState     @default(LOBBY)
   players      Player[]
   claimedRooms ClaimedRoom[]
+}
+
+enum GameState {
+  LOBBY
+  ONGOING
+  ENDED
 }
 
 model Player {

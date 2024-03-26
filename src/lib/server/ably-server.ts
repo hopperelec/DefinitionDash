@@ -12,7 +12,7 @@ export function updateRealtimePoints(
 ) {
   ablyServer.channels
     .get("player:" + gameId + ":" + userId)
-    .publish("points", { points: points });
+    .publish("points", { points });
   ablyServer.channels
     .get("game:" + gameId + ":points")
     .publish("points", { userId, points });

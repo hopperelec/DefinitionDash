@@ -9,7 +9,6 @@ export const load = async ({ params, locals }) => {
     select: {
       points: true,
       isHost: true,
-      user: { select: { id: true } },
       game: {
         select: {
           map: { select: { id: true, imgURL: true } },
@@ -59,7 +58,7 @@ export const load = async ({ params, locals }) => {
     claimedRooms: ret.game.claimedRooms.map(
       (claimedRoom) => claimedRoom.room.svgRef,
     ),
-    userId: ret.user.id,
+    userId: locals.user.id,
     isHost: ret.isHost,
     currPoints: ret.points,
   };

@@ -31,9 +31,8 @@ export const load = async ({ params, locals }) => {
     isHost: ret.isHost,
     players: ret.game.players.map((player) => {
       return {
-        id: player.user.id,
-        name: player.user.name,
         points: player.points,
+        ...player.user,
       };
     }),
   };

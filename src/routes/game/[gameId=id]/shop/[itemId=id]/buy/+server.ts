@@ -82,7 +82,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
           AND Player.id <> ${playerId}
         ORDER BY rand() LIMIT 1`;
     if (randPlayers.length === 0)
-      error(400, "There are no other players in this game!");
+      error(403, "There are no other players in this game!");
     const randPlayer = randPlayers[0];
     await moveRoom(
       {
@@ -118,7 +118,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
           AND Player.id <> ${playerId}
         ORDER BY rand() LIMIT 1`;
     if (randPlayers.length === 0)
-      error(400, "There are no other players in this game!");
+      error(403, "There are no other players in this game!");
     const randPlayer = randPlayers[0];
     const newPoints = Math.max(0, Number(randPlayer.points) - +actionParams);
     await prisma.player.update({
@@ -136,7 +136,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
         WHERE gameId = ${gameId}
         ORDER BY rand()
         LIMIT ${+actionParams}`;
-    if (rooms.length === 0) error(400, "No rooms available to unclaim!");
+    if (rooms.length === 0) error(500, "No rooms available to unclaim!");
     await unclaimRooms(gameId, rooms);
   },
 
@@ -147,7 +147,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
         FROM ClaimedRoom
         WHERE gameId = ${gameId}
         ORDER BY rand()`;
-    if (rooms.length === 0) error(400, "No rooms available to unclaim!");
+    if (rooms.length === 0) error(500, "No rooms available to unclaim!");
     // MySQL doesn't support dynamic limits, so need to limit from Javascript
     await unclaimRooms(
       gameId,
@@ -157,23 +157,26 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 };
 
 export const GET = async ({ params, locals }) => {
+  const itemId = +params.itemId;
   const shopItem = await prisma.shopItem.findUnique({
-    where: { id: +params.itemId },
+    where: { id: itemId },
     select: { cost: true, action: true },
   });
   if (!shopItem) error(404, "This item does not exist!");
+  const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
     where: {
-      userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
-      game: { isOngoing: true },
+      userId_gameId: { userId: locals.user.id, gameId },
+      game: { state: "ONGOING" },
     },
     select: { id: true, currQuestionId: true, points: true },
   });
-  if (!player) error(403, "You are not in this game or or the game has ended!");
+  if (!player)
+    error(403, "You are not in this game or or the game is not ongoing!");
   if (player.currQuestionId)
-    error(400, "You can not buy an item while answering a question!");
+    error(403, "You can not buy an item while answering a question!");
   if (player.points < shopItem.cost)
-    error(400, "You do not have enough points to buy this item");
+    error(403, "You do not have enough points to buy this item");
 
   const actionParts = shopItem.action.split("/", 2);
   const action = ACTIONS[actionParts[0]];
@@ -186,8 +189,8 @@ export const GET = async ({ params, locals }) => {
     playerId: player.id,
     playerPoints: player.points,
     user: locals.user,
-    gameId: +params.gameId,
-    itemId: +params.itemId,
+    gameId,
+    itemId,
     itemCost: shopItem.cost,
     actionParams: actionParts[1],
   });
@@ -195,10 +198,6 @@ export const GET = async ({ params, locals }) => {
     where: { id: player.id },
     data: { points: { decrement: shopItem.cost } },
   });
-  updateRealtimePoints(
-    +params.gameId,
-    locals.user.id,
-    player.points - shopItem.cost,
-  );
+  updateRealtimePoints(gameId, locals.user.id, player.points - shopItem.cost);
   return new Response();
 };

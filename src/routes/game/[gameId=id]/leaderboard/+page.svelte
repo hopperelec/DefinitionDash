@@ -3,17 +3,14 @@
   import { getChannel } from "$lib/ably-client";
   import { page } from "$app/stores";
   import "$lib/button.css";
+  import getDisplayName from "$lib/get-display-name";
 
   export let data;
-
-  function getDisplayName(userId: number, name: string | null) {
-    return name || "User " + userId;
-  }
 
   const players = data.players.reduce(
     (acc, player) => {
       acc[player.id] = {
-        name: getDisplayName(player.id, player.name),
+        name: getDisplayName(player),
         points: player.points,
       };
       return acc;
@@ -32,10 +29,7 @@
         break;
       case "create":
         players[$pointsMessage.data.userId] = {
-          name: getDisplayName(
-            $pointsMessage.data.userId,
-            $pointsMessage.data.name,
-          ),
+          name: getDisplayName($pointsMessage.data),
           points: 0,
         };
     }

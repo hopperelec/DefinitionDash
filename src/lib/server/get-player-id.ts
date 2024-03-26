@@ -3,30 +3,20 @@ import { error, redirect } from "@sveltejs/kit";
 import chooseSpawnpoint from "$lib/server/choose-spawnpoint";
 import ablyServer from "$lib/server/ably-server";
 
-export default async function getPlayerId(
-  user: { id: number; schoolId: number },
+async function addPlayer(
   gameId: number,
-): Promise<number> {
-  const player = await prisma.player.findFirst({
-    where: { userId: user.id, gameId: gameId },
-    select: {
-      id: true,
-      game: { select: { isOngoing: true } },
-    },
-  });
-  if (player) {
-    if (player.game.isOngoing) return player.id;
-    redirect(301, "/game/" + gameId + "/end");
-  }
+  user: { id: number; schoolId: number },
+) {
   const game = await prisma.game.findFirst({
     where: {
       id: gameId,
       map: { creator: { schoolId: user.schoolId } },
-      isOngoing: true,
+      state: { not: "ENDED" },
     },
-    select: { mapId: true },
+    select: { mapId: true, state: true },
   });
   if (!game) error(403, "You do not have access to this game!");
+  if (game.state == "LOBBY") redirect(303, "/game/" + gameId + "/lobby/");
   const spawnpoint = await chooseSpawnpoint(game.mapId);
   const newPlayer = await prisma.player.create({
     data: { userId: user.id, gameId, currRoomId: spawnpoint },
@@ -36,6 +26,7 @@ export default async function getPlayerId(
       user: { select: { name: true, picture: true } },
       game: {
         select: {
+          state: true,
           claimedRooms: { where: { roomId: spawnpoint } },
         },
       },
@@ -55,4 +46,28 @@ export default async function getPlayerId(
     .get("game:" + gameId + ":points")
     .publish("create", { userId: user.id, name: newPlayer.user.name });
   return newPlayer.id;
+}
+
+export default async function getPlayerId(
+  user: { id: number; schoolId: number },
+  gameId: number,
+): Promise<number> {
+  const player = await prisma.player.findFirst({
+    where: { userId: user.id, gameId },
+    select: {
+      id: true,
+      game: { select: { state: true } },
+    },
+  });
+  if (player) {
+    switch (player.game.state) {
+      case "LOBBY":
+        redirect(303, "/game/" + gameId + "/lobby/");
+      case "ONGOING":
+        return player.id;
+      case "ENDED":
+        redirect(301, "/game/" + gameId + "/end/");
+    }
+  }
+  return await addPlayer(gameId, user);
 }

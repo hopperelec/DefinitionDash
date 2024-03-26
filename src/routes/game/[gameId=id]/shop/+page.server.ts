@@ -7,7 +7,7 @@ export const load = async ({ params, locals }) => {
   const playerId = await getPlayerId(locals.user, +params.gameId);
   const playerData = await prisma.player.findUnique({
     where: { id: playerId },
-    select: { userId: true, points: true },
+    select: { points: true },
   });
   if (!playerData)
     error(
@@ -20,7 +20,8 @@ export const load = async ({ params, locals }) => {
     points: number;
   } = {
     shopItems: await prisma.shopItem.findMany(),
-    ...playerData,
+    userId: locals.user.id,
+    points: playerData.points,
   };
   return props;
 };

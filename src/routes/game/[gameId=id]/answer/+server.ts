@@ -5,10 +5,7 @@ import { moveRoom } from "$lib/server/ably-server";
 export const POST = async ({ request, params, locals }) => {
   const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
-    where: {
-      userId_gameId: { userId: locals.user.id, gameId },
-      game: { isOngoing: true },
-    },
+    where: { userId_gameId: { userId: locals.user.id, gameId } },
     select: {
       id: true,
       currQuestion: { select: { answerRegex: true } },
@@ -24,9 +21,9 @@ export const POST = async ({ request, params, locals }) => {
       },
     },
   });
-  if (!player) error(403, "You are not in this game or the game has ended!");
+  if (!player) error(403, "You are not in this game!");
   if (!player.currQuestion)
-    error(400, "You currently have no question to answer!");
+    error(403, "You currently have no question to answer!");
   if (!player.currMove)
     error(
       500,

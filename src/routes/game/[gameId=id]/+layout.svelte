@@ -3,10 +3,10 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
 
-  const announcements = getChannel(
+  const announcement = getChannel(
     "game:" + $page.params.gameId + ":announcements",
   );
-  $: if ($announcements?.name == "end") {
+  $: if ($announcement?.name == "end") {
     goto("/game/" + $page.params.gameId + "/end/");
   }
 </script>

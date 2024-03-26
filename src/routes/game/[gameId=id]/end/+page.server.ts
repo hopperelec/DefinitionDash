@@ -1,35 +1,43 @@
 import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 import ablyServer from "$lib/server/ably-server";
+import getDisplayName from "$lib/get-display-name";
+
+async function endGame(gameId: number) {
+  await prisma.game.update({
+    where: { id: gameId },
+    data: { state: "ENDED" },
+  });
+  ablyServer.channels
+    .get("game:" + gameId + ":announcements")
+    .publish("end", null);
+}
 
 export const load = async ({ params, locals }) => {
+  const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
     where: {
-      userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
+      userId_gameId: { userId: locals.user.id, gameId },
     },
     select: {
       isHost: true,
       points: true,
-      game: { select: { isOngoing: true } },
+      game: { select: { state: true } },
     },
   });
   if (!player) error(403, "You are not in this game!");
-  if (player.game.isOngoing) {
+  if (player.game.state == "LOBBY")
+    error(403, "You can't end a game from the lobby!");
+  if (player.game.state == "ONGOING") {
     if (!player.isHost)
       error(
         403,
-        "This game is ongoing and you are not a host but only a host can end a game!",
+        "This game has not ended and you are not a host but only a host can end a game!",
       );
-    await prisma.game.update({
-      where: { id: +params.gameId },
-      data: { isOngoing: false },
-    });
-    ablyServer.channels
-      .get("game:" + +params.gameId + ":announcements")
-      .publish("end", null);
+    await endGame(gameId);
   }
   const ret = await prisma.game.findUnique({
-    where: { id: +params.gameId },
+    where: { id: gameId },
     select: {
       map: { select: { imgURL: true } },
       claimedRooms: {
@@ -74,7 +82,7 @@ export const load = async ({ params, locals }) => {
     players: ret.players.map((player) => {
       return {
         points: player.points,
-        name: player.user.name || "User " + player.user.id,
+        name: getDisplayName(player.user),
         picture: player.user.picture,
         currSvgRef: player.currRoom.svgRef,
       };
