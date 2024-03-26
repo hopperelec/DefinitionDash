@@ -125,6 +125,7 @@ model Player {
   currMove       Room?       @relation("roomQueue", fields: [currMoveId], references: [id])
   currMoveId     Int?        @db.UnsignedInt
   points         Int         @default(0) @db.UnsignedInt
+  kicked         Boolean     @default(false)
 
   @@unique([userId, gameId])
 }

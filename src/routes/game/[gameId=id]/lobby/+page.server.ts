@@ -16,13 +16,18 @@ export const load = async ({ params, locals }) => {
       players: {
         select: {
           isHost: true,
+          kicked: true,
           user: { select: { id: true, name: true, picture: true } },
         },
       },
     },
   });
   if (!game) error(403, "You do not have access to this game's lobby!");
-  if (!game.players.some((player) => player.user.id == locals.user.id)) {
+
+  const self = game.players.filter(
+    (player) => player.user.id == locals.user.id,
+  )[0];
+  if (!self) {
     const spawnpoint = await chooseSpawnpoint(game.mapId);
     await prisma.player.create({
       data: {
@@ -36,16 +41,18 @@ export const load = async ({ params, locals }) => {
       name: locals.user.name,
       picture: locals.user.picture,
     };
-    game.players.push({ isHost: false, user });
+    game.players.push({ isHost: false, kicked: false, user });
     ablyServer.channels.get("game:" + gameId + ":lobby").publish("join", user);
-  }
+  } else if (self.kicked) error(403, "You've been kicked from this game!");
   return {
     userId: locals.user.id,
-    players: game.players.map((player) => {
-      return {
-        isHost: player.isHost,
-        ...player.user,
-      };
-    }),
+    players: game.players
+      .filter((player) => !player.kicked)
+      .map((player) => {
+        return {
+          isHost: player.isHost,
+          ...player.user,
+        };
+      }),
   };
 };

@@ -4,18 +4,19 @@
   import { page } from "$app/stores";
   import "$lib/button.css";
   import getDisplayName from "$lib/get-display-name";
+  import type { LeaderboardPlayer } from "$lib/types";
 
   export let data;
 
-  const players = data.players.reduce(
+  let players = data.players.reduce(
     (acc, player) => {
       acc[player.id] = {
+        ...player,
         name: getDisplayName(player),
-        points: player.points,
-      };
+      }
       return acc;
     },
-    {} as { [key: number]: { name: string; points: number } },
+    {} as { [key: number]: LeaderboardPlayer },
   );
   $: orderedPlayers = Object.values(players).sort(
     (a, b) => b.points - a.points,
@@ -29,10 +30,21 @@
         break;
       case "create":
         players[$pointsMessage.data.userId] = {
+          id: $pointsMessage.data.userId,
           name: getDisplayName($pointsMessage.data),
           points: 0,
+          kickable: data.isHost,
         };
     }
+  }
+
+  const announcement = getChannel(
+    "game:" + $page.params.gameId + ":announcements",
+  );
+  $: if ($announcement?.name == "kick") {
+    const userId = $announcement.data.userId;
+    delete players[userId];
+    players = players; // trigger reactivity
   }
 </script>
 

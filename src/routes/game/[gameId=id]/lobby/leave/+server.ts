@@ -17,6 +17,7 @@ export const GET = async ({ params, locals }) => {
   const player = await prisma.player.findUnique({
     where: {
       userId_gameId: { userId: locals.user.id, gameId },
+      kicked: false,
     },
     select: {
       isHost: true,
@@ -35,9 +36,7 @@ export const GET = async ({ params, locals }) => {
   if (player.game.state != "LOBBY")
     error(403, "You can only leave a game whilst it is in the lobby!");
   await prisma.player.delete({
-    where: {
-      userId_gameId: { userId: locals.user.id, gameId },
-    },
+    where: { userId_gameId: { userId: locals.user.id, gameId } },
   });
   ablyServer.channels
     .get("game:" + gameId + ":lobby")

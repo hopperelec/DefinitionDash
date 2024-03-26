@@ -32,12 +32,25 @@
     }
     movePlayer($positionsMessage.data.userId, svgRef);
   }
+
   const playerMessage = getChannel(
     "player:" + $page.params.gameId + ":" + data.userId,
   );
   $: if ($playerMessage?.name == "points") {
     addPtsChangeGlyph($playerMessage.data.points - data.currPoints);
     data.currPoints = $playerMessage.data.points;
+  }
+
+  const announcement = getChannel(
+    "game:" + $page.params.gameId + ":announcements",
+  );
+  $: if ($announcement?.name == "kick") {
+    const userId = $announcement.data.userId;
+    delete data.players[userId];
+    if (map) {
+      const icon = map.getElmWhere("user", userId) as SVGImageElement;
+      if (icon) map.removeIcon(icon);
+    }
   }
 
   function movePlayer(userId: number, svgRef: number) {

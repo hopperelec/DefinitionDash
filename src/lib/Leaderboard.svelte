@@ -1,16 +1,23 @@
 <script lang="ts">
-  export let orderedPlayers: {
-    name: string;
-    points: number;
-  }[];
+  import type { LeaderboardPlayer } from "$lib/types";
+  import Kickable from "$lib/Kickable.svelte";
+
+  export let orderedPlayers: LeaderboardPlayer[];
 </script>
 
 <h3>Leaderboard</h3>
 <ol>
   {#each orderedPlayers as player}
     <li>
-      <span>{player.name}</span> -
-      <span>{player.points} point{player.points === 1 ? "" : "s"}</span>
+      {#if player.kickable}
+        <Kickable userId={player.id}>
+          <span>{player.name}</span> -
+          <span>{player.points} point{player.points === 1 ? "" : "s"}</span>
+        </Kickable>
+      {:else}
+        <span>{player.name}</span> -
+        <span>{player.points} point{player.points === 1 ? "" : "s"}</span>
+      {/if}
     </li>
   {/each}
 </ol>
@@ -25,5 +32,10 @@
 
   ol {
     overflow-y: auto;
+    margin-left: 10px; /* Counter li padding */
+  }
+
+  li {
+    margin-right: 10px; /* Prevent overflow for Kickable hover */
   }
 </style>

@@ -157,17 +157,12 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 };
 
 export const GET = async ({ params, locals }) => {
-  const itemId = +params.itemId;
-  const shopItem = await prisma.shopItem.findUnique({
-    where: { id: itemId },
-    select: { cost: true, action: true },
-  });
-  if (!shopItem) error(404, "This item does not exist!");
   const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
     where: {
       userId_gameId: { userId: locals.user.id, gameId },
       game: { state: "ONGOING" },
+      kicked: false,
     },
     select: { id: true, currQuestionId: true, points: true },
   });
@@ -175,6 +170,12 @@ export const GET = async ({ params, locals }) => {
     error(403, "You are not in this game or or the game is not ongoing!");
   if (player.currQuestionId)
     error(403, "You can not buy an item while answering a question!");
+  const itemId = +params.itemId;
+  const shopItem = await prisma.shopItem.findUnique({
+    where: { id: itemId },
+    select: { cost: true, action: true },
+  });
+  if (!shopItem) error(404, "This item does not exist!");
   if (player.points < shopItem.cost)
     error(403, "You do not have enough points to buy this item");
 

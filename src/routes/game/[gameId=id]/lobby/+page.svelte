@@ -6,6 +6,7 @@
   import { getChannel } from "$lib/ably-client";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import Kickable from "$lib/Kickable.svelte";
 
   export let data;
 
@@ -24,6 +25,11 @@
   );
   let isHost = players[data.userId].isHost;
 
+  function leavePlayer(userId: number) {
+    delete players[userId];
+    players = players; // Trigger reactivity
+  }
+
   const lobbyMessage = getChannel("game:" + $page.params.gameId + ":lobby");
   $: if ($lobbyMessage) {
     switch ($lobbyMessage.name) {
@@ -38,17 +44,26 @@
         };
         break;
       case "leave":
-        delete players[$lobbyMessage.data.userId];
-        players = players; // Trigger reactivity
+        leavePlayer($lobbyMessage.data.userId);
         break;
-      case "host":
+      case "host": {
         const userId = $lobbyMessage.data.userId;
         players[userId].isHost = true;
         if (userId == data.userId) {
           isHost = true;
-          alert("The previous host left the game, so you have been assigned as the new host!");
+          alert(
+            "The previous host left the game, so you have been assigned as the new host!",
+          );
         }
+      }
     }
+  }
+
+  const announcement = getChannel(
+    "game:" + $page.params.gameId + ":announcements",
+  );
+  $: if ($announcement?.name == "kick") {
+    leavePlayer($announcement.data.userId);
   }
 
   function isOnlyHost() {
@@ -83,15 +98,35 @@
     </div>
     <ul>
       {#each Object.entries(players) as [id, player]}
-        <li class:host={player.isHost} class:current-user={data.userId === +id}>
-          <img
-            width="32"
-            height="32"
-            src={player.picture}
-            alt="{player.name}'s picture"
-          />
-          <span>{player.name}</span>
-        </li>
+        {#if isHost && data.userId !== +id && !player.isHost}
+          <li>
+            <Kickable userId={+id}>
+              <div class="player-container">
+                <img
+                  width="32"
+                  height="32"
+                  src={player.picture}
+                  alt="{player.name}'s picture"
+                />
+                <span>{player.name}</span>
+              </div>
+            </Kickable>
+          </li>
+        {:else}
+          <li
+            class="player-container"
+            class:host={player.isHost}
+            class:current-user={data.userId === +id}
+          >
+            <img
+              width="32"
+              height="32"
+              src={player.picture}
+              alt="{player.name}'s picture"
+            />
+            <span>{player.name}</span>
+          </li>
+        {/if}
       {/each}
     </ul>
   </div>
@@ -137,7 +172,9 @@
   li {
     list-style-type: none;
     padding: 5px 0;
-    position: relative;
+  }
+
+  .player-container {
     display: flex;
     align-items: center;
     font-size: 24px;

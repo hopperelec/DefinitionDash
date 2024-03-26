@@ -8,13 +8,14 @@ export const load = async ({ params, locals }) => {
     where: { id: playerId },
     select: {
       isHost: true,
-      user: { select: { id: true } },
       game: {
         select: {
           players: {
+            where: { kicked: false },
             select: {
               user: { select: { id: true, name: true } },
               points: true,
+              isHost: true,
             },
           },
         },
@@ -27,11 +28,14 @@ export const load = async ({ params, locals }) => {
       "An unexpected error occurred while trying to retrieve your player data",
     );
   return {
-    userId: ret.user.id,
+    userId: locals.user.id,
     isHost: ret.isHost,
     players: ret.game.players.map((player) => {
       return {
         points: player.points,
+        kickable: ret.isHost
+          ? !player.isHost && player.user.id != locals.user.id
+          : undefined,
         ...player.user,
       };
     }),

@@ -13,9 +13,7 @@ async function startGame(gameId: number) {
 export const GET = async ({ params, locals }) => {
   const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
-    where: {
-      userId_gameId: { userId: locals.user.id, gameId },
-    },
+    where: { userId_gameId: { userId: locals.user.id, gameId } },
     select: {
       isHost: true,
       game: { select: { state: true } },

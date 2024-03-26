@@ -5,7 +5,10 @@ import { moveRoom } from "$lib/server/ably-server";
 export const POST = async ({ request, params, locals }) => {
   const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
-    where: { userId_gameId: { userId: locals.user.id, gameId } },
+    where: {
+      userId_gameId: { userId: locals.user.id, gameId },
+      kicked: false,
+    },
     select: {
       id: true,
       currQuestion: { select: { answerRegex: true } },

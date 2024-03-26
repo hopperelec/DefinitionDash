@@ -57,9 +57,12 @@ export default async function getPlayerId(
     select: {
       id: true,
       game: { select: { state: true } },
+      kicked: true,
     },
   });
   if (player) {
+    if (player.kicked) error(403, "You've been kicked from this game!");
+    /* eslint-disable no-fallthrough */
     switch (player.game.state) {
       case "LOBBY":
         redirect(303, "/game/" + gameId + "/lobby/");
@@ -68,6 +71,7 @@ export default async function getPlayerId(
       case "ENDED":
         redirect(301, "/game/" + gameId + "/end/");
     }
+    /* eslint-enable no-fallthrough */
   }
   return await addPlayer(gameId, user);
 }

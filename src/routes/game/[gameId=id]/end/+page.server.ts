@@ -16,9 +16,7 @@ async function endGame(gameId: number) {
 export const load = async ({ params, locals }) => {
   const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
-    where: {
-      userId_gameId: { userId: locals.user.id, gameId },
-    },
+    where: { userId_gameId: { userId: locals.user.id, gameId } },
     select: {
       isHost: true,
       points: true,

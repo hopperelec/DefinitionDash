@@ -13,6 +13,7 @@ export const load = async ({ params, locals }) => {
         select: {
           map: { select: { id: true, imgURL: true } },
           players: {
+            where: { kicked: false },
             select: {
               user: { select: { id: true, picture: true } },
               currRoom: { select: { svgRef: true } },

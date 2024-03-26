@@ -12,6 +12,7 @@ export const load = async ({ params, locals, url }) => {
     where: {
       userId_gameId: { userId: locals.user.id, gameId: +params.gameId },
       game: { state: "ONGOING" },
+      kicked: false,
     },
     select: {
       id: true,
