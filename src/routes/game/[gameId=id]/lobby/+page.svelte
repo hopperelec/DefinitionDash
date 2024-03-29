@@ -92,7 +92,7 @@
       </button>
     </div>
     <ul>
-      {#each Object.entries(players) as [id, player]}
+      {#each Object.values(players) as player}
         <li>
           <KickablePlayerLabel
             currentUserId={data.userId}
