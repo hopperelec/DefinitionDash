@@ -48,11 +48,13 @@
 <div id="end-container">
   <h2>Game over!</h2>
   <p>You {getCardinal(data.leaderboardPosition)}!</p>
-  <div id="leaderboard-container">
-    <Leaderboard currentUserId={data.userId} orderedPlayers={data.players} />
-  </div>
-  <div id="map-container">
-    <SVGMap bind:this={map} imgURL={data.mapImgURL} onSuccess={onMapSuccess} />
+  <div id="center-container">
+    <div id="leaderboard-container">
+      <Leaderboard currentUserId={data.userId} orderedPlayers={data.players} />
+    </div>
+    <div id="map-container">
+      <SVGMap bind:this={map} imgURL={data.mapImgURL} onSuccess={onMapSuccess} />
+    </div>
   </div>
   <a class="button" href="/game">New game</a>
 </div>
@@ -70,10 +72,9 @@
 <style>
   #end-container {
     height: 100vh;
-    display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr) auto;
-    grid-template-columns: 1fr 1fr;
-    place-items: center center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   h2 {
@@ -81,22 +82,66 @@
     margin: 0;
   }
 
-  h2,
-  p,
-  a {
-    grid-column: 1 / 3;
+  p {
+    margin-top: 0;
+  }
+
+  #center-container {
+    flex-grow: 1;
+    width: 100%;
+    display: grid;
+    place-items: center;
+
+    & > * {
+      box-sizing: border-box;
+    }
+  }
+
+  #center-container, #leaderboard-container {
+    /* Prevent overflow */
+    min-height: 0;
+    max-height: 100%;
   }
 
   #map-container {
     width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: auto;
   }
 
   #leaderboard-container {
-    max-height: 100%;
     display: flex;
     flex-direction: column;
+  }
+
+  @media (aspect-ratio > 1) {
+    #center-container {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    #leaderboard-container {
+      padding-right: 15px;
+    }
+
+    #map-container {
+      padding-left: 15px;
+    }
+  }
+
+  @media (aspect-ratio < 1) {
+    #center-container {
+      grid-template-rows: 1fr 1fr;
+    }
+
+    #leaderboard-container {
+      padding-bottom: 15px;
+    }
+
+    #map-container {
+      padding-top: 15px;
+    }
   }
 </style>
