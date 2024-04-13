@@ -53,7 +53,11 @@
       <Leaderboard currentUserId={data.userId} orderedPlayers={data.players} />
     </div>
     <div id="map-container">
-      <SVGMap bind:this={map} imgURL={data.mapImgURL} onSuccess={onMapSuccess} />
+      <SVGMap
+        bind:this={map}
+        imgURL={data.mapImgURL}
+        onSuccess={onMapSuccess}
+      />
     </div>
   </div>
   <a class="button" href="/game">New game</a>
@@ -97,7 +101,8 @@
     }
   }
 
-  #center-container, #leaderboard-container {
+  #center-container,
+  #leaderboard-container {
     /* Prevent overflow */
     min-height: 0;
     max-height: 100%;
