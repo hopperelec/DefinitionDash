@@ -24,7 +24,7 @@
           picture: $positionsMessage.data.picture,
           currSvgRef: $positionsMessage.data.svgRef,
         };
-        // fallthrough
+      // fallthrough
       case "move":
         const svgRef = $positionsMessage.data.svgRef;
         if (!data.claimedRooms.includes(svgRef)) {
@@ -32,12 +32,15 @@
           const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
           if (pointIcon) map.removeIcon(pointIcon);
         }
-        movePlayer($positionsMessage.data.userId, $positionsMessage.data.svgRef);
+        movePlayer(
+          $positionsMessage.data.userId,
+          $positionsMessage.data.svgRef,
+        );
         break;
 
       case "unclaim":
         data.claimedRooms = data.claimedRooms.filter(
-          (claimedRoom) => !$positionsMessage.data.includes(claimedRoom)
+          (claimedRoom) => !$positionsMessage.data.includes(claimedRoom),
         );
         for (const svgRef of $positionsMessage.data) {
           addPointIcon(svgRef);
