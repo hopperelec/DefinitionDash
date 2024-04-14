@@ -18,19 +18,31 @@
     "game:" + $page.params.gameId + ":positions",
   );
   $: if ($positionsMessage) {
-    if ($positionsMessage.name == "create") {
-      data.players[$positionsMessage.data.userId] = {
-        picture: $positionsMessage.data.picture,
-        currSvgRef: $positionsMessage.data.svgRef,
-      };
+    switch ($positionsMessage.name) {
+      case "create":
+        data.players[$positionsMessage.data.userId] = {
+          picture: $positionsMessage.data.picture,
+          currSvgRef: $positionsMessage.data.svgRef,
+        };
+        // fallthrough
+      case "move":
+        const svgRef = $positionsMessage.data.svgRef;
+        if (!data.claimedRooms.includes(svgRef)) {
+          data.claimedRooms.push(svgRef);
+          const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
+          if (pointIcon) map.removeIcon(pointIcon);
+        }
+        movePlayer($positionsMessage.data.userId, $positionsMessage.data.svgRef);
+        break;
+
+      case "unclaim":
+        data.claimedRooms = data.claimedRooms.filter(
+          (claimedRoom) => !$positionsMessage.data.includes(claimedRoom)
+        );
+        for (const svgRef of $positionsMessage.data) {
+          addPointIcon(svgRef);
+        }
     }
-    const svgRef = $positionsMessage.data.svgRef;
-    if (!data.claimedRooms.includes(svgRef)) {
-      data.claimedRooms.push(svgRef);
-      const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
-      if (pointIcon) map.removeIcon(pointIcon);
-    }
-    movePlayer($positionsMessage.data.userId, svgRef);
   }
 
   const playerMessage = getChannel(
@@ -51,6 +63,11 @@
       const icon = map.getElmWhere("user", userId) as SVGImageElement;
       if (icon) map.removeIcon(icon);
     }
+  }
+
+  function addPointIcon(svgRef: number) {
+    const icon = map.addIconTo(svgRef, POINT_ICON);
+    if (icon) icon.dataset.point = svgRef.toString();
   }
 
   function movePlayer(userId: number, svgRef: number) {
@@ -107,8 +124,7 @@
     for (const roomElm of map.getSVG().querySelectorAll("[data-room]")) {
       const svgRef = (roomElm as HTMLElement).dataset.room;
       if (svgRef && !data.claimedRooms.includes(+svgRef)) {
-        const icon = map.addIconTo(+svgRef, POINT_ICON);
-        if (icon) icon.dataset.point = svgRef;
+        addPointIcon(+svgRef);
       }
     }
     doors = await fetch("/maps/" + data.map.id + "/doors")

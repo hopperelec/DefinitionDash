@@ -75,6 +75,6 @@ export async function unclaimRooms(
   });
   ablyServer.channels.get("game:" + gameId + ":positions").publish(
     "unclaim",
-    rooms.map((room) => room.svgRef),
+    rooms.map((room) => Number(room.svgRef)),
   );
 }

@@ -131,8 +131,10 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
   // actionParams is an integer number of rooms (e.g: "5" -> unclaim 5 rooms)
   unclaimAbsoluteRooms: async ({ gameId, actionParams }) => {
     const rooms: { roomId: bigint; svgRef: bigint }[] = await prisma.$queryRaw`
-        SELECT roomId
+        SELECT roomId,Room.svgRef
         FROM ClaimedRoom
+          INNER JOIN Room
+            ON Room.id = roomId
         WHERE gameId = ${gameId}
         ORDER BY rand()
         LIMIT ${+actionParams}`;
@@ -143,8 +145,10 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
   // actionParams is a float percentage (e.g: "50" -> unclaim 50% of rooms)
   unclaimPercentageRooms: async ({ gameId, actionParams }) => {
     const rooms: { roomId: bigint; svgRef: bigint }[] = await prisma.$queryRaw`
-        SELECT roomId
+        SELECT roomId,Room.svgRef
         FROM ClaimedRoom
+          INNER JOIN Room
+            ON Room.id = roomId
         WHERE gameId = ${gameId}
         ORDER BY rand()`;
     if (rooms.length === 0) error(500, "No rooms available to unclaim!");
