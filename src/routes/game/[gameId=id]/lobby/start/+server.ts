@@ -7,7 +7,10 @@ async function startGame(gameId: number) {
     where: { id: gameId },
     data: { state: "ONGOING" },
   });
-  ablyServer.channels.get("game:" + gameId + ":lobby").publish("start", null);
+  ablyServer.channels
+    .get("game:" + gameId + ":lobby")
+    .publish("start", null)
+    .then();
 }
 
 export const GET = async ({ params, locals }) => {

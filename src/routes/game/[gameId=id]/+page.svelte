@@ -25,7 +25,7 @@
           currSvgRef: $positionsMessage.data.svgRef,
         };
       // fallthrough
-      case "move":
+      case "move": {
         const svgRef = $positionsMessage.data.svgRef;
         if (!data.claimedRooms.includes(svgRef)) {
           data.claimedRooms.push(svgRef);
@@ -37,6 +37,7 @@
           $positionsMessage.data.svgRef,
         );
         break;
+      }
 
       case "unclaim":
         data.claimedRooms = data.claimedRooms.filter(

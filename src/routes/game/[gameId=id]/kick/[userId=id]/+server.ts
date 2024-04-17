@@ -33,6 +33,7 @@ export const POST = async ({ locals, params }) => {
   });
   ablyServer.channels
     .get("game:" + gameId + ":announcements")
-    .publish("kick", { userId: requestedUserId });
+    .publish("kick", { userId: requestedUserId })
+    .then();
   return new Response();
 };

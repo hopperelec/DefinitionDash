@@ -9,7 +9,8 @@ async function assignHost(gameId: number, userId: number) {
   });
   ablyServer.channels
     .get("game:" + gameId + ":lobby")
-    .publish("host", { userId });
+    .publish("host", { userId })
+    .then();
 }
 
 export const GET = async ({ params, locals }) => {
@@ -40,7 +41,8 @@ export const GET = async ({ params, locals }) => {
   });
   ablyServer.channels
     .get("game:" + gameId + ":lobby")
-    .publish("leave", { userId: locals.user.id });
+    .publish("leave", { userId: locals.user.id })
+    .then();
   if (
     player.game.players.length != 0 &&
     !player.game.players.some((player) => player.isHost)

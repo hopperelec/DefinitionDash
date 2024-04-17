@@ -10,7 +10,8 @@ async function endGame(gameId: number) {
   });
   ablyServer.channels
     .get("game:" + gameId + ":announcements")
-    .publish("end", null);
+    .publish("end", null)
+    .then();
 }
 
 export const load = async ({ params, locals }) => {
