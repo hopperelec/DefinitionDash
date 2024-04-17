@@ -12,10 +12,12 @@ export function updateRealtimePoints(
 ) {
   ablyServer.channels
     .get("player:" + gameId + ":" + userId)
-    .publish("points", { points });
+    .publish("points", { points })
+    .then();
   ablyServer.channels
     .get("game:" + gameId + ":points")
-    .publish("points", { userId, points });
+    .publish("points", { userId, points })
+    .then();
 }
 
 export async function moveRoom(
@@ -60,7 +62,8 @@ export async function moveRoom(
     .publish("move", {
       userId: player.userId,
       svgRef: room.svgRef,
-    });
+    })
+    .then();
 }
 
 export async function unclaimRooms(
@@ -73,8 +76,11 @@ export async function unclaimRooms(
       roomId: { in: rooms.map((room) => Number(room.roomId)) },
     },
   });
-  ablyServer.channels.get("game:" + gameId + ":positions").publish(
-    "unclaim",
-    rooms.map((room) => Number(room.svgRef)),
-  );
+  ablyServer.channels
+    .get("game:" + gameId + ":positions")
+    .publish(
+      "unclaim",
+      rooms.map((room) => Number(room.svgRef)),
+    )
+    .then();
 }
