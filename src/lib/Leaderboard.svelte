@@ -26,8 +26,9 @@
 
   ol {
     font-size: 24px;
-    overflow-y: auto;
+    overflow: hidden auto;
     margin: 0 0 0 10px; /* Counter li padding */
+    max-width: min(500px, 100%);
   }
 
   li {

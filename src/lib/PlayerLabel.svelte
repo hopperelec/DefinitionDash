@@ -18,8 +18,13 @@
     src={player.picture || DEFAULT_USER_ICON}
     width="32"
   />
-  <span>{name}</span>
-  {#if player.points}<span> - </span><span>{player.points} points</span>{/if}
+  <span>
+    <span class="name" title={name}>{name}</span>
+    {#if player.points !== undefined}
+      <span class="separator">-</span>
+      <span>{player.points} points</span>
+    {/if}
+  </span>
 </div>
 
 <style>
@@ -28,6 +33,7 @@
     vertical-align: middle;
     align-items: center;
     font-size: 24px;
+    max-width: 100%;
 
     & > img {
       clip-path: inset(0% round 50%);
@@ -36,10 +42,21 @@
     & > span {
       margin-left: 10px;
       margin-right: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+      /* Prevent overflow */
+      display: flex;
+      min-width: 0;
       white-space: nowrap;
     }
+  }
+
+  .name {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .separator {
+    padding: 0 10px;
   }
 
   .host {

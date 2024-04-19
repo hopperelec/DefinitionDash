@@ -97,6 +97,7 @@
     place-items: center;
 
     & > * {
+      min-width: 0;
       box-sizing: border-box;
     }
   }
@@ -120,11 +121,12 @@
   #leaderboard-container {
     display: flex;
     flex-direction: column;
+    max-width: 100%;
   }
 
   @media (aspect-ratio > 1) {
     #center-container {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     #leaderboard-container {
@@ -138,7 +140,7 @@
 
   @media (aspect-ratio < 1) {
     #center-container {
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
     }
 
     #leaderboard-container {

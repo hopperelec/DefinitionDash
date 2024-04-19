@@ -41,12 +41,12 @@
   <div id="definition-container">
     <input
       bind:value={answer}
-      use:focus
       class:shake={status === "incorrect"}
       disabled={status === "waiting"}
       on:keyup={onKeyUp}
       placeholder="Type answer here..."
       type="text"
+      use:focus
     />
     {#if data.wordClass}<p id="word-class">{data.wordClass}</p>{/if}
     <p id="definition">{data.definition}</p>
@@ -63,10 +63,12 @@
       border-bottom: 1px dashed darkgrey;
       height: 1em;
       font-weight: bold;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: inline-block;
       vertical-align: text-top;
+
+      /* Prevent overflow */
+      display: inline-block;
+      overflow-x: clip;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
   </style>
