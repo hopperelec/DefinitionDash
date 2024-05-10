@@ -17,6 +17,7 @@ async function addPlayer(
   });
   if (!game) error(403, "You do not have access to this game!");
   if (game.state == "LOBBY") redirect(303, "/game/" + gameId + "/lobby/");
+
   const spawnpoint = await chooseSpawnpoint(game.mapId);
   const newPlayer = await prisma.player.create({
     data: { userId: user.id, gameId, currRoomId: spawnpoint },
@@ -37,14 +38,18 @@ async function addPlayer(
       data: { gameId, roomId: spawnpoint },
     });
   }
+
+  // Initialize the player's realtime map position
   ablyServer.channels.get("game:" + gameId + ":positions").publish("create", {
     userId: user.id,
     picture: newPlayer.user.picture,
     svgRef: newPlayer.currRoom.svgRef,
   });
+  // Initialize the player's realtime points (for the leaderboard)
   ablyServer.channels
     .get("game:" + gameId + ":points")
     .publish("create", { userId: user.id, name: newPlayer.user.name });
+
   return newPlayer.id;
 }
 
@@ -73,5 +78,6 @@ export default async function getPlayerId(
     }
     /* eslint-enable no-fallthrough */
   }
+  // The player does not exist yet, so add them
   return await addPlayer(gameId, user);
 }
