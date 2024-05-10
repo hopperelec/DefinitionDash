@@ -36,11 +36,14 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
   error(403, "Only teachers can access this page!");
 }
 
+// Runs before every request
 export const handle: Handle = async ({ event, resolve }) => {
   let page = "";
 
   if (await isAuthorized(event)) {
+    // The user is signed in; return the requested page
     return resolve(event, {
+      // Minify the page
       transformPageChunk: ({ html, done }) => {
         page += html;
         if (done) {
@@ -49,6 +52,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       },
     });
   }
+  // The user isn't signed in; redirect them to the login page
   return new Response("Redirect", {
     status: 303,
     headers: { Location: "/login" },
