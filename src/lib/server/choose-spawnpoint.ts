@@ -1,6 +1,7 @@
 import prisma from "$lib/server/prisma";
 
 export default async function chooseSpawnpoint(mapId: number) {
+  // Prisma doesn't support server-side rand, so I use a raw query to avoid unnecessarily selecting all the data
   const room: { id: bigint }[] = await prisma.$queryRaw`
     SELECT id
     FROM Room

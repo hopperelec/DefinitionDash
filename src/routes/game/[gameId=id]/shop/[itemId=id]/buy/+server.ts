@@ -30,6 +30,8 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
         500,
         "An unexpected error occurred while trying to retrieve your player data",
       );
+
+    // Prisma doesn't support server-side rand, so I use a raw query to avoid unnecessarily selecting all the data
     const rooms: {
       id: bigint;
       svgRef: bigint;
@@ -43,6 +45,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
         500,
         "An unexpected error occurred while trying to choose a room to teleport you to",
       );
+
     await movePlayerToRoom(
       {
         id: playerId,
@@ -68,6 +71,8 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
         500,
         "An unexpected error occurred while trying to retrieve your player data",
       );
+
+    // Prisma doesn't support server-side rand, so I use a raw query to avoid unnecessarily selecting all the data
     const randPlayers: {
       id: bigint;
       userId: bigint;
@@ -84,6 +89,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
     if (randPlayers.length === 0)
       error(403, "There are no other players in this game!");
     const randPlayer = randPlayers[0];
+
     await movePlayerToRoom(
       {
         id: playerId,
@@ -107,6 +113,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 
   // actionParams is an integer number of points to subtract
   subtractRandPlayerPoints: async ({ playerId, gameId, actionParams }) => {
+    // Prisma doesn't support server-side rand, so I use a raw query to avoid unnecessarily selecting all the data
     const randPlayers: {
       id: bigint;
       userId: bigint;
@@ -130,6 +137,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 
   // actionParams is an integer number of rooms (e.g: "5" -> unclaim 5 rooms)
   unclaimAbsoluteRooms: async ({ gameId, actionParams }) => {
+    // Prisma doesn't support server-side rand, so I use a raw query
     const rooms: { roomId: bigint; svgRef: bigint }[] = await prisma.$queryRaw`
         SELECT roomId,Room.svgRef
         FROM ClaimedRoom
@@ -144,6 +152,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 
   // actionParams is a float percentage (e.g: "50" -> unclaim 50% of rooms)
   unclaimPercentageRooms: async ({ gameId, actionParams }) => {
+    // Prisma doesn't support server-side rand, so I use a raw query
     const rooms: { roomId: bigint; svgRef: bigint }[] = await prisma.$queryRaw`
         SELECT roomId,Room.svgRef
         FROM ClaimedRoom
