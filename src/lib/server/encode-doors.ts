@@ -1,5 +1,6 @@
 import type { LocalDoor } from "$lib/types";
 
+// Gets the largest key in an object with numeric keys
 function getMaxNumericKey(obj: { [key: number]: unknown }) {
   return +Object.keys(obj).reduce((a, b) => (+a > +b ? a : b));
 }
@@ -8,6 +9,11 @@ function calcBitsNeededToStore(value: number) {
   return Math.ceil(Math.log2(value + 1));
 }
 
+// Converts a one-to-many number object to an array of numbers
+// The array of numbers is split into groups separated by 0
+// The first number of each group is a key from the object
+// All the following numbers in the group are the corresponding values
+// e.g: flattenOneToMany({ 1: [2, 3], 2: [4, 3]}) --> [1, 2, 3, 0, 2, 4, 3]
 function* flattenOneToMany(oneToMany: { [key: number]: number[] }) {
   const entries = Object.entries(oneToMany);
   for (let i = 0; i < entries.length; i++) {
