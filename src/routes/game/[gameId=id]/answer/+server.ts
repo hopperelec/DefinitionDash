@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
-import { moveRoom } from "$lib/server/ably-server";
+import { movePlayerToRoom } from "$lib/server/ably-server";
 
 export const POST = async ({ request, params, locals }) => {
   const gameId = +params.gameId;
@@ -44,7 +44,7 @@ export const POST = async ({ request, params, locals }) => {
         currMove: { disconnect: true },
       },
     });
-    await moveRoom(
+    await movePlayerToRoom(
       {
         id: player.id,
         userId: locals.user.id,

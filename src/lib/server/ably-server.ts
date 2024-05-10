@@ -10,17 +10,20 @@ export function updateRealtimePoints(
   userId: number,
   points: number,
 ) {
+  // Player-specific channel, currently used on shop page
   ablyServer.channels
     .get("player:" + gameId + ":" + userId)
     .publish("points", { points })
     .then();
+
+  // Game channel, used on game page and leaderboard page
   ablyServer.channels
     .get("game:" + gameId + ":points")
     .publish("points", { userId, points })
     .then();
 }
 
-export async function moveRoom(
+export async function movePlayerToRoom(
   player: {
     id: number;
     userId: number;
@@ -39,6 +42,7 @@ export async function moveRoom(
     canClaimRoom = !claimedRoom;
   }
   if (canClaimRoom) {
+    // Move player, award a point to the player and claim the room in database
     const newPlayerData = await prisma.player.update({
       where: { id: player.id },
       data: {
@@ -52,11 +56,14 @@ export async function moveRoom(
     });
     updateRealtimePoints(player.gameId, player.userId, newPlayerData.points);
   } else {
+    // Just move player in database
     await prisma.player.update({
       where: { id: player.id },
       data: { currRoomId: room.id },
     });
   }
+
+  // Announce the movement in realtime
   ablyServer.channels
     .get("game:" + player.gameId + ":positions")
     .publish("move", {
@@ -70,12 +77,15 @@ export async function unclaimRooms(
   gameId: number,
   rooms: { roomId: bigint; svgRef: bigint }[],
 ) {
+  // Unclaim in database
   await prisma.claimedRoom.deleteMany({
     where: {
       gameId,
       roomId: { in: rooms.map((room) => Number(room.roomId)) },
     },
   });
+
+  // Unclaim in realtime
   ablyServer.channels
     .get("game:" + gameId + ":positions")
     .publish(
