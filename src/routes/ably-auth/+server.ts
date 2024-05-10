@@ -2,6 +2,8 @@ import ablyServer from "$lib/server/ably-server";
 import { error, json } from "@sveltejs/kit";
 import prisma from "$lib/server/prisma";
 
+// Authenticates a user with Ably by returning a "token request" which the
+// client can use to request an Ably token via the Ably API
 export const GET = async ({ locals }) => {
   const userData = await prisma.user.findUnique({
     where: { id: locals.user.id },
