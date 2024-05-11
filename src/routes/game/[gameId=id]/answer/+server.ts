@@ -39,6 +39,8 @@ export const POST = async ({ request, params, locals }) => {
     "i",
   ).test(await request.text());
   if (correct) {
+    // Clear the player's currQuestion and currMove
+    // because they are no longer currently answering a question
     await prisma.player.update({
       where: { id: player.id },
       data: {
