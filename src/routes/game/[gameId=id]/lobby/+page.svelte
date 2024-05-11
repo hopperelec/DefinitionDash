@@ -10,6 +10,7 @@
 
   export let data;
 
+  // Restructure loaded players data to be keyed by ID
   let players = data.players.reduce(
     (acc, player) => {
       acc[player.id] = player;
@@ -24,6 +25,7 @@
     players = players; // Trigger reactivity
   }
 
+  // Listen for realtime lobby events
   const lobbyMessage = getChannel("game:" + $page.params.gameId + ":lobby");
   $: if ($lobbyMessage) {
     switch ($lobbyMessage.name) {
