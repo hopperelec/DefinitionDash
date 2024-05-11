@@ -7,7 +7,7 @@
   export let data;
   const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
   let map: SVGMap;
-  let _firstRoom: number = 0;
+  let firstRoom: number = 0;
 
   function drawLine(svgRef1: number, svgRef2: number) {
     const firstRoomCenter = map.getCenterOf(svgRef1);
@@ -27,31 +27,35 @@
   }
 
   async function onClickRoom(clickedRoom: number) {
-    if (!_firstRoom) {
-      _firstRoom = clickedRoom;
+    if (!firstRoom) {
+      firstRoom = clickedRoom;
     } else {
-      const svgRef1 = Math.min(_firstRoom, clickedRoom);
-      const svgRef2 = Math.max(_firstRoom, clickedRoom);
+      const svgRef1 = Math.min(firstRoom, clickedRoom);
+      const svgRef2 = Math.max(firstRoom, clickedRoom);
       if (lines[svgRef1] && lines[svgRef1][svgRef2]) {
+        // Delete the door
         lines[svgRef1][svgRef2].remove();
         delete lines[svgRef1][svgRef2];
         await fetch(svgRef1 + "/" + svgRef2, {
           method: "DELETE",
         });
-      } else if (clickedRoom !== _firstRoom) {
+      } else if (clickedRoom !== firstRoom) {
+        // Create the door
         drawLine(svgRef1, svgRef2);
         await fetch(svgRef1 + "/" + svgRef2, {
           method: "PUT",
         });
       }
-      _firstRoom = 0;
+      firstRoom = 0;
     }
   }
 
   async function onMapLoad() {
+    // Load current maps data
     const doors = await fetch("/maps/" + $page.params.mapId + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
+    // Draw doors as lines between rooms
     for (const [svgRef1, svgRef2s] of Object.entries(doors)) {
       for (const svgRef2 of svgRef2s) {
         drawLine(+svgRef1, svgRef2);
