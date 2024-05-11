@@ -170,6 +170,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 };
 
 export const GET = async ({ params, locals }) => {
+  // Ensure the player is able to buy the requested item
   const gameId = +params.gameId;
   const player = await prisma.player.findUnique({
     where: {
@@ -191,7 +192,7 @@ export const GET = async ({ params, locals }) => {
   if (!shopItem) error(404, "This item does not exist!");
   if (player.points < shopItem.cost)
     error(403, "You do not have enough points to buy this item");
-
+  // Run action associated with the requested item
   const actionParts = shopItem.action.split("/", 2);
   const action = ACTIONS[actionParts[0]];
   if (!action)
@@ -208,6 +209,7 @@ export const GET = async ({ params, locals }) => {
     itemCost: shopItem.cost,
     actionParams: actionParts[1],
   });
+  // If the action works successfully, deduct the cost of the item from the player
   await prisma.player.update({
     where: { id: player.id },
     data: { points: { decrement: shopItem.cost } },
