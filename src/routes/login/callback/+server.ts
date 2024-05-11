@@ -11,6 +11,7 @@ import { SESSION_COOKIE_KEY, SESSION_DURATION_DAYS } from "$lib/constants";
 export const POST: RequestHandler = async ({ request, cookies }) => {
   const params = new URLSearchParams(await request.text());
 
+  // Ensure the user signed in successfully
   const token = params.get("credential");
   if (!token) error(400, "No credential passed");
   const csrfCookie = params.get("g_csrf_token");
@@ -27,6 +28,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   const payload = ticket.getPayload();
   if (!payload) error(400, "Failed to verify ID token");
 
+  // Create user if they don't exist and update their data if they do
   const domain = payload.hd || ALLOWED_DOMAIN;
   const user = await prisma.user.upsert({
     where: { googleSub: payload.sub },
@@ -46,6 +48,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     select: { id: true },
   });
 
+  // Create session
   const sessionUUID: string = crypto.randomUUID();
   const expiry = new Date();
   expiry.setDate(expiry.getDate() + SESSION_DURATION_DAYS);
@@ -53,6 +56,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     data: { userId: user.id, uuidBin: toBuffer(sessionUUID), expires: expiry },
   });
 
+  // Save session to ccookies
   cookies.set(SESSION_COOKIE_KEY, sessionUUID, {
     path: "/",
     httpOnly: true,
@@ -60,6 +64,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     maxAge: 60 * 60 * 24 * SESSION_DURATION_DAYS,
   });
 
+  // Redirect to home page
   return new Response("Redirect", {
     status: 303,
     headers: { Location: "/" },
