@@ -32,6 +32,8 @@ export const POST = async ({ request, params, locals }) => {
       500,
       "An unexpected error occurred while trying to get the room you were trying to move to",
     );
+
+  // Use answerRegex to check if the answer is correct
   const correct = new RegExp(
     "^" + player.currQuestion.answerRegex + "$",
     "i",
