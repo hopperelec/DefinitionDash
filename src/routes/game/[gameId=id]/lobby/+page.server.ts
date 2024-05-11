@@ -28,6 +28,7 @@ export const load = async ({ params, locals }) => {
     (player) => player.user.id == locals.user.id,
   )[0];
   if (!self) {
+    // The user is not in this game yet, so add them
     const spawnpoint = await chooseSpawnpoint(game.mapId);
     await prisma.player.create({
       data: {
@@ -42,6 +43,7 @@ export const load = async ({ params, locals }) => {
       picture: locals.user.picture,
     };
     game.players.push({ isHost: false, kicked: false, user });
+    // Add player in realtime
     ablyServer.channels
       .get("game:" + gameId + ":lobby")
       .publish("join", user)
