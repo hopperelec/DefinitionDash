@@ -5,6 +5,7 @@
 
   export let data;
 
+  // Listen for realtime announcements which need to be received on every page
   const announcement = getChannel(
     "game:" + $page.params.gameId + ":announcements",
   );
