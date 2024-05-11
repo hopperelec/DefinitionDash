@@ -24,7 +24,7 @@
     return "came " + position + suffix;
   }
 
-  function onMapSuccess() {
+  function onMapLoad() {
     // Add player icon for all players
     for (const player of data.players) {
       const icon = map.addIconTo(
@@ -57,7 +57,7 @@
       <SVGMap
         bind:this={map}
         imgURL={data.mapImgURL}
-        onSuccess={onMapSuccess}
+        onLoad={onMapLoad}
       />
     </div>
   </div>

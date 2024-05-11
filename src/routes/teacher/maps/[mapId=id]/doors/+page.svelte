@@ -48,7 +48,7 @@
     }
   }
 
-  async function onMapSuccess() {
+  async function onMapLoad() {
     const doors = await fetch("/maps/" + $page.params.mapId + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
@@ -65,7 +65,7 @@
     bind:this={map}
     imgURL={data.mapURL}
     {onClickRoom}
-    onSuccess={onMapSuccess}
+    onLoad={onMapLoad}
   />
 </div>
 

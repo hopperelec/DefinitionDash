@@ -106,7 +106,7 @@
   }
 
   export let imgURL: string | undefined;
-  export let onSuccess = () => {};
+  export let onLoad = () => {};
   export let onError = (message: string) => {
     (container || document.body).appendChild(
       document.createTextNode("Error: " + message),
@@ -147,7 +147,7 @@
             }
           });
         }
-        onSuccess();
+        onLoad();
       } else {
         onError("Invalid map! Must be SVG.");
       }

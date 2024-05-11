@@ -79,7 +79,7 @@
     // A position update could occur before the map has finished loading.
     // This is common for the player's own position after they answer a question
     // since they are redirected to this page before the new position is published
-    // If the map hasn't loaded yet, movePlayer will be called again in onMapSuccess.
+    // If the map hasn't loaded yet, movePlayer will be called again in onMapLoad.
     if (map) {
       const prevIcon = map.getElmWhere("user", userId) as SVGImageElement;
       if (prevIcon) map.removeIcon(prevIcon);
@@ -121,7 +121,7 @@
     }
   }
 
-  async function onMapSuccess() {
+  async function onMapLoad() {
     for (const [userId, player] of Object.entries(data.players)) {
       movePlayer(+userId, player.currSvgRef);
     }
@@ -166,7 +166,7 @@
       bind:this={map}
       imgURL={data.map.imgURL}
       {onClickRoom}
-      onSuccess={onMapSuccess}
+      onLoad={onMapLoad}
     />
   </div>
 </div>
