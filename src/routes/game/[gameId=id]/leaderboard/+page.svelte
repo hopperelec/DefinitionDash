@@ -7,6 +7,7 @@
 
   export let data;
 
+  // Restructure loaded players data to be keyed by ID
   let players = data.players.reduce(
     (acc, player) => {
       acc[player.id] = player;
@@ -18,6 +19,7 @@
     (a, b) => b.points - a.points,
   );
 
+  // Listen for realtime points events
   const pointsMessage = getChannel("game:" + $page.params.gameId + ":points");
   $: if ($pointsMessage) {
     switch ($pointsMessage.name) {
@@ -33,6 +35,7 @@
     }
   }
 
+  // Listen for realtime kick events
   const announcement = getChannel(
     "game:" + $page.params.gameId + ":announcements",
   );
