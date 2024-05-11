@@ -14,6 +14,7 @@
   let ptsChangeContainer: HTMLElement;
   let doors: { [key: number]: number[] };
 
+  // Listen for realtime events involving positions on the map
   const positionsMessage = getChannel(
     "game:" + $page.params.gameId + ":positions",
   );
@@ -49,6 +50,7 @@
     }
   }
 
+  // Listen for the player's points changing in realtime
   const playerMessage = getChannel(
     "player:" + $page.params.gameId + ":" + data.userId,
   );
@@ -57,6 +59,7 @@
     data.currPoints = $playerMessage.data.points;
   }
 
+  // Listen for realtime kick events
   const announcement = getChannel(
     "game:" + $page.params.gameId + ":announcements",
   );
@@ -95,6 +98,7 @@
   }
 
   function canMoveTo(svgRef: number) {
+    // Check if there is a door between the room the player is currently in and the given room
     const svgRef1 = Math.min(data.players[data.userId].currSvgRef, svgRef);
     const svgRef2 = Math.max(data.players[data.userId].currSvgRef, svgRef);
     return doors[svgRef1] && doors[svgRef1].includes(svgRef2);
@@ -112,6 +116,7 @@
     elm.classList.add("pts-change");
     const rect = ptsIndicator.getBoundingClientRect();
     elm.style.left = `${rect.x + Math.floor(Math.random() * rect.width)}px`;
+    // Remove once animation has finished playing
     setTimeout(() => elm.remove(), 1000);
   }
 
@@ -122,18 +127,25 @@
   }
 
   async function onMapLoad() {
+    // Add player icons for all players
     for (const [userId, player] of Object.entries(data.players)) {
       movePlayer(+userId, player.currSvgRef);
     }
+
+    // Add point icons to all unclaimed rooms
     for (const roomElm of map.getSVG().querySelectorAll("[data-room]")) {
       const svgRef = (roomElm as HTMLElement).dataset.room;
       if (svgRef && !data.claimedRooms.includes(+svgRef)) {
         addPointIcon(+svgRef);
       }
     }
+
+    // Load doors data
     doors = await fetch("/maps/" + data.map.id + "/doors")
       .then((response) => response.arrayBuffer())
       .then(decodeDoors);
+
+    // Change the cursor to indicate if the player can move to the hovered room
     map.getSVG().addEventListener("mousemove", (event) => {
       const hoveredSvgRef = map.getEventRoom(event);
       map.getSVG().style.cursor = hoveredSvgRef

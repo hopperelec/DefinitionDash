@@ -25,7 +25,7 @@
   }
 
   function onMapLoad() {
-    // Add player icon for all players
+    // Add player icons for all players
     for (const player of data.players) {
       const icon = map.addIconTo(
         player.currSvgRef,
@@ -36,7 +36,7 @@
       }
     }
 
-    // Add point icon to all unclaimed rooms
+    // Add point icons to all unclaimed rooms
     for (const roomElm of map.getSVG().querySelectorAll("[data-room]")) {
       const svgRef = (roomElm as HTMLElement).dataset.room;
       if (svgRef && !data.claimedRooms.includes(+svgRef)) {
