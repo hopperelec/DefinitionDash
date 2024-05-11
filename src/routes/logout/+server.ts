@@ -12,6 +12,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
     });
     cookies.delete(SESSION_COOKIE_KEY, { path: "/" });
   }
+  // Redirect to login page
   return new Response("Redirect", {
     status: 303,
     headers: { Location: "/login" },
