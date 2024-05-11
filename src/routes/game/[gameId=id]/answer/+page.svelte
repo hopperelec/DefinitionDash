@@ -17,6 +17,7 @@
 
   async function onKeyUp(event: KeyboardEvent) {
     if (event.key == "Enter") {
+      // They entered an answer, check if it's correct
       status = "waiting";
       const res = await fetch("", { method: "POST", body: answer });
       const json = await res.json();
