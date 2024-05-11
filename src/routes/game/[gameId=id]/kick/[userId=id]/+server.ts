@@ -6,6 +6,7 @@ export const POST = async ({ locals, params }) => {
   const requestedUserId = +params.userId;
   if (requestedUserId == locals.user.id) error(403, "You can't kick yourself!");
 
+  // Ensure the requesting player can kick other players
   const gameId = +params.gameId;
   const requestingPlayer = await prisma.player.findUnique({
     where: {
@@ -18,6 +19,7 @@ export const POST = async ({ locals, params }) => {
   if (requestingPlayer.game.state == "ENDED")
     error(403, "You can't kick a player after the game has ended!");
 
+  // Ensure the requested player can be kicked
   const requestedPlayer = await prisma.player.findUnique({
     where: { userId_gameId: { userId: requestedUserId, gameId } },
     select: { isHost: true, kicked: true },
@@ -26,11 +28,13 @@ export const POST = async ({ locals, params }) => {
   if (requestedPlayer.isHost) error(403, "You can't kick a host!");
   if (requestedPlayer.kicked) error(403, "This player is already kicked");
 
+  // Kick requested player in the database
   await prisma.player.update({
     where: { userId_gameId: { userId: requestedUserId, gameId } },
     data: { kicked: true },
     select: { id: true },
   });
+  // Kick requested player in realtime
   ablyServer.channels
     .get("game:" + gameId + ":announcements")
     .publish("kick", { userId: requestedUserId })
