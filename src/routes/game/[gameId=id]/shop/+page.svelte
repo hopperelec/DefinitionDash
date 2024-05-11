@@ -5,6 +5,7 @@
 
   export let data;
 
+  // Listen for the player's points changing
   const playerMessage = getChannel(
     "player:" + $page.params.gameId + ":" + data.userId,
   );
