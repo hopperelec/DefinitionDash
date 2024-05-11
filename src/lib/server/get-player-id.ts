@@ -40,15 +40,19 @@ async function addPlayer(
   }
 
   // Initialize the player's realtime map position
-  ablyServer.channels.get("game:" + gameId + ":positions").publish("create", {
-    userId: user.id,
-    picture: newPlayer.user.picture,
-    svgRef: newPlayer.currRoom.svgRef,
-  });
+  ablyServer.channels
+    .get("game:" + gameId + ":positions")
+    .publish("create", {
+      userId: user.id,
+      picture: newPlayer.user.picture,
+      svgRef: newPlayer.currRoom.svgRef,
+    })
+    .then();
   // Initialize the player's realtime points (for the leaderboard)
   ablyServer.channels
     .get("game:" + gameId + ":points")
-    .publish("create", { userId: user.id, name: newPlayer.user.name });
+    .publish("create", { userId: user.id, name: newPlayer.user.name })
+    .then();
 
   return newPlayer.id;
 }

@@ -42,7 +42,7 @@ export async function movePlayerToRoom(
     canClaimRoom = !claimedRoom;
   }
   if (canClaimRoom) {
-    // Move player, award a point to the player and claim the room in database
+    // Move the player, award a point to the player and claim the room in the database
     const newPlayerData = await prisma.player.update({
       where: { id: player.id },
       data: {
@@ -56,7 +56,7 @@ export async function movePlayerToRoom(
     });
     updateRealtimePoints(player.gameId, player.userId, newPlayerData.points);
   } else {
-    // Just move player in database
+    // Just move the player in the database
     await prisma.player.update({
       where: { id: player.id },
       data: { currRoomId: room.id },
@@ -77,7 +77,7 @@ export async function unclaimRooms(
   gameId: number,
   rooms: { roomId: bigint; svgRef: bigint }[],
 ) {
-  // Unclaim in database
+  // Unclaim in the database
   await prisma.claimedRoom.deleteMany({
     where: {
       gameId,
