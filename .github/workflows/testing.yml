@@ -10,11 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install --frozen-lockfile
       - run: npm run test:unit
   integration-test:
     runs-on: ubuntu-latest
@@ -25,10 +22,7 @@ jobs:
       ALLOWED_DOMAIN: example.com
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npm run test:integration
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps
+      - run: bun run test:integration
