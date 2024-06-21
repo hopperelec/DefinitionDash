@@ -10,6 +10,7 @@ import type { PageData } from "./$types";
 export let data: PageData;
 let map: SVGMap;
 
+// won, came 1st, came 2nd, came 3rd, came 4th...
 function getCardinal(position: number) {
 	if (position === 1) {
 		return "won";
@@ -27,7 +28,7 @@ function getCardinal(position: number) {
 	return `came ${position}${suffix}`;
 }
 
-function onMapSuccess() {
+function onMapLoad() {
 	for (const player of data.players) {
 		const icon = map.addIconTo(
 			player.currSvgRef,
@@ -58,7 +59,7 @@ function onMapSuccess() {
 			<SVGMapComponent
 				bind:this={map}
 				imgURL={data.mapImgURL}
-				onSuccess={onMapSuccess}
+				onLoad={onMapLoad}
 			/>
 		</div>
 	</div>

@@ -106,7 +106,7 @@ export function addIconTo(svgRef: number, iconSrc: string) {
 }
 
 export let imgURL: string | undefined;
-export let onSuccess = () => {};
+export let onLoad = () => {};
 export let onError = (message: string) => {
 	(container || document.body).appendChild(
 		document.createTextNode(`Error: ${message}`),
@@ -147,7 +147,7 @@ onMount(async () => {
 					}
 				});
 			}
-			onSuccess();
+			onLoad();
 		} else {
 			onError("Invalid map! Must be SVG.");
 		}
@@ -158,21 +158,21 @@ onMount(async () => {
 </script>
 
 <div bind:this={container} id="map-container">
-  <p>Loading map...</p>
+	<p>Loading map...</p>
 </div>
 
 <svelte:head>
-  <link as="fetch" crossorigin="anonymous" href={imgURL} rel="preload" />
-  <style>
-    #map-container > svg {
-      height: 100%;
-    }
+	<link as="fetch" crossorigin="anonymous" href={imgURL} rel="preload" />
+	<style>
+		#map-container > svg {
+			height: 100%;
+		}
 
-    [data-label-for],
-    [data-icon-for] {
-      pointer-events: none;
-    }
-  </style>
+		[data-label-for],
+		[data-icon-for] {
+			pointer-events: none;
+		}
+	</style>
 </svelte:head>
 
 <style lang="scss">

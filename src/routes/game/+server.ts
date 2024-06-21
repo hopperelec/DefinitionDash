@@ -3,6 +3,7 @@ import getAnyMapFor from "$lib/server/get-any-map-for";
 import prisma from "$lib/server/prisma";
 import { redirect } from "@sveltejs/kit";
 
+// Creates a new game+player and redirects the user to it
 export const GET = async ({ locals }) => {
 	const map = await getAnyMapFor(locals.user.schoolId);
 	const spawnpoint = await chooseSpawnpoint(map.id);

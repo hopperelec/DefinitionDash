@@ -9,7 +9,7 @@ import type { PageData } from "./$types";
 export let data: PageData;
 const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
 let map: SVGMap;
-let _firstRoom = 0;
+let firstRoom = 0;
 
 function drawLine(svgRef1: number, svgRef2: number) {
 	const firstRoomCenter = map.getCenterOf(svgRef1);
@@ -29,28 +29,28 @@ function drawLine(svgRef1: number, svgRef2: number) {
 }
 
 async function onClickRoom(clickedRoom: number) {
-	if (!_firstRoom) {
-		_firstRoom = clickedRoom;
+	if (!firstRoom) {
+		firstRoom = clickedRoom;
 	} else {
-		const svgRef1 = Math.min(_firstRoom, clickedRoom);
-		const svgRef2 = Math.max(_firstRoom, clickedRoom);
+		const svgRef1 = Math.min(firstRoom, clickedRoom);
+		const svgRef2 = Math.max(firstRoom, clickedRoom);
 		if (lines[svgRef1]?.[svgRef2]) {
 			lines[svgRef1][svgRef2].remove();
 			delete lines[svgRef1][svgRef2];
 			await fetch(`${svgRef1}/${svgRef2}`, {
 				method: "DELETE",
 			});
-		} else if (clickedRoom !== _firstRoom) {
+		} else if (clickedRoom !== firstRoom) {
 			drawLine(svgRef1, svgRef2);
 			await fetch(`${svgRef1}/${svgRef2}`, {
 				method: "PUT",
 			});
 		}
-		_firstRoom = 0;
+		firstRoom = 0;
 	}
 }
 
-async function onMapSuccess() {
+async function onMapLoad() {
 	const doors = await fetch(`/maps/${$page.params.mapId}/doors`)
 		.then((response) => response.arrayBuffer())
 		.then(decodeDoors);
@@ -63,11 +63,11 @@ async function onMapSuccess() {
 </script>
 
 <div id="map-container">
-  <SVGMapComponent
+	<SVGMapComponent
 		bind:this={map}
 		imgURL={data.mapURL}
 		{onClickRoom}
-		onSuccess={onMapSuccess}
+		onLoad={onMapLoad}
 	/>
 </div>
 

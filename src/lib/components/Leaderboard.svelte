@@ -9,11 +9,11 @@ export let orderedPlayers: PlayerLabelProps[];
 
 <h3>Leaderboard</h3>
 <ol>
-  {#each orderedPlayers as player}
-    <li>
-      <KickablePlayerLabel {currentUserId} {allowKicking} {player} />
-    </li>
-  {/each}
+	{#each orderedPlayers as player}
+		<li>
+			<KickablePlayerLabel {currentUserId} {allowKicking} {player} />
+		</li>
+	{/each}
 </ol>
 
 <style>

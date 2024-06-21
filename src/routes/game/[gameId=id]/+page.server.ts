@@ -33,6 +33,8 @@ export const load = async ({ params, locals }) => {
 			500,
 			"An unexpected error occurred while trying to retrieve your player data",
 		);
+
+	// Restructure player data to be keyed by ID
 	type Opponents = {
 		[key: number]: {
 			picture: string | null;
@@ -46,6 +48,7 @@ export const load = async ({ params, locals }) => {
 			currSvgRef: player.currRoom.svgRef,
 		};
 	}
+
 	const props: {
 		players: Opponents;
 		map: { id: number; imgURL: string };

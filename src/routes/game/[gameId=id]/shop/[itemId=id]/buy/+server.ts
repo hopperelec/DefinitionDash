@@ -1,5 +1,5 @@
 import {
-	moveRoom,
+	movePlayerToRoom,
 	unclaimRooms,
 	updateRealtimePoints,
 } from "$lib/server/ably-server";
@@ -43,7 +43,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 				500,
 				"An unexpected error occurred while trying to choose a room to teleport you to",
 			);
-		await moveRoom(
+		await movePlayerToRoom(
 			{
 				id: playerId,
 				userId: user.id,
@@ -84,7 +84,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 		if (randPlayers.length === 0)
 			error(403, "There are no other players in this game!");
 		const randPlayer = randPlayers[0];
-		await moveRoom(
+		await movePlayerToRoom(
 			{
 				id: playerId,
 				userId: user.id,
@@ -95,7 +95,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 				svgRef: Number(randPlayer.svgRef),
 			},
 		);
-		await moveRoom(
+		await movePlayerToRoom(
 			{
 				id: Number(randPlayer.id),
 				userId: Number(randPlayer.userId),

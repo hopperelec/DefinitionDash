@@ -27,6 +27,7 @@ export const load = async ({ params, locals }) => {
 	if (!player) error(403, "You are not in this game!");
 	if (player.game.state === "LOBBY")
 		error(403, "You can't end a game from the lobby!");
+
 	if (player.game.state === "ONGOING") {
 		if (!player.isHost)
 			error(
@@ -35,6 +36,7 @@ export const load = async ({ params, locals }) => {
 			);
 		await endGame(gameId);
 	}
+
 	const ret = await prisma.game.findUnique({
 		where: { id: gameId },
 		select: {
@@ -53,6 +55,8 @@ export const load = async ({ params, locals }) => {
 				},
 				orderBy: { points: "desc" },
 			},
+			// Count the number of players with more points than this player
+			// (used to find leaderboardPosition)
 			_count: {
 				select: { players: { where: { points: { gt: player.points } } } },
 			},
@@ -63,6 +67,7 @@ export const load = async ({ params, locals }) => {
 			500,
 			"An unexpected error occurred while trying to retrieve the game data",
 		);
+
 	const props: {
 		mapImgURL: string;
 		leaderboardPosition: number;

@@ -11,6 +11,7 @@ import type { PageData } from "./$types";
 
 export let data: PageData;
 
+// Restructure loaded players data to be keyed by ID
 let players = data.players.reduce(
 	(acc, player) => {
 		acc[player.id] = player;

@@ -10,17 +10,19 @@ export function updateRealtimePoints(
 	userId: number,
 	points: number,
 ) {
+	// Player-specific channel, currently used on shop page
 	ablyServer.channels
 		.get(`player:${gameId}:${userId}`)
 		.publish("points", { points })
 		.then();
+	// Game channel, used on game page and leaderboard page
 	ablyServer.channels
 		.get(`game:${gameId}:points`)
 		.publish("points", { userId, points })
 		.then();
 }
 
-export async function moveRoom(
+export async function movePlayerToRoom(
 	player: {
 		id: number;
 		userId: number;

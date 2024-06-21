@@ -13,15 +13,15 @@ async function kickPlayer(userId: number) {
 </script>
 
 {#if allowKicking && player.id !== currentUserId && !player.isHost}
-  <button
-    on:click={async () => await kickPlayer(player.id)}
-    tabindex="0"
-    type="button"
-  >
-    <PlayerLabel {player} {currentUserId} />
-  </button>
+	<button
+		on:click={async () => await kickPlayer(player.id)}
+		tabindex="0"
+		type="button"
+	>
+		<PlayerLabel {player} {currentUserId} />
+	</button>
 {:else}
-  <PlayerLabel {player} {currentUserId} />
+	<PlayerLabel {player} {currentUserId} />
 {/if}
 
 <style>

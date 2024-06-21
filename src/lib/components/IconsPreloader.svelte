@@ -7,5 +7,5 @@ export let players: { picture: string | null }[];
 
 <PlayerPicturePreloader {players} />
 <svelte:head>
-  <link as="image" href={POINT_ICON} rel="preload" />
+	<link as="image" href={POINT_ICON} rel="preload" />
 </svelte:head>

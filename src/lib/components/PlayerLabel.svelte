@@ -8,23 +8,23 @@ let name = player.name || `User ${player.id}`;
 </script>
 
 <div
-  class:current-user={player.id === currentUserId}
-  class:host={player.isHost}
-  id="label-container"
+	class:current-user={player.id === currentUserId}
+	class:host={player.isHost}
+	id="label-container"
 >
-  <img
-    alt="{name}'s picture"
-    height="32"
-    src={player.picture || DEFAULT_USER_ICON}
-    width="32"
-  />
-  <span>
-    <span class="name" title={name}>{name}</span>
-    {#if player.points !== undefined}
-      <span class="separator">-</span>
-      <span>{player.points} points</span>
-    {/if}
-  </span>
+	<img
+		alt="{name}'s picture"
+		height="32"
+		src={player.picture || DEFAULT_USER_ICON}
+		width="32"
+	/>
+	<span>
+		<span class="name" title={name}>{name}</span>
+		{#if player.points !== undefined}
+			<span class="separator">-</span>
+			<span>{player.points} points</span>
+		{/if}
+	</span>
 </div>
 
 <style>

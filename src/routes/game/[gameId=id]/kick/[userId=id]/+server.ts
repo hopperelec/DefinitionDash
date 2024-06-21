@@ -7,6 +7,7 @@ export const POST = async ({ locals, params }) => {
 	if (requestedUserId === locals.user.id)
 		error(403, "You can't kick yourself!");
 
+	// Ensure the requesting player can kick other players
 	const gameId = +params.gameId;
 	const requestingPlayer = await prisma.player.findUnique({
 		where: {
@@ -19,6 +20,7 @@ export const POST = async ({ locals, params }) => {
 	if (requestingPlayer.game.state === "ENDED")
 		error(403, "You can't kick a player after the game has ended!");
 
+	// Ensure the requested player can be kicked
 	const requestedPlayer = await prisma.player.findUnique({
 		where: { userId_gameId: { userId: requestedUserId, gameId } },
 		select: { isHost: true, kicked: true },
