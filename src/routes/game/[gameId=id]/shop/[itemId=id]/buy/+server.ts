@@ -80,6 +80,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 						ON Room.id = Player.currRoomId
 				WHERE gameId = ${gameId}
 					AND Player.id <> ${playerId}
+					AND Player.kicked = false
 				ORDER BY rand() LIMIT 1`;
 		if (randPlayers.length === 0)
 			error(403, "There are no other players in this game!");
@@ -116,6 +117,7 @@ const ACTIONS: { [key: string]: (details: ActionDetails) => Promise<void> } = {
 				FROM Player
 				WHERE gameId = ${gameId}
 					AND Player.id <> ${playerId}
+          AND Player.kicked = false
 				ORDER BY rand() LIMIT 1`;
 		if (randPlayers.length === 0)
 			error(403, "There are no other players in this game!");
