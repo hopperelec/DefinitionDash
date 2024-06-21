@@ -25,7 +25,8 @@ import { PUBLIC_BASE_URL, PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
 		data-text="continue_with"
 		data-theme="outline"
 		data-type="standard"
-	></div>
+	>
+	</div>
 </main>
 
 <style>
