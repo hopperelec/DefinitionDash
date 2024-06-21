@@ -1,4 +1,3 @@
 {
-  "plugins": ["prettier-plugin-svelte", "prettier-plugin-prisma"],
-  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
+  "plugins": ["prettier-plugin-prisma"]
 }

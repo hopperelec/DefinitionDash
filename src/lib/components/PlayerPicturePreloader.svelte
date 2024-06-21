@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { DEFAULT_USER_ICON } from "$lib/constants.js";
+import { DEFAULT_USER_ICON } from "$lib/constants.js";
 
-  export let players: { picture: string | null }[];
+export let players: { picture: string | null }[];
 </script>
 
 <svelte:head>

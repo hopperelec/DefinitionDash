@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { PlayerLabelProps } from "$lib/types";
-  import { DEFAULT_USER_ICON } from "$lib/constants";
+import { DEFAULT_USER_ICON } from "$lib/constants";
+import type { PlayerLabelProps } from "$lib/types";
 
-  export let currentUserId: number;
-  export let player: PlayerLabelProps;
-  let name = player.name || "User " + player.id;
+export let currentUserId: number;
+export let player: PlayerLabelProps;
+let name = player.name || `User ${player.id}`;
 </script>
 
 <div
@@ -28,42 +28,42 @@
 </div>
 
 <style>
-  #label-container {
-    display: inline-flex;
-    vertical-align: middle;
-    align-items: center;
-    font-size: 24px;
-    max-width: 100%;
+#label-container {
+	display: inline-flex;
+	vertical-align: middle;
+	align-items: center;
+	font-size: 24px;
+	max-width: 100%;
 
-    & > img {
-      clip-path: inset(0% round 50%);
-    }
+	& > img {
+		clip-path: inset(0% round 50%);
+	}
 
-    & > span {
-      margin-left: 10px;
-      margin-right: 20px;
+	& > span {
+		margin-left: 10px;
+		margin-right: 20px;
 
-      /* Prevent overflow */
-      display: flex;
-      min-width: 0;
-      white-space: nowrap;
-    }
-  }
+		/* Prevent overflow */
+		display: flex;
+		min-width: 0;
+		white-space: nowrap;
+	}
+}
 
-  .name {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-  }
+.name {
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+}
 
-  .separator {
-    padding: 0 10px;
-  }
+.separator {
+	padding: 0 10px;
+}
 
-  .host {
-    color: orange;
-  }
+.host {
+	color: orange;
+}
 
-  .current-user {
-    color: blue;
-  }
+.current-user {
+	color: blue;
+}
 </style>

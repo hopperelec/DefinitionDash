@@ -1,12 +1,17 @@
-name: Linting
+name: Lint and format check
 
 on:
   push:
-    branches: "master"
   pull_request:
 
 jobs:
-  eslint:
+  biome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: biomejs/setup-biome@v2
+      - run: biome ci .
+  prisma-prettier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,7 +20,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run eslint
+      - run: npm run format-check:prisma-prettier
   stylelint:
     runs-on: ubuntu-latest
     steps:

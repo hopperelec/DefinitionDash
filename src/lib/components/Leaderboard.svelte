@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { PlayerLabelProps } from "$lib/types";
-  import KickablePlayerLabel from "$lib/components/KickablePlayerLabel.svelte";
+import KickablePlayerLabel from "$lib/components/KickablePlayerLabel.svelte";
+import type { PlayerLabelProps } from "$lib/types";
 
-  export let currentUserId: number;
-  export let allowKicking = false;
-  export let orderedPlayers: PlayerLabelProps[];
+export let currentUserId: number;
+export let allowKicking = false;
+export let orderedPlayers: PlayerLabelProps[];
 </script>
 
 <h3>Leaderboard</h3>
@@ -17,22 +17,22 @@
 </ol>
 
 <style>
-  h3 {
-    width: 100%;
-    margin: 0 10px;
-    text-align: center;
-    font-family: var(--default-font-family-bold);
-  }
+h3 {
+	width: 100%;
+	margin: 0 10px;
+	text-align: center;
+	font-family: var(--default-font-family-bold);
+}
 
-  ol {
-    font-size: 24px;
-    overflow: hidden auto;
-    margin: 0 0 0 10px; /* Counter li padding */
-    max-width: min(500px, 100%);
-  }
+ol {
+	font-size: 24px;
+	overflow: hidden auto;
+	margin: 0 0 0 10px; /* Counter li padding */
+	max-width: min(500px, 100%);
+}
 
-  li {
-    padding: 5px 0;
-    margin-right: 10px; /* Prevent overflow for Kickable hover */
-  }
+li {
+	padding: 5px 0;
+	margin-right: 10px; /* Prevent overflow for Kickable hover */
+}
 </style>
