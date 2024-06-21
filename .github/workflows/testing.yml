@@ -8,13 +8,12 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run test:unit
+          version: 9
+        run: pnpm install
+      - run: pnpm run test:unit
   integration-test:
     runs-on: ubuntu-latest
     environment: production
@@ -23,11 +22,10 @@ jobs:
       PUBLIC_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
       ALLOWED_DOMAIN: example.com
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npm run test:integration
+          version: 9
+        run: pnpm install
+      - run: pnpm dlx playwright install --with-deps
+      - run: pnpm run test:integration
