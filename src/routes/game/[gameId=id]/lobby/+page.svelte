@@ -1,12 +1,12 @@
 <script lang="ts">
-  import PlayerPicturePreloader from "$lib/PlayerPicturePreloader.svelte";
+  import PlayerPicturePreloader from "$lib/components/PlayerPicturePreloader.svelte";
   import { DEFAULT_USER_ICON } from "$lib/constants";
-  import "$lib/button.css";
+  import "$lib/styles/button.css";
   import { getChannel } from "$lib/ably-client";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import type { PlayerLabelProps } from "$lib/types";
-  import KickablePlayerLabel from "$lib/KickablePlayerLabel.svelte";
+  import KickablePlayerLabel from "$lib/components/KickablePlayerLabel.svelte";
 
   export let data;
 

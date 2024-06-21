@@ -1,6 +1,6 @@
 <script lang="ts">
   import { POINT_ICON } from "$lib/constants.js";
-  import PlayerPicturePreloader from "$lib/PlayerPicturePreloader.svelte";
+  import PlayerPicturePreloader from "$lib/components/PlayerPicturePreloader.svelte";
 
   export let players: { picture: string | null }[];
 </script>

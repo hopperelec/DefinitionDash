@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "$lib/button.css";
+  import "$lib/styles/button.css";
   import { page } from "$app/stores";
   import { getChannel } from "$lib/ably-client";
 

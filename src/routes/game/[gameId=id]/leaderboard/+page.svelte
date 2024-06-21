@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Leaderboard from "$lib/Leaderboard.svelte";
+  import Leaderboard from "$lib/components/Leaderboard.svelte";
   import { getChannel } from "$lib/ably-client";
   import { page } from "$app/stores";
-  import "$lib/button.css";
+  import "$lib/styles/button.css";
   import type { PlayerLabelProps } from "$lib/types";
 
   export let data;

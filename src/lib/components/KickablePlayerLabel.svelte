@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PlayerLabel from "$lib/PlayerLabel.svelte";
+  import PlayerLabel from "$lib/components/PlayerLabel.svelte";
   import type { PlayerLabelProps } from "$lib/types";
 
   export let currentUserId: number;

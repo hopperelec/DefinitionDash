@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Leaderboard from "$lib/Leaderboard.svelte";
-  import SVGMap from "$lib/SVGMap.svelte";
+  import Leaderboard from "$lib/components/Leaderboard.svelte";
+  import SVGMap from "$lib/components/SVGMap.svelte";
   import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
-  import "$lib/button.css";
-  import IconsPreloader from "$lib/IconsPreloader.svelte";
+  import "$lib/styles/button.css";
+  import IconsPreloader from "$lib/components/IconsPreloader.svelte";
 
   export let data;
   let map: SVGMap;

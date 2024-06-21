@@ -1,12 +1,12 @@
 <script lang="ts">
-  import SVGMap from "$lib/SVGMap.svelte";
-  import "$lib/button.css";
+  import SVGMap from "$lib/components/SVGMap.svelte";
+  import "$lib/styles/button.css";
   import decodeDoors from "$lib/decode-doors";
   import { page } from "$app/stores";
   import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
   import { getChannel } from "$lib/ably-client";
   import { goto } from "$app/navigation";
-  import IconsPreloader from "$lib/IconsPreloader.svelte";
+  import IconsPreloader from "$lib/components/IconsPreloader.svelte";
 
   export let data;
   let map: SVGMap;

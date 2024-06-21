@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SVGMap from "$lib/SVGMap.svelte";
+  import SVGMap from "$lib/components/SVGMap.svelte";
   import { SVG_NS } from "$lib/constants";
   import decodeDoors from "$lib/decode-doors";
   import { page } from "$app/stores";

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PlayerLabelProps } from "$lib/types";
-  import KickablePlayerLabel from "$lib/KickablePlayerLabel.svelte";
+  import KickablePlayerLabel from "$lib/components/KickablePlayerLabel.svelte";
 
   export let currentUserId: number;
   export let allowKicking = false;
