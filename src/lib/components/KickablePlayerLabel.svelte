@@ -1,4 +1,5 @@
 <script lang="ts">
+import { page } from "$app/stores";
 import PlayerLabel from "$lib/components/PlayerLabel.svelte";
 import type { PlayerLabelProps } from "$lib/types";
 
@@ -7,7 +8,7 @@ export let allowKicking = false;
 export let player: PlayerLabelProps;
 
 async function kickPlayer(userId: number) {
-	const res = await fetch(`../kick/${userId}/`, { method: "POST" });
+	const res = await fetch(`/game/${$page.params.gameId}/kick/${userId}/`, { method: "POST" });
 	if (!res.ok) alert((await res.json()).message);
 }
 </script>
