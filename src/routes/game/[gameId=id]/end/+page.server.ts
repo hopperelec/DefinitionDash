@@ -47,6 +47,7 @@ export const load = async ({ params, locals }) => {
 				},
 			},
 			players: {
+				where: { kicked: false },
 				select: {
 					isHost: true,
 					points: true,
