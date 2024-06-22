@@ -1,11 +1,11 @@
 <script lang="ts">
 import PlayerPicturePreloader from "$lib/components/PlayerPicturePreloader.svelte";
-import { POINT_ICON } from "$lib/constants.js";
+import PointIcon from "$lib/media/point.svg";
 
 export let players: { picture: string | null }[];
 </script>
 
 <PlayerPicturePreloader {players} />
 <svelte:head>
-	<link as="image" href={POINT_ICON} rel="preload" />
+	<link as="image" href={PointIcon} rel="preload" />
 </svelte:head>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DEFAULT_USER_ICON } from "$lib/constants.js";
+import DefaultPFP from "$lib/media/default_pfp.svg";
 
 export let players: { picture: string | null }[];
 </script>
@@ -14,7 +14,7 @@ export let players: { picture: string | null }[];
 				referrerpolicy="no-referrer"
 			/>
 		{:else}
-			<link as="image" href={DEFAULT_USER_ICON} rel="preload" />
+			<link as="image" href={DefaultPFP} rel="preload" />
 		{/if}
 	{/each}
 </svelte:head>

@@ -6,8 +6,9 @@ import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
 import IconsPreloader from "$lib/components/IconsPreloader.svelte";
-import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
 import decodeDoors from "$lib/decode-doors";
+import DefaultPFP from "$lib/media/default_pfp.svg";
+import PointIcon from "$lib/media/point.svg";
 import type { InboundMessage } from "ably";
 import type { PageData } from "./$types";
 
@@ -67,7 +68,7 @@ $: if ($announcement?.name === "kick") {
 }
 
 function addPointIcon(svgRef: number) {
-	const icon = map.addIconTo(svgRef, POINT_ICON);
+	const icon = map.addIconTo(svgRef, PointIcon);
 	if (icon) icon.dataset.point = svgRef.toString();
 }
 
@@ -81,7 +82,7 @@ function movePlayer(userId: number, svgRef: number) {
 		const prevIcon = map.getElmWhere("user", userId) as SVGImageElement;
 		if (prevIcon) map.removeIcon(prevIcon);
 		const player = data.players[userId];
-		const newIcon = map.addIconTo(svgRef, player.picture || DEFAULT_USER_ICON);
+		const newIcon = map.addIconTo(svgRef, player.picture || DefaultPFP);
 		if (newIcon) {
 			newIcon.dataset.user = userId.toString();
 		}

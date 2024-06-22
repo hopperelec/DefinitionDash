@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DEFAULT_USER_ICON } from "$lib/constants";
+import DefaultPFP from "$lib/media/default_pfp.svg";
 import type { PlayerLabelProps } from "$lib/types";
 
 export let currentUserId: number;
@@ -15,7 +15,7 @@ let name = player.name || `User ${player.id}`;
 	<img
 		alt="{name}'s picture"
 		height="32"
-		src={player.picture || DEFAULT_USER_ICON}
+		src={player.picture || DefaultPFP}
 		width="32"
 	/>
 	<span>

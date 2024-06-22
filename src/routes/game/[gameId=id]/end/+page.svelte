@@ -2,7 +2,8 @@
 import Leaderboard from "$lib/components/Leaderboard.svelte";
 import SVGMapComponent from "$lib/components/SVGMap.svelte";
 import type SVGMap from "$lib/components/SVGMap.svelte";
-import { DEFAULT_USER_ICON, POINT_ICON } from "$lib/constants";
+import DefaultPFP from "$lib/media/default_pfp.svg";
+import PointIcon from "$lib/media/point.svg";
 import "$lib/styles/button.css";
 import IconsPreloader from "$lib/components/IconsPreloader.svelte";
 import type { PageData } from "./$types";
@@ -32,7 +33,7 @@ function onMapLoad() {
 	for (const player of data.players) {
 		const icon = map.addIconTo(
 			player.currSvgRef,
-			player.picture || DEFAULT_USER_ICON,
+			player.picture || DefaultPFP,
 		);
 		if (icon) {
 			icon.classList.add("user");
@@ -42,7 +43,7 @@ function onMapLoad() {
 	for (const roomElm of map.getSVG().querySelectorAll("[data-room]")) {
 		const svgRef = (roomElm as HTMLElement).dataset.room;
 		if (svgRef && !data.claimedRooms.includes(+svgRef)) {
-			map.addIconTo(+svgRef, POINT_ICON);
+			map.addIconTo(+svgRef, PointIcon);
 		}
 	}
 }

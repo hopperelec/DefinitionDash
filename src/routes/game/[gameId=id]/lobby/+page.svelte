@@ -1,6 +1,6 @@
 <script lang="ts">
 import PlayerPicturePreloader from "$lib/components/PlayerPicturePreloader.svelte";
-import { DEFAULT_USER_ICON } from "$lib/constants";
+import DefaultPFP from "$lib/media/default_pfp.svg";
 import "$lib/styles/button.css";
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
@@ -37,7 +37,7 @@ $: if ($lobbyMessage) {
 			players[$lobbyMessage.data.id] = {
 				id: $lobbyMessage.data.id,
 				name: $lobbyMessage.data.name,
-				picture: $lobbyMessage.data.picture || DEFAULT_USER_ICON,
+				picture: $lobbyMessage.data.picture || DefaultPFP,
 				isHost: false,
 			};
 			break;
