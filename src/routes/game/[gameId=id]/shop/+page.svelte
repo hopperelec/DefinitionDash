@@ -2,7 +2,10 @@
 import "$lib/styles/button.css";
 import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
+import { title } from "$lib/page-meta";
 import type { PageData } from "./$types";
+
+title.set("Shop");
 
 export let data: PageData;
 

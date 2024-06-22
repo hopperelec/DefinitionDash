@@ -2,7 +2,10 @@
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
+import { setTitlePrefix } from "$lib/page-meta";
 import type { PageData } from "./$types";
+
+setTitlePrefix(`Game ${$page.params.gameId}`);
 
 export let data: PageData;
 

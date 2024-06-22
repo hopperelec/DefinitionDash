@@ -1,5 +1,8 @@
 <script>
 import { PUBLIC_BASE_URL, PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
+import { title } from "$lib/page-meta";
+
+title.set("Login");
 </script>
 
 <svelte:head>

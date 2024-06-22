@@ -8,7 +8,9 @@ export let allowKicking = false;
 export let player: PlayerLabelProps;
 
 async function kickPlayer(userId: number) {
-	const res = await fetch(`/game/${$page.params.gameId}/kick/${userId}/`, { method: "POST" });
+	const res = await fetch(`/game/${$page.params.gameId}/kick/${userId}/`, {
+		method: "POST",
+	});
 	if (!res.ok) alert((await res.json()).message);
 }
 </script>

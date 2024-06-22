@@ -1,6 +1,10 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
+import { page } from "$app/stores";
+import { title } from "$lib/page-meta";
 import type { PageData } from "./$types";
+
+title.set(`Game ${$page.params.gameId} | Question`);
 
 export let data: PageData;
 let answer = "";

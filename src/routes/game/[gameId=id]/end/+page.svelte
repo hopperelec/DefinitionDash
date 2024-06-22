@@ -6,7 +6,10 @@ import DefaultPFP from "$lib/media/default_pfp.svg";
 import PointIcon from "$lib/media/point.svg";
 import "$lib/styles/button.css";
 import IconsPreloader from "$lib/components/IconsPreloader.svelte";
+import { title } from "$lib/page-meta";
 import type { PageData } from "./$types";
+
+title.set("Game over!");
 
 export let data: PageData;
 let map: SVGMap;
@@ -31,10 +34,7 @@ function getCardinal(position: number) {
 
 function onMapLoad() {
 	for (const player of data.players) {
-		const icon = map.addIconTo(
-			player.currSvgRef,
-			player.picture || DefaultPFP,
-		);
+		const icon = map.addIconTo(player.currSvgRef, player.picture || DefaultPFP);
 		if (icon) {
 			icon.classList.add("user");
 		}

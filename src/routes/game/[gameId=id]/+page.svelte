@@ -9,8 +9,11 @@ import IconsPreloader from "$lib/components/IconsPreloader.svelte";
 import decodeDoors from "$lib/decode-doors";
 import DefaultPFP from "$lib/media/default_pfp.svg";
 import PointIcon from "$lib/media/point.svg";
+import { title } from "$lib/page-meta";
 import type { InboundMessage } from "ably";
 import type { PageData } from "./$types";
+
+title.set(undefined);
 
 export let data: PageData;
 let map: SVGMap;

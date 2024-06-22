@@ -6,8 +6,11 @@ import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
 import KickablePlayerLabel from "$lib/components/KickablePlayerLabel.svelte";
+import { title } from "$lib/page-meta";
 import type { PlayerLabelProps } from "$lib/types";
 import type { PageData } from "./$types";
+
+title.set("Lobby");
 
 export let data: PageData;
 

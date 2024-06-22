@@ -3,8 +3,11 @@ import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
 import Leaderboard from "$lib/components/Leaderboard.svelte";
 import "$lib/styles/button.css";
+import { title } from "$lib/page-meta";
 import type { PlayerLabelProps } from "$lib/types";
 import type { PageData } from "./$types";
+
+title.set("Leaderboard");
 
 export let data: PageData;
 

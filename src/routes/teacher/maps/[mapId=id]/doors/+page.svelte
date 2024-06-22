@@ -4,7 +4,10 @@ import type SVGMap from "$lib/components/SVGMap.svelte";
 import SVGMapComponent from "$lib/components/SVGMap.svelte";
 import { SVG_NS } from "$lib/constants";
 import decodeDoors from "$lib/decode-doors";
+import { title } from "$lib/page-meta";
 import type { PageData } from "./$types";
+
+title.set("Doors mapper");
 
 export let data: PageData;
 const lines: { [key: number]: { [key: number]: SVGLineElement } } = {}; // First key is room1Id, second key is room2Id
