@@ -39,7 +39,7 @@ async function buyItem(itemId: number) {
 			</li>
 		{/each}
 	</ul>
-	<a class="button" href="../">Back to game</a>
+	<a class="button" href="..">Back to game</a>
 </div>
 
 <style>

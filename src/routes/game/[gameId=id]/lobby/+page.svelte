@@ -91,7 +91,11 @@ function leaveGame() {
 	<div id="lobby-container">
 		<h2>Lobby</h2>
 		<div>
-			{#if isHost}<a href="start" class="button">Start game</a>{/if}
+			{#if isHost}
+				<button class="button" on:click={async () => await fetch("start")} type="button">
+					Start game
+				</button>
+			{/if}
 			<button class="button" on:click={leaveGame} type="button">
 				Leave game
 			</button>

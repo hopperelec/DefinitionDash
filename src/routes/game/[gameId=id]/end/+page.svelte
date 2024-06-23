@@ -64,7 +64,9 @@ function onMapLoad() {
 			/>
 		</div>
 	</div>
-	<a class="button" href="/game">New game</a>
+	<button class="button" on:click={async () => await fetch("/game")} type="button">
+		New game
+	</button>
 </div>
 <IconsPreloader players={data.players} />
 

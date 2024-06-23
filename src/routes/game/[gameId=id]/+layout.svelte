@@ -12,9 +12,9 @@ export let data: PageData;
 const announcement = getChannel(`game:${$page.params.gameId}:announcements`);
 $: if ($announcement) {
 	switch ($announcement.name) {
-		// biome-ignore lint/suspicious/noFallthroughSwitchClause:
 		case "end":
 			goto(`/game/${$page.params.gameId}/end/`);
+			break;
 		case "kick":
 			if ($announcement.data.userId === data.userId) {
 				alert("You've been kicked from this game!");

@@ -50,7 +50,7 @@ $: if ($announcement?.name === "kick") {
 	<div id="leaderboard-container">
 		<Leaderboard allowKicking currentUserId={data.userId} {orderedPlayers} />
 	</div>
-	<a class="button" href="../">Back to game</a>
+	<a class="button" href="..">Back to game</a>
 </div>
 
 <style>
