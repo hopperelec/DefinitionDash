@@ -16,7 +16,10 @@ const minificationOptions: Options = {
 };
 
 async function isAuthorized(event: RequestEvent): Promise<boolean> {
-	if (event.url.pathname.startsWith("/login")) return true;
+	if (
+		event.url.pathname.startsWith("/login") ||
+		event.url.pathname === "/site.webmanifest"
+	) return true;
 	const sessionUUID = event.cookies.get(SESSION_COOKIE_KEY);
 	if (!sessionUUID) return false;
 	const session = await prisma.session.findUnique({
