@@ -16,11 +16,9 @@ export const load = async ({ params, locals }) => {
 		);
 	const props: {
 		shopItems: ShopItem[];
-		userId: number;
 		points: number;
 	} = {
 		shopItems: await prisma.shopItem.findMany(),
-		userId: locals.user.id,
 		points: playerData.points,
 	};
 	return props;

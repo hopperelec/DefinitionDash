@@ -48,7 +48,6 @@ export const load = async ({ params, locals }) => {
 			.then();
 	} else if (self.kicked) error(403, "You've been kicked from this game!");
 	return {
-		userId: locals.user.id,
 		players: game.players
 			.filter((player) => !player.kicked)
 			.map((player) => {

@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
 import { page } from "$app/stores";
 import DefinitionDashLogo from "$lib/media/logo.svg";
+
+export let isLoggedIn: boolean;
 </script>
 
 <div id="home-container">
@@ -9,9 +11,19 @@ import DefinitionDashLogo from "$lib/media/logo.svg";
 			<img src={DefinitionDashLogo} alt="Definition Dash logo"/>
 			<h1>Definition<br>Dash</h1>
 		</a>
-		{#if $page.url.pathname !== "/login/"}
-			<a href="/login/" id="login-button">Login</a>
-		{/if}
+		<nav>
+			{#if isLoggedIn}
+				<!--
+					Causes a console error and doesn't use CSR
+					https://github.com/sveltejs/kit/issues/12398
+				-->
+				<a href="/game">New game</a>
+			{:else}
+				{#if $page.url.pathname !== "/login/"}
+					<a href="/login/">Login</a>
+				{/if}
+			{/if}
+		</nav>
 	</header>
 	<main><slot/></main>
 	<footer>
@@ -58,7 +70,7 @@ a {
 	text-decoration: none;
 }
 
-#login-button {
+nav {
 	height: 100%;
 	padding: 0 .5em;
 	float: right;

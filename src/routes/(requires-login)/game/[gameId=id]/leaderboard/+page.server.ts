@@ -28,7 +28,6 @@ export const load = async ({ params, locals }) => {
 			"An unexpected error occurred while trying to retrieve your player data",
 		);
 	return {
-		userId: locals.user.id,
 		isHost: ret.isHost,
 		players: ret.game.players.map((player) => {
 			return {

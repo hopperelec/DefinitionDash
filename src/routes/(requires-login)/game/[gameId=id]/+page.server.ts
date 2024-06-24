@@ -53,7 +53,6 @@ export const load = async ({ params, locals }) => {
 		players: Opponents;
 		map: { id: number; imgURL: string };
 		claimedRooms: number[];
-		userId: number;
 		isHost: boolean;
 		currPoints: number;
 	} = {
@@ -62,7 +61,6 @@ export const load = async ({ params, locals }) => {
 		claimedRooms: ret.game.claimedRooms.map(
 			(claimedRoom) => claimedRoom.room.svgRef,
 		),
-		userId: locals.user.id,
 		isHost: ret.isHost,
 		currPoints: ret.points,
 	};

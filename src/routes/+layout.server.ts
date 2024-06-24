@@ -1,3 +1,3 @@
 export const load = async ({ locals }) => {
-	return { userId: locals.user.id };
+	return { userId: locals.user?.id };
 };

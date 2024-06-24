@@ -1,12 +1,15 @@
-<script>
+<script lang="ts">
 import { page } from "$app/stores";
 import DefaultLayout from "$lib/components/DefaultLayout.svelte";
 import { title } from "$lib/page-meta";
+import type { LayoutData } from "./$types";
 
 title.set(`Error ${$page.status}`);
+
+export let data: LayoutData;
 </script>
 
-<DefaultLayout>
+<DefaultLayout isLoggedIn={!!data.userId}>
 	<div>
 		<h1>An error has occurred!</h1>
 		<h2>{$page.status}: {$page.error?.message}</h2>

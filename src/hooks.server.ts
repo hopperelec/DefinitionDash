@@ -15,8 +15,11 @@ const minificationOptions: Options = {
 	removeRedundantAttributes: true,
 };
 
-async function isAuthorized(event: RequestEvent): Promise<boolean> {
-	if (!event.route.id?.startsWith("/(requires-login)")) return true;
+function requiresAuthorization(event: RequestEvent) {
+	return event.route.id?.startsWith("/(requires-login)");
+}
+
+async function isAuthorized(event: RequestEvent) {
 	const sessionUUID = event.cookies.get(SESSION_COOKIE_KEY);
 	if (!sessionUUID) return false;
 	const session = await prisma.session.findUnique({
@@ -39,7 +42,8 @@ async function isAuthorized(event: RequestEvent): Promise<boolean> {
 export const handle: Handle = async ({ event, resolve }) => {
 	let page = "";
 
-	if (await isAuthorized(event)) {
+	// Check if authorized first so that `event.locals.user` is set even if authorization isn't required
+	if ((await isAuthorized(event)) || !requiresAuthorization(event)) {
 		return resolve(event, {
 			transformPageChunk: ({ html, done }) => {
 				page += html;
