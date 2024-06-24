@@ -1,6 +1,6 @@
 import { SESSION_COOKIE_KEY } from "$lib/constants";
 import prisma from "$lib/server/prisma";
-import type { Handle, RequestEvent } from "@sveltejs/kit";
+import { type Handle, type RequestEvent, redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
 import type { Options } from "html-minifier-terser";
 import { minify } from "html-minifier-terser";
@@ -16,10 +16,7 @@ const minificationOptions: Options = {
 };
 
 async function isAuthorized(event: RequestEvent): Promise<boolean> {
-	if (
-		event.url.pathname.startsWith("/login") ||
-		event.url.pathname === "/site.webmanifest"
-	) return true;
+	if (!event.route.id?.startsWith("/(requires-login)")) return true;
 	const sessionUUID = event.cookies.get(SESSION_COOKIE_KEY);
 	if (!sessionUUID) return false;
 	const session = await prisma.session.findUnique({
@@ -52,8 +49,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 			},
 		});
 	}
-	return new Response("Redirect", {
-		status: 303,
-		headers: { Location: "/login" },
-	});
+	return redirect(303, "/login/");
 };

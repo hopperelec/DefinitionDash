@@ -1,6 +1,6 @@
 import { SESSION_COOKIE_KEY } from "$lib/constants";
 import prisma from "$lib/server/prisma";
-import type { RequestHandler } from "@sveltejs/kit";
+import { type RequestHandler, redirect } from "@sveltejs/kit";
 import { toBuffer } from "uuid-buffer";
 
 export const GET: RequestHandler = async ({ cookies }) => {
@@ -12,8 +12,5 @@ export const GET: RequestHandler = async ({ cookies }) => {
 		});
 		cookies.delete(SESSION_COOKIE_KEY, { path: "/" });
 	}
-	return new Response("Redirect", {
-		status: 303,
-		headers: { Location: "/login" },
-	});
+	return redirect(303, "/");
 };

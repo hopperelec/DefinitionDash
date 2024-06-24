@@ -3,7 +3,7 @@ import { ALLOWED_DOMAIN } from "$env/static/private";
 import { PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
 import { SESSION_COOKIE_KEY, SESSION_DURATION_DAYS } from "$lib/constants";
 import prisma from "$lib/server/prisma";
-import type { RequestHandler } from "@sveltejs/kit";
+import { type RequestHandler, redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
 import { OAuth2Client } from "google-auth-library";
 import { toBuffer } from "uuid-buffer";
@@ -60,8 +60,5 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		maxAge: 60 * 60 * 24 * SESSION_DURATION_DAYS,
 	});
 
-	return new Response("Redirect", {
-		status: 303,
-		headers: { Location: "/" },
-	});
+	return redirect(303, "/game/");
 };

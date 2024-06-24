@@ -92,9 +92,11 @@ function leaveGame() {
 		<h2>Lobby</h2>
 		<div>
 			{#if isHost}
-				<button class="button" on:click={async () => await fetch("start")} type="button">
-					Start game
-				</button>
+				<!--
+					Causes a console error and doesn't use CSR
+					https://github.com/sveltejs/kit/issues/12398
+				-->
+				<a class="button" href="start">Start game</a>
 			{/if}
 			<button class="button" on:click={leaveGame} type="button">
 				Leave game

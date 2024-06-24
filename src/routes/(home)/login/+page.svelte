@@ -18,8 +18,7 @@ title.set("Login");
 	id="g_id_onload"
 ></div>
 
-<main>
-	<header>Definition Dash</header>
+<div id="login-container">
 	<div
 		class="g_id_signin"
 		data-logo_alignment="left"
@@ -30,23 +29,13 @@ title.set("Login");
 		data-type="standard"
 	>
 	</div>
-</main>
+</div>
 
 <style>
-main {
+#login-container {
 	display: flex;
 	align-items: center;
-	flex-direction: column;
-	position: absolute;
-	inset: 0;
-	margin: auto;
-	height: 80px;
-}
-
-header {
-	text-align: center;
-	font-family: var(--default-font-family);
-	font-weight: bold;
-	font-size: 40px;
+	justify-content: center;
+	flex-grow: 1;
 }
 </style>

@@ -64,9 +64,12 @@ function onMapLoad() {
 			/>
 		</div>
 	</div>
-	<button class="button" on:click={async () => await fetch("/game")} type="button">
-		New game
-	</button>
+
+	<!--
+		Causes a console error and doesn't use CSR
+		https://github.com/sveltejs/kit/issues/12398
+	-->
+	<a class="button" href="/game">New game</a>
 </div>
 <IconsPreloader players={data.players} />
 
