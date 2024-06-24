@@ -8,7 +8,7 @@ import { error } from "@sveltejs/kit";
 import { OAuth2Client } from "google-auth-library";
 import { toBuffer } from "uuid-buffer";
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, url, cookies }) => {
 	const params = new URLSearchParams(await request.text());
 
 	const token = params.get("credential");
@@ -60,5 +60,5 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		maxAge: 60 * 60 * 24 * SESSION_DURATION_DAYS,
 	});
 
-	return redirect(303, "/game/");
+	return redirect(303, url.searchParams.get("redirect_uri") || "/");
 };

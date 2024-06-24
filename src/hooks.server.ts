@@ -49,5 +49,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 			},
 		});
 	}
-	return redirect(303, "/login/");
+	return redirect(303, `/login/?redirect_uri=${event.url.pathname}`);
 };
