@@ -12,7 +12,10 @@ export let data: PageData;
 let value = "";
 const invalidInputRegex = new RegExp(/(^0+)|\D/g);
 function onInput(event: Event & { currentTarget: HTMLInputElement }) {
-	value = event.currentTarget.value = event.currentTarget.value.replaceAll(invalidInputRegex, "");
+	value = event.currentTarget.value = event.currentTarget.value.replaceAll(
+		invalidInputRegex,
+		"",
+	);
 }
 
 async function joinGame() {

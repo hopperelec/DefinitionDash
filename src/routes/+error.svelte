@@ -15,14 +15,6 @@ export let data: LayoutData;
 </DefaultLayout>
 
 <style>
-div {
-	flex: 1;
-	text-align: center;
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
-}
-
 h1 {
 	font-size: 64px;
 	font-weight: bold;
