@@ -90,6 +90,7 @@ function leaveGame() {
 <div id="page-container">
 	<div id="lobby-container">
 		<h2>Lobby</h2>
+		<h3>Game ID: <span>{$page.params.gameId}</span></h3>
 		<div>
 			{#if isHost}
 				<!--
@@ -139,9 +140,12 @@ function leaveGame() {
 	}
 }
 
+h2, h3 {
+	margin: 0;
+}
+
 h2 {
 	font-size: 2em;
-	margin: 0;
 	font-family: var(--default-font-family-bold);
 }
 

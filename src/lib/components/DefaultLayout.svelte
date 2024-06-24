@@ -3,6 +3,7 @@ import { page } from "$app/stores";
 import DefinitionDashLogo from "$lib/media/logo.svg";
 
 export let isLoggedIn: boolean;
+export let centerContent = false;
 </script>
 
 <div id="home-container">
@@ -13,6 +14,9 @@ export let isLoggedIn: boolean;
 		</a>
 		<nav>
 			{#if isLoggedIn}
+				{#if $page.url.pathname !== "/join-game/"}
+					<a href="/join-game/">Join game</a>
+				{/if}
 				<!--
 					Causes a console error and doesn't use CSR
 					https://github.com/sveltejs/kit/issues/12398
@@ -25,7 +29,7 @@ export let isLoggedIn: boolean;
 			{/if}
 		</nav>
 	</header>
-	<main><slot/></main>
+	<main class:center={centerContent}><slot/></main>
 	<footer>
 		<a href="/terms">Terms of service</a>
 		<a href="/privacy">Privacy policy</a>
@@ -72,16 +76,25 @@ a {
 
 nav {
 	height: 100%;
-	padding: 0 .5em;
 	float: right;
 	font-size: 1.7em;
 	display: flex;
 	align-items: center;
+
+	& > a {
+		padding: 0 .5em;
+	}
 }
 
 main {
 	flex-grow: 1;
 	display: flex;
+
+	&.center {
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+	}
 }
 
 footer {

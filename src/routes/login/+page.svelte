@@ -1,7 +1,11 @@
-<script>
+<script lang="ts">
 import { page } from "$app/stores";
 import { PUBLIC_BASE_URL, PUBLIC_GOOGLE_CLIENT_ID } from "$env/static/public";
+import DefaultLayout from "$lib/components/DefaultLayout.svelte";
 import { title } from "$lib/page-meta";
+import type { PageData } from "./$types";
+
+export let data: PageData;
 
 title.set("Login");
 $: redirectURI = $page.url.searchParams.get("redirect_uri");
@@ -20,7 +24,7 @@ $: redirectURI = $page.url.searchParams.get("redirect_uri");
 	id="g_id_onload"
 ></div>
 
-<div id="login-container">
+<DefaultLayout isLoggedIn={!!data.userId} centerContent={true}>
 	<div
 		class="g_id_signin"
 		data-logo_alignment="left"
@@ -31,13 +35,4 @@ $: redirectURI = $page.url.searchParams.get("redirect_uri");
 		data-type="standard"
 	>
 	</div>
-</div>
-
-<style>
-#login-container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-grow: 1;
-}
-</style>
+</DefaultLayout>

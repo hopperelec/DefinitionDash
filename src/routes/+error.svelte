@@ -9,11 +9,9 @@ title.set(`Error ${$page.status}`);
 export let data: LayoutData;
 </script>
 
-<DefaultLayout isLoggedIn={!!data.userId}>
-	<div>
-		<h1>An error has occurred!</h1>
-		<h2>{$page.status}: {$page.error?.message}</h2>
-	</div>
+<DefaultLayout isLoggedIn={!!data.userId} centerContent={true}>
+	<h1>An error has occurred!</h1>
+	<h2>{$page.status}: {$page.error?.message}</h2>
 </DefaultLayout>
 
 <style>
