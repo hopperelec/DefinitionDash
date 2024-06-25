@@ -53,10 +53,13 @@ header {
 
 	border-bottom: 2px solid black;
 	height: var(--height);
+	display: flex;
+	justify-content: space-between;
 }
 
 #logotype {
-	display: inline-flex;
+	/* The width of this element is not being calculated correctly and I'm not sure why */
+	display: flex;
 	align-items: center;
 }
 
@@ -79,7 +82,6 @@ a {
 
 nav {
 	height: 100%;
-	float: right;
 	font-size: 1.7em;
 	display: flex;
 	align-items: center;
