@@ -32,7 +32,10 @@ export let centerContent = false;
 	<main class:center={centerContent}><slot/></main>
 	<footer>
 		<a href="/terms">Terms of service</a>
+		<span>-</span>
 		<a href="/privacy">Privacy policy</a>
+		<span>-</span>
+		<a href="https://github.com/hopperelec/DefinitionDash">Source code</a>
 	</footer>
 </div>
 
