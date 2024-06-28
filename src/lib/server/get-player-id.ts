@@ -38,16 +38,13 @@ async function addPlayer(
 		});
 	}
 	ablyServer.channels
-		.get(`game:${gameId}:positions`)
+		.get(`game:${gameId}`)
 		.publish("create", {
 			userId: user.id,
+			name: newPlayer.user.name,
 			picture: newPlayer.user.picture,
 			svgRef: newPlayer.currRoom.svgRef,
 		})
-		.then();
-	ablyServer.channels
-		.get(`game:${gameId}:points`)
-		.publish("create", { userId: user.id, name: newPlayer.user.name })
 		.then();
 	return newPlayer.id;
 }

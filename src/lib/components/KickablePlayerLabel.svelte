@@ -3,7 +3,7 @@ import { page } from "$app/stores";
 import PlayerLabel from "$lib/components/PlayerLabel.svelte";
 import type { PlayerLabelProps } from "$lib/types";
 
-export let currentUserId: number;
+export let currUserId: number;
 export let allowKicking = false;
 export let player: PlayerLabelProps;
 
@@ -15,16 +15,16 @@ async function kickPlayer(userId: number) {
 }
 </script>
 
-{#if allowKicking && player.id !== currentUserId && !player.isHost}
+{#if allowKicking && player.id !== currUserId && !player.isHost}
 	<button
 		on:click={async () => await kickPlayer(player.id)}
 		tabindex="0"
 		type="button"
 	>
-		<PlayerLabel {player} {currentUserId} />
+		<PlayerLabel {player} {currUserId} />
 	</button>
 {:else}
-	<PlayerLabel {player} {currentUserId} />
+	<PlayerLabel {player} {currUserId} />
 {/if}
 
 <style>
@@ -42,9 +42,9 @@ button {
 		&::after {
 			content: "";
 			position: absolute;
-			width: calc(100% + 10px);
+			width: calc(100% + 1em);
 			top: 50%;
-			left: -5px;
+			left: -.5em;
 			border-top: 2px solid black;
 		}
 	}

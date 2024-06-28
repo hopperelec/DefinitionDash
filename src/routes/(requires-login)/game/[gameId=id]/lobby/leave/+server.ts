@@ -7,10 +7,7 @@ async function assignHost(gameId: number, userId: number) {
 		where: { userId_gameId: { userId, gameId } },
 		data: { isHost: true },
 	});
-	ablyServer.channels
-		.get(`game:${gameId}:lobby`)
-		.publish("host", { userId })
-		.then();
+	ablyServer.channels.get(`lobby:${gameId}`).publish("host", { userId }).then();
 }
 
 export const GET = async ({ params, locals }) => {
@@ -40,7 +37,7 @@ export const GET = async ({ params, locals }) => {
 		where: { userId_gameId: { userId: locals.user.id, gameId } },
 	});
 	ablyServer.channels
-		.get(`game:${gameId}:lobby`)
+		.get(`lobby:${gameId}`)
 		.publish("leave", { userId: locals.user.id })
 		.then();
 	if (

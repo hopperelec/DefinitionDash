@@ -1,0 +1,9 @@
+.status-bar {
+		padding: 0 .5em;
+		border-bottom: 1px solid black;
+		display: flex;
+		align-items: center;
+		white-space: nowrap;
+		background: #bbb;
+		font-family: "Segoe UI", Arial, sans-serif;
+}

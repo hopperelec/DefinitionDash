@@ -178,7 +178,6 @@ onMount(async () => {
 <style lang="scss">
 #map-container {
 	height: 100%;
-	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -186,6 +185,7 @@ onMount(async () => {
 	& > p {
 		font-family: var(--default-font-family-bold);
 		font-size: 4em;
+		text-align: center;
 	}
 }
 </style>

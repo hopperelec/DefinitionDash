@@ -9,14 +9,14 @@ setTitlePrefix(`Game ${$page.params.gameId}`);
 
 export let data: PageData;
 
-const announcement = getChannel(`game:${$page.params.gameId}:announcements`);
-$: if ($announcement) {
-	switch ($announcement.name) {
+const realtimeMessage = getChannel(`game:${$page.params.gameId}`);
+$: if ($realtimeMessage) {
+	switch ($realtimeMessage.name) {
 		case "end":
 			goto(`/game/${$page.params.gameId}/end/`);
 			break;
 		case "kick":
-			if ($announcement.data.userId === data.userId) {
+			if ($realtimeMessage.data.userId === data.userId) {
 				alert("You've been kicked from this game!");
 				goto("/");
 			}

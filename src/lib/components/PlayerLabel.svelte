@@ -2,21 +2,19 @@
 import DefaultPFP from "$lib/media/default_pfp.svg";
 import type { PlayerLabelProps } from "$lib/types";
 
-export let currentUserId: number;
+export let currUserId: number;
 export let player: PlayerLabelProps;
 let name = player.name || `User ${player.id}`;
 </script>
 
 <div
-	class:current-user={player.id === currentUserId}
+	class:current-user={player.id === currUserId}
 	class:host={player.isHost}
 	id="label-container"
 >
 	<img
 		alt="{name}'s picture"
-		height="32"
 		src={player.picture || DefaultPFP}
-		width="32"
 	/>
 	<span>
 		<span class="name" title={name}>{name}</span>
@@ -32,16 +30,15 @@ let name = player.name || `User ${player.id}`;
 	display: inline-flex;
 	vertical-align: middle;
 	align-items: center;
-	font-size: 24px;
 	max-width: 100%;
 
 	& > img {
+		height: 1.5em;
 		clip-path: inset(0% round 50%);
 	}
 
 	& > span {
-		margin-left: 10px;
-		margin-right: 20px;
+		margin: 0 .25em;
 
 		/* Prevent overflow */
 		display: flex;
@@ -56,7 +53,7 @@ let name = player.name || `User ${player.id}`;
 }
 
 .separator {
-	padding: 0 10px;
+	padding: 0 .5em;
 }
 
 .host {

@@ -42,11 +42,9 @@ export const load = async ({ params, locals }) => {
 			picture: locals.user.picture,
 		};
 		game.players.push({ isHost: false, kicked: false, user });
-		ablyServer.channels
-			.get(`game:${gameId}:lobby`)
-			.publish("join", user)
-			.then();
+		ablyServer.channels.get(`lobby:${gameId}`).publish("join", user).then();
 	} else if (self.kicked) error(403, "You've been kicked from this game!");
+
 	return {
 		players: game.players
 			.filter((player) => !player.kicked)

@@ -23,6 +23,9 @@ importers:
       panzoom:
         specifier: ^9.4.3
         version: 9.4.3
+      svelte-splitpanes:
+        specifier: ^8.0.5
+        version: 8.0.5(svelte@4.2.18)
       uuid-buffer:
         specifier: ^1.0.3
         version: 1.0.3
@@ -1371,6 +1374,9 @@ packages:
     resolution: {integrity: sha512-OtIRv/2GyiF6o/d8K7MYKKbXrOUBIK6SfkIRM4Z0dY3w+LiQ0vy3F57m0Z71bjbyeiWFiHJ8brqnmE6H6/jEuw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  esm-env-robust@0.0.3:
+    resolution: {integrity: sha512-90Gnuw2DALOqlL1581VxP3GHPUNHX9U+fQ+8FNcTTFClhY5gEggAAnJ3q1b2Oq23knRsjv8YpNeMRPaMLUymOA==}
+
   esm-env@1.0.0:
     resolution: {integrity: sha512-Cf6VksWPsTuW01vU9Mk/3vRue91Zevka5SjyNf3nEpokFRuqt/KjUQoGAwq9qMmhpLTHmXzSIrFRw8zxWzmFBA==}
 
@@ -2437,6 +2443,11 @@ packages:
         optional: true
       typescript:
         optional: true
+
+  svelte-splitpanes@8.0.5:
+    resolution: {integrity: sha512-LUdNbuckYtGcBI5Us1ugYlw0fC6wnUEbUTgUY4TVLR/ZCsSrTw9Ftuf7NkM0tTRMCBG3ZmzPDfWuOlmSOXGU/A==}
+    peerDependencies:
+      svelte: ^4.2.18
 
   svelte@4.2.18:
     resolution: {integrity: sha512-d0FdzYIiAePqRJEb90WlJDkjUEx42xhivxN8muUBmfZnP+tzUgz12DJ2hRJi8sIHCME7jeK1PTMgKPSfTd8JrA==}
@@ -3779,6 +3790,10 @@ snapshots:
 
   eslint-visitor-keys@4.0.0: {}
 
+  esm-env-robust@0.0.3:
+    dependencies:
+      esm-env: 1.0.0
+
   esm-env@1.0.0: {}
 
   espree@10.1.0:
@@ -4906,6 +4921,11 @@ snapshots:
       postcss: 8.4.38
       sass: 1.77.6
       typescript: 5.5.2
+
+  svelte-splitpanes@8.0.5(svelte@4.2.18):
+    dependencies:
+      esm-env-robust: 0.0.3
+      svelte: 4.2.18
 
   svelte@4.2.18:
     dependencies:

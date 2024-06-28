@@ -1,5 +1,7 @@
+import type { Doors } from "$lib/types";
+
 export default function decodeDoors(buffer: ArrayBuffer) {
-	const doors: { [key: number]: number[] } = {};
+	const doors: Doors = {};
 	const bytes = new Uint8Array(buffer);
 	const bitsPerSvgRef = bytes[0];
 	let firstSvgRef = 0;
@@ -24,8 +26,8 @@ export default function decodeDoors(buffer: ArrayBuffer) {
 		} else {
 			const svgRef1 = Math.min(firstSvgRef, currentNumber);
 			const svgRef2 = Math.max(firstSvgRef, currentNumber);
-			doors[svgRef1] = doors[svgRef1] || [];
-			doors[svgRef1].push(svgRef2);
+			doors[svgRef1] = doors[svgRef1] || new Set();
+			doors[svgRef1].add(svgRef2);
 		}
 	}
 	return doors;

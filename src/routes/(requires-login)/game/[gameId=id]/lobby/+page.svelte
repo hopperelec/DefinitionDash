@@ -30,25 +30,25 @@ function leavePlayer(userId: number) {
 	players = players;
 }
 
-const lobbyMessage = getChannel(`game:${$page.params.gameId}:lobby`);
-$: if ($lobbyMessage) {
-	switch ($lobbyMessage.name) {
+const realtimeMessage = getChannel(`lobby:${$page.params.gameId}`);
+$: if ($realtimeMessage) {
+	switch ($realtimeMessage.name) {
 		case "start":
 			goto("../");
 			break;
 		case "join":
-			players[$lobbyMessage.data.id] = {
-				id: $lobbyMessage.data.id,
-				name: $lobbyMessage.data.name,
-				picture: $lobbyMessage.data.picture || DefaultPFP,
+			players[$realtimeMessage.data.id] = {
+				id: $realtimeMessage.data.id,
+				name: $realtimeMessage.data.name,
+				picture: $realtimeMessage.data.picture || DefaultPFP,
 				isHost: false,
 			};
 			break;
 		case "leave":
-			leavePlayer($lobbyMessage.data.userId);
+			leavePlayer($realtimeMessage.data.userId);
 			break;
 		case "host": {
-			const userId = $lobbyMessage.data.userId;
+			const userId = $realtimeMessage.data.userId;
 			players[userId].isHost = true;
 			if (userId === data.userId) {
 				isHost = true;
@@ -91,7 +91,7 @@ function leaveGame() {
 	<div id="lobby-container">
 		<h2>Lobby</h2>
 		<h3>Game ID: <span>{$page.params.gameId}</span></h3>
-		<div>
+		<div id="buttons-container">
 			{#if isHost}
 				<!--
 					Causes a console error and doesn't use CSR
@@ -107,7 +107,7 @@ function leaveGame() {
 			{#each Object.values(players) as player}
 				<li>
 					<KickablePlayerLabel
-						currentUserId={data.userId}
+						currUserId={data.userId}
 						allowKicking={isHost}
 						{player}
 					/>
@@ -125,11 +125,19 @@ function leaveGame() {
 	font-family: var(--default-font-family);
 }
 
+div {
+	display: flex;
+}
+
 #page-container,
 #lobby-container {
-	display: flex;
 	flex-direction: column;
 	align-items: center;
+}
+
+#buttons-container {
+	flex-wrap: wrap;
+	justify-content: center;
 }
 
 #lobby-container {
@@ -154,7 +162,8 @@ ul {
 	margin: 0 10px;
 	max-width: 100%;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	grid-template-columns: repeat(auto-fit, 1fr);
+	font-size: 1.3em;
 }
 
 li {

@@ -1,6 +1,6 @@
 import ablyServer from "$lib/server/ably-server";
 import prisma from "$lib/server/prisma";
-import type { PlayerLabelProps } from "$lib/types";
+import type { PreorderedLeaderboardPlayer } from "$lib/types";
 import { error } from "@sveltejs/kit";
 
 async function endGame(gameId: number) {
@@ -8,10 +8,7 @@ async function endGame(gameId: number) {
 		where: { id: gameId },
 		data: { state: "ENDED" },
 	});
-	ablyServer.channels
-		.get(`game:${gameId}:announcements`)
-		.publish("end", null)
-		.then();
+	ablyServer.channels.get(`game:${gameId}`).publish("end", null).then();
 }
 
 export const load = async ({ params, locals }) => {
@@ -73,7 +70,7 @@ export const load = async ({ params, locals }) => {
 		mapImgURL: string;
 		leaderboardPosition: number;
 		claimedRooms: number[];
-		players: (PlayerLabelProps & { currSvgRef: number })[];
+		players: (PreorderedLeaderboardPlayer & { currSvgRef: number })[];
 	} = {
 		mapImgURL: ret.map.imgURL,
 		leaderboardPosition: ret._count.players + 1,

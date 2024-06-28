@@ -35,7 +35,7 @@ export const POST = async ({ locals, params }) => {
 		select: { id: true },
 	});
 	ablyServer.channels
-		.get(`game:${gameId}:announcements`)
+		.get(`game:${gameId}`)
 		.publish("kick", { userId: requestedUserId })
 		.then();
 	return new Response();

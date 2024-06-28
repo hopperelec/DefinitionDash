@@ -1,18 +1,43 @@
 <script lang="ts">
+import IconsPreloader from "$lib/components/IconsPreloader.svelte";
 import Leaderboard from "$lib/components/Leaderboard.svelte";
-import SVGMapComponent from "$lib/components/SVGMap.svelte";
-import type SVGMap from "$lib/components/SVGMap.svelte";
+import SVGMap from "$lib/components/SVGMap.svelte";
+import StatusBar from "$lib/components/StatusBar.svelte";
+import StatusBarSeparator from "$lib/components/StatusBarSeparator.svelte";
+import TwoDimensionalPanes from "$lib/components/TwoDimensionalPanes.svelte";
 import DefaultPFP from "$lib/media/default_pfp.svg";
 import PointIcon from "$lib/media/point.svg";
-import "$lib/styles/button.css";
-import IconsPreloader from "$lib/components/IconsPreloader.svelte";
 import { title } from "$lib/page-meta";
+import { createPane } from "$lib/types";
 import type { PageData } from "./$types";
 
 title.set("Game over!");
 
 export let data: PageData;
+
 let map: SVGMap;
+let width: number;
+let height: number;
+$: columnMode = width / height < 1.3;
+
+let panes = [
+	[
+		createPane(
+			"Map",
+			SVGMap,
+			{ imgURL: data.mapImgURL, onLoad: () => onMapLoad() },
+			true,
+			true,
+		),
+		createPane(
+			"Leaderboard",
+			Leaderboard,
+			{ currUserId: data.userId, players: data.players },
+			true,
+			true,
+		),
+	],
+];
 
 // won, came 1st, came 2nd, came 3rd, came 4th...
 function getCardinal(position: number) {
@@ -50,26 +75,22 @@ function onMapLoad() {
 </script>
 
 <div id="end-container">
-	<h2>Game over!</h2>
-	<p>You {getCardinal(data.leaderboardPosition)}!</p>
-	<div id="center-container">
-		<div id="leaderboard-container">
-			<Leaderboard currentUserId={data.userId} orderedPlayers={data.players} />
+	<StatusBar>
+		<StatusBarSeparator/>
+		<span>Game over. You {getCardinal(data.leaderboardPosition)}!</span>
+		<!--
+			Causes a console error and doesn't use CSR
+			https://github.com/sveltejs/kit/issues/12398
+		-->
+		<div id="right-align">
+			<a href="/">Home page</a>
+			<StatusBarSeparator/>
+			<a href="/game">New game</a>
 		</div>
-		<div id="map-container">
-			<SVGMapComponent
-				bind:this={map}
-				imgURL={data.mapImgURL}
-				onLoad={onMapLoad}
-			/>
-		</div>
+	</StatusBar>
+	<div id="panes-container" bind:clientWidth={width} bind:clientHeight={height}>
+		<TwoDimensionalPanes {panes} {columnMode}/>
 	</div>
-
-	<!--
-		Causes a console error and doesn't use CSR
-		https://github.com/sveltejs/kit/issues/12398
-	-->
-	<a class="button" href="/game">New game</a>
 </div>
 <IconsPreloader players={data.players} />
 
@@ -87,77 +108,26 @@ function onMapLoad() {
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 }
 
-h2 {
-	font-family: var(--default-font-family-bold);
-	margin: 0;
-}
-
-p {
-	margin-top: 0;
-}
-
-#center-container {
-	flex-grow: 1;
-	width: 100%;
-	display: grid;
-	place-items: center;
-
-	& > * {
-		min-width: 0;
-		box-sizing: border-box;
-	}
-}
-
-#center-container,
-#leaderboard-container {
-	/* Prevent overflow */
+#panes-container {
 	min-height: 0;
-	max-height: 100%;
+	flex-grow: 1;
 }
 
-#map-container {
-	width: 100%;
-	height: 100%;
+span {
+	font-weight: bold;
+}
+
+#right-align {
+	margin-left: auto;
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	overflow: auto;
 }
 
-#leaderboard-container {
-	display: flex;
-	flex-direction: column;
-	max-width: 100%;
-}
-
-@media (aspect-ratio > 1) {
-	#center-container {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	#leaderboard-container {
-		padding-right: 15px;
-	}
-
-	#map-container {
-		padding-left: 15px;
-	}
-}
-
-@media (aspect-ratio < 1) {
-	#center-container {
-		grid-template-rows: repeat(2, minmax(0, 1fr));
-	}
-
-	#leaderboard-container {
-		padding-bottom: 15px;
-	}
-
-	#map-container {
-		padding-top: 15px;
-	}
+a {
+	text-decoration: none;
+	font-weight: bold;
+	color: inherit;
 }
 </style>

@@ -1,13 +1,8 @@
 import prisma from "$lib/server/prisma";
-import { error } from "@sveltejs/kit";
+import type { Definition } from "$lib/types";
+import { error, json } from "@sveltejs/kit";
 
-type Definition = {
-	wordClass: string;
-	definition: string;
-	usageTemplate: string;
-};
-
-export const load = async ({ params, locals, url }) => {
+export const GET = async ({ params, locals, url }) => {
 	const roomRequested = url.searchParams.get("svgRef");
 	if (!roomRequested) error(400, "You must select a room you wish to move to");
 
@@ -32,7 +27,7 @@ export const load = async ({ params, locals, url }) => {
 	});
 	if (!player)
 		error(403, "You are not in this game or the game is not ongoing!");
-	if (player.currQuestion) return player.currQuestion as Definition;
+	if (player.currQuestion) return json(player.currQuestion);
 
 	// Ensure there is a door between the room the player is currently in and the room they are trying to move to
 	const door = await prisma.door.findUnique({
@@ -65,5 +60,5 @@ export const load = async ({ params, locals, url }) => {
 			currMoveId: +roomRequested,
 		},
 	});
-	return definition;
+	return json(definition);
 };
