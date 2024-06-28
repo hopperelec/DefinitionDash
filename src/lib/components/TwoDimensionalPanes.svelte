@@ -13,7 +13,6 @@ export let columnMode = false;
 	<div class="status-bar">
 		<input type="checkbox" id="column-mode" bind:checked={columnMode}/>
 		<label for="column-mode">Column mode</label>
-		<StatusBarSeparator/>
 		<ul id="tabs">
 			{#each panes.flat() as tab}
 				<StatusBarSeparator/>
@@ -94,7 +93,7 @@ export let columnMode = false;
 		list-style: none;
 
 		& > button {
-			padding: 0 0 0 .5em;
+			padding: 0;
 			background: none;
 			border: none;
 			cursor: pointer;
