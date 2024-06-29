@@ -17,6 +17,7 @@ import { type DefinitionDashPaneProps, createPane } from "$lib/components/split-
 import StatusBar from "$lib/components/status-bar/StatusBar.svelte";
 import StatusBarSeparator from "$lib/components/status-bar/StatusBarSeparator.svelte";
 import type { Doors } from "$lib/types";
+import GuidePane from "./GuidePane.svelte";
 
 title.set(undefined);
 
@@ -84,6 +85,14 @@ let panes: DefinitionDashPaneProps[][] = [
 			LeaderboardPane,
 			{ currUserId: data.userId, players },
 			true,
+			true,
+			true,
+		),
+		createPane(
+			"Guide",
+			GuidePane,
+			{},
+			false,
 			true,
 			true,
 		),
