@@ -142,7 +142,7 @@ onMount(async () => {
 			if (onClickRoom) {
 				svg.addEventListener("click", (event) => {
 					if (onClickRoom) {
-						let clickedRoom = getEventRoom(event);
+						const clickedRoom = getEventRoom(event);
 						if (clickedRoom) onClickRoom(clickedRoom);
 					}
 				});

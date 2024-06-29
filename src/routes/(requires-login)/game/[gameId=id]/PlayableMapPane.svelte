@@ -1,5 +1,3 @@
-<svelte:options accessors/>
-
 <script lang="ts">
 // biome-ignore lint/style/useImportType: Used as component
 import SVGMap from "$lib/components/SVGMap.svelte";
@@ -19,7 +17,7 @@ export let players: Readable<{
 }>;
 export let claimedRooms: Set<number>;
 export let currMove: Writable<number | undefined>;
-export let doors: Doors = {};
+export let doors: Readable<Doors>;
 
 let map: SVGMap;
 
@@ -46,19 +44,23 @@ export function movePlayerIcon(userId: number, svgRef: number) {
 }
 
 export function addPointIcon(svgRef: number) {
-	const icon = map.addIconTo(svgRef, PointIcon);
-	if (icon) icon.dataset.point = svgRef.toString();
+	if (map) {
+		const icon = map.addIconTo(svgRef, PointIcon);
+		if (icon) icon.dataset.point = svgRef.toString();
+	}
 }
 
 export function removePointIcon(svgRef: number) {
-	const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
-	if (pointIcon) map.removeIcon(pointIcon);
+	if (map) {
+		const pointIcon = map.getElmWhere("point", svgRef) as SVGImageElement;
+		if (pointIcon) map.removeIcon(pointIcon);
+	}
 }
 
 function canMoveTo(svgRef: number) {
 	const svgRef1 = Math.min($players[currUserId].currSvgRef, svgRef);
 	const svgRef2 = Math.max($players[currUserId].currSvgRef, svgRef);
-	return doors[svgRef1]?.has(svgRef2);
+	return $doors[svgRef1]?.has(svgRef2);
 }
 
 async function onClickRoom(clickedSvgRef: number) {

@@ -1,10 +1,10 @@
 <script lang="ts">
 import DefaultPFP from "$lib/media/default_pfp.svg";
-import type { PlayerLabelProps } from "$lib/types";
+import type { PlayerLabelProps } from "./types";
 
 export let currUserId: number;
 export let player: PlayerLabelProps;
-let name = player.name || `User ${player.id}`;
+const name = player.name || `User ${player.id}`;
 </script>
 
 <div

@@ -1,13 +1,13 @@
 <script lang="ts">
-import PlayerPicturePreloader from "$lib/components/PlayerPicturePreloader.svelte";
+import PlayerPicturePreloader from "$lib/components/preloaders/PlayerPicturePreloader.svelte";
 import DefaultPFP from "$lib/media/default_pfp.svg";
 import "$lib/styles/button.css";
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
-import KickablePlayerLabel from "$lib/components/KickablePlayerLabel.svelte";
+import KickablePlayerLabel from "$lib/components/player-label/KickablePlayerLabel.svelte";
+import type { PlayerLabelProps } from "$lib/components/player-label/types";
 import { title } from "$lib/page-meta";
-import type { PlayerLabelProps } from "$lib/types";
 import type { PageData } from "./$types";
 
 title.set("Lobby");
@@ -22,7 +22,7 @@ let players = data.players.reduce(
 	},
 	{} as { [key: number]: PlayerLabelProps },
 );
-let isHost = players[data.userId].isHost;
+$: isHost = players[data.userId].isHost;
 
 function leavePlayer(userId: number) {
 	delete players[userId];

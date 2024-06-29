@@ -1,6 +1,6 @@
 <script lang="ts">
-import PreorderedLeaderboard from "$lib/components/PreorderedLeaderboard.svelte";
-import type { LeaderboardPlayers } from "$lib/types";
+import PreorderedLeaderboard from "$lib/components/leaderboard/PreorderedLeaderboard.svelte";
+import type { LeaderboardPlayers } from "./types";
 
 export let currUserId: number;
 export let allowKicking = false;

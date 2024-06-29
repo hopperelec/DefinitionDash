@@ -1,6 +1,6 @@
 <script lang="ts">
-import KickablePlayerLabel from "$lib/components/KickablePlayerLabel.svelte";
-import type { PreorderedLeaderboardPlayer } from "$lib/types";
+import KickablePlayerLabel from "$lib/components/player-label/KickablePlayerLabel.svelte";
+import type { PreorderedLeaderboardPlayer } from "./types";
 
 export let currUserId: number;
 export let allowKicking = false;

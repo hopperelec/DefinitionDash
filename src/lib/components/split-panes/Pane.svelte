@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { DefinitionDashPaneProps } from "$lib/types";
 import { Pane } from "svelte-splitpanes";
+import type { DefinitionDashPaneProps } from "./types";
 
 export let props: DefinitionDashPaneProps;
 </script>

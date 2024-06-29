@@ -1,31 +1,33 @@
 <script lang="ts">
 import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
-import IconsPreloader from "$lib/components/IconsPreloader.svelte";
-import TwoDimensionalPanes from "$lib/components/TwoDimensionalPanes.svelte";
+import IconsPreloader from "$lib/components/preloaders/IconsPreloader.svelte";
+import TwoDimensionalPanes from "$lib/components/split-panes/TwoDimensionalSplitPanes.svelte";
 import decodeDoors from "$lib/decode-doors";
 import { title } from "$lib/page-meta.js";
-import { type TwoDimensionalPaneProps, createPane } from "$lib/types";
 import { onMount } from "svelte";
-import { derived, writable } from "svelte/store";
+import { type Writable, derived, writable } from "svelte/store";
 import type { PageData } from "./$types";
 import AnswerPane from "./AnswerPane.svelte";
 import PlayableMap from "./PlayableMapPane.svelte";
 import LeaderboardPane from "./ReactiveLeaderboardPane.svelte";
 import Shop from "./ShopPane.svelte";
 import "$lib/styles/status-bar.css";
-import StatusBar from "$lib/components/StatusBar.svelte";
-import StatusBarSeparator from "$lib/components/StatusBarSeparator.svelte";
+import { type DefinitionDashPaneProps, createPane } from "$lib/components/split-panes/types";
+import StatusBar from "$lib/components/status-bar/StatusBar.svelte";
+import StatusBarSeparator from "$lib/components/status-bar/StatusBarSeparator.svelte";
+import type { Doors } from "$lib/types";
 
 title.set(undefined);
 
 export let data: PageData;
-let players = writable(data.players);
-let currPoints = derived(players, () => $players[data.userId].points);
+const players = writable(data.players);
+const currPoints = derived(players, () => $players[data.userId].points);
 const currMove = writable(data.currMove);
 
 let columnMode = true;
 let ptsChangeContainer: HTMLElement;
+const doors: Writable<Doors> = writable();
 
 function addPtsChangeGlyph(amount: number) {
 	const elm = ptsChangeContainer.appendChild(document.createElement("span"));
@@ -39,7 +41,7 @@ function addPtsChangeGlyph(amount: number) {
 	setTimeout(() => elm.remove(), 1000);
 }
 
-let playableMap = createPane(
+const playableMap = createPane(
 	"Map",
 	PlayableMap,
 	{
@@ -48,12 +50,13 @@ let playableMap = createPane(
 		players,
 		claimedRooms: data.claimedRooms,
 		currMove,
+		doors,
 	},
 	true,
 	true,
 	true,
 );
-let answerPane = createPane(
+const answerPane = createPane(
 	"Answer",
 	AnswerPane,
 	{
@@ -65,7 +68,7 @@ let answerPane = createPane(
 	true,
 );
 
-let panes: TwoDimensionalPaneProps = [
+let panes: DefinitionDashPaneProps[][] = [
 	[playableMap, answerPane],
 	[
 		createPane(
@@ -106,12 +109,9 @@ $: if ($realtimeMessage) {
 				isHost: false,
 			};
 		case "move": {
-			const svgRef = $realtimeMessage.data.svgRef;
-			$players[$realtimeMessage.data.userId].currSvgRef = svgRef;
-			(playableMap.binding as PlayableMap).movePlayerIcon(
-				$realtimeMessage.data.userId,
-				svgRef,
-			);
+			const { userId, svgRef } = $realtimeMessage.data;
+			$players[userId].currSvgRef = svgRef;
+			(playableMap.binding as PlayableMap).movePlayerIcon(userId, svgRef);
 			if (!data.claimedRooms.has(svgRef)) {
 				data.claimedRooms.add(svgRef);
 				(playableMap.binding as PlayableMap).removePointIcon(svgRef);
@@ -119,14 +119,13 @@ $: if ($realtimeMessage) {
 			break;
 		}
 
-		case "points":
-			if ($realtimeMessage.data.userId === data.userId)
-				addPtsChangeGlyph(
-					$realtimeMessage.data.points - $players[data.userId].points,
-				);
-			$players[$realtimeMessage.data.userId].points =
-				$realtimeMessage.data.points;
+		case "points": {
+			const { userId, points } = $realtimeMessage.data;
+			if (userId === data.userId)
+				addPtsChangeGlyph(points - $players[data.userId].points);
+			$players[userId].points = points;
 			break;
+		}
 
 		case "unclaim":
 			for (const svgRef of $realtimeMessage.data) {
@@ -136,7 +135,7 @@ $: if ($realtimeMessage) {
 			break;
 
 		case "kick": {
-			const userId = $realtimeMessage.data.userId;
+			const { userId } = $realtimeMessage.data;
 			delete $players[userId];
 			(playableMap.binding as PlayableMap).removePlayerIcon(userId);
 		}
@@ -144,11 +143,11 @@ $: if ($realtimeMessage) {
 }
 
 onMount(async () => {
-	(playableMap.binding as PlayableMap).doors = await fetch(
-		`/maps/${data.map.id}/doors`,
-	)
-		.then((response) => response.arrayBuffer())
-		.then(decodeDoors);
+	doors.set(
+		await fetch(`/maps/${data.map.id}/doors`)
+			.then((response) => response.arrayBuffer())
+			.then(decodeDoors)
+	);
 });
 </script>
 

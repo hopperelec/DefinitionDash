@@ -1,6 +1,6 @@
 <script lang="ts">
-import Leaderboard from "$lib/components/Leaderboard.svelte";
-import type { LeaderboardPlayers } from "$lib/types.js";
+import Leaderboard from "$lib/components/leaderboard/Leaderboard.svelte";
+import type { LeaderboardPlayers } from "$lib/components/leaderboard/types";
 import type { Readable } from "svelte/store";
 
 export let currUserId: number;

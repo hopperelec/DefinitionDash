@@ -1,7 +1,7 @@
 <script lang="ts">
 import { page } from "$app/stores";
-import PlayerLabel from "$lib/components/PlayerLabel.svelte";
-import type { PlayerLabelProps } from "$lib/types";
+import PlayerLabel from "$lib/components/player-label/PlayerLabel.svelte";
+import type { PlayerLabelProps } from "./types";
 
 export let currUserId: number;
 export let allowKicking = false;
