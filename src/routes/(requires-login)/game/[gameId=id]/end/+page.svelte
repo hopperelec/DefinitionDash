@@ -20,14 +20,15 @@ let width: number;
 let height: number;
 $: columnMode = width / height < 1.3;
 
+const mapPane = createPane(
+	"Map",
+	SVGMap,
+	{ imgURL: data.mapImgURL, onLoad: () => onMapLoad() },
+	true,
+	true,
+);
 let panes = [
-	createPane(
-		"Map",
-		SVGMap,
-		{ imgURL: data.mapImgURL, onLoad: () => onMapLoad() },
-		true,
-		true,
-	),
+	mapPane,
 	createPane(
 		"Leaderboard",
 		Leaderboard,
@@ -56,6 +57,7 @@ function getCardinal(position: number) {
 }
 
 function onMapLoad() {
+	const map = mapPane.binding as SVGMap;
 	for (const player of data.players) {
 		const icon = map.addIconTo(player.currSvgRef, player.picture || DefaultPFP);
 		if (icon) {
