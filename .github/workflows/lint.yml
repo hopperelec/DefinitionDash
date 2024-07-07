@@ -15,17 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
-        run: pnpm install
+      - run: pnpm install
       - run: pnpm run format-check:prisma-prettier
   stylelint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
-        run: pnpm install
+      - run: pnpm install
       - run: pnpm run stylelint
