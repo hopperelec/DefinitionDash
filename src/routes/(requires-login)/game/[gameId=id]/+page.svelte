@@ -13,7 +13,10 @@ import PlayableMap from "./PlayableMapPane.svelte";
 import LeaderboardPane from "./ReactiveLeaderboardPane.svelte";
 import Shop from "./ShopPane.svelte";
 import "$lib/styles/status-bar.css";
-import { type DefinitionDashPaneProps, createPane } from "$lib/components/split-panes/types";
+import {
+	type DefinitionDashPaneProps,
+	createPane,
+} from "$lib/components/split-panes/types";
 import StatusBar from "$lib/components/status-bar/StatusBar.svelte";
 import StatusBarSeparator from "$lib/components/status-bar/StatusBarSeparator.svelte";
 import type { Doors } from "$lib/types";
@@ -88,14 +91,7 @@ let panes: DefinitionDashPaneProps[][] = [
 			true,
 			true,
 		),
-		createPane(
-			"Guide",
-			GuidePane,
-			{},
-			false,
-			true,
-			true,
-		),
+		createPane("Guide", GuidePane, {}, false, true, true),
 	],
 ];
 
@@ -155,7 +151,7 @@ onMount(async () => {
 	doors.set(
 		await fetch(`/maps/${data.map.id}/doors`)
 			.then((response) => response.arrayBuffer())
-			.then(decodeDoors)
+			.then(decodeDoors),
 	);
 });
 </script>
