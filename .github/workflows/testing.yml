@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
         run: pnpm install
@@ -23,7 +23,7 @@ jobs:
       ALLOWED_DOMAIN: example.com
     steps:
       - uses: actions/checkout@v4
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
         run: pnpm install

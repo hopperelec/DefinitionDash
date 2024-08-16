@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: biomejs/setup-biome@v2
+        with:
+          version: '1.8.2'
       - run: biome ci .
   prisma-prettier:
     runs-on: ubuntu-latest
