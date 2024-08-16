@@ -1,3 +1,8 @@
-Definition Dash is a project for my A Level Computer Science coursework (OCR Component 3).
+Definition Dash is the project I did for my A Level Computer Science coursework (OCR Component 3).
 
-I will provide more details here about the project and add a license once I have finished the course.
+I will soon be providing:
+- more details about what the project is
+- my coursework document (filtered to not include anything about my school)
+- a sample map
+- sample questions
+After which I will be working on making a publicly accessible version of the game for everyone to try out!
