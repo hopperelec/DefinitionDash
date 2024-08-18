@@ -85,6 +85,8 @@ async function onMapLoad() {
 		/* noinspection CssUnusedSymbol */
 		.door-line {
 			stroke: black;
+			stroke-width: 1;
+			vector-effect: non-scaling-stroke;
 		}
 
 		[data-room]:hover {

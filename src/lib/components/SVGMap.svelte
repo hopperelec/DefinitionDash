@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ICON_SIZE, SVG_NS } from "$lib/constants";
+import { SVG_NS } from "$lib/constants";
 import createPanZoom, { type PanZoom } from "panzoom";
 import { onMount } from "svelte";
 
@@ -66,43 +66,40 @@ export function getCenterOf(roomId: number) {
 }
 
 export function addIconTo(svgRef: number, iconSrc: string) {
-	const center = getCenterOf(svgRef);
-	if (!center) return;
-
-	const labels = getLabelsFor(svgRef);
-	if (labels) {
-		for (const label of labels) {
-			label.style.display = "none";
-		}
-	}
-
-	const icon = document.createElementNS(SVG_NS, "image");
-	icon.setAttribute("referrerpolicy", "no-referrer"); // Avoids Google 403
-	icon.href.baseVal = iconSrc;
-	icon.setAttribute("width", ICON_SIZE.toString());
-	icon.setAttribute("height", ICON_SIZE.toString());
-
 	let iconContainer = getElmWhere("icon-for", svgRef);
-	if (iconContainer) {
-		icon.setAttribute(
-			"transform",
-			`translate(${(iconContainer.childElementCount * ICON_SIZE) / 2})`, // Overlap icons slightly
-		);
-	} else {
-		iconContainer = svg.appendChild(document.createElementNS(SVG_NS, "g"));
+	if (!iconContainer) {
+		const center = getCenterOf(svgRef);
+		if (!center) return;
+		const labels = getLabelsFor(svgRef);
+		if (labels) {
+			for (const label of labels) {
+				label.style.display = "none";
+			}
+		}
+		iconContainer = svg.appendChild(document.createElementNS(SVG_NS, "svg"));
+		iconContainer.setAttribute("x", center.x.toString());
+		iconContainer.setAttribute("y", center.y.toString());
+		iconContainer.setAttribute("viewBox", "0 .5 1 1");
+		iconContainer.setAttribute("width", "1em");
+		iconContainer.setAttribute("height", "1em");
+		iconContainer.setAttribute("overflow", "visible");
 		iconContainer.dataset.iconFor = svgRef.toString();
 	}
-	iconContainer.appendChild(icon);
 
-	const iconContainerBBox = iconContainer.getBBox();
-	center.x -= iconContainerBBox.width / 2;
-	center.y -= iconContainerBBox.height / 2;
-
-	iconContainer.setAttribute(
-		"transform",
-		`translate(${center.x}, ${center.y})`,
+	const newIcon = iconContainer.appendChild(
+		document.createElementNS(SVG_NS, "image"),
 	);
-	return icon;
+	newIcon.setAttribute("referrerpolicy", "no-referrer"); // Avoids Google 403
+	newIcon.href.baseVal = iconSrc;
+
+	// Keep icons centered, and overlap them slightly
+	let x = -(iconContainer.childElementCount + 1) / 4;
+	for (const icon of iconContainer.children) {
+		icon.setAttribute("x", x.toString());
+		x += 0.5;
+	}
+
+	return newIcon;
 }
 
 export let imgURL: string | undefined;
@@ -171,6 +168,12 @@ onMount(async () => {
 		[data-label-for],
 		[data-icon-for] {
 			pointer-events: none;
+		}
+
+		[data-icon-for] > image {
+			width: 1px;
+			height: 1px;
+			vector-effect: non-scaling-stroke;
 		}
 	</style>
 </svelte:head>
