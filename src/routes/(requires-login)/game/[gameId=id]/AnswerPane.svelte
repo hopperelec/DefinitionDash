@@ -1,9 +1,13 @@
 <script lang="ts">
+import MinimizeButton from "$lib/components/split-panes/MinimizeButton.svelte";
+import PaneTitle from "$lib/components/split-panes/PaneTitle.svelte";
+import PaneTitleBar from "$lib/components/split-panes/PaneTitleBar.svelte";
 import type { Definition } from "$lib/types";
 import type { Writable } from "svelte/store";
 
 export let currQuestion: Definition | null;
 export let currMove: Writable<unknown>;
+export let minimize: () => void;
 
 let answer = "";
 let usageElm: HTMLElement;
@@ -57,6 +61,10 @@ function focus(elm: HTMLElement) {
 }
 </script>
 
+<PaneTitleBar>
+	<PaneTitle>Answer</PaneTitle>
+	<MinimizeButton {minimize}/>
+</PaneTitleBar>
 <div class:loading={status === "loading"} class:has-question={currQuestion} class:no-question={!currQuestion}>
 	{#if currQuestion}
 		<input

@@ -1,6 +1,6 @@
+import type { PreorderedLeaderboardPlayer } from "$lib/components/leaderboard/types";
 import ablyServer from "$lib/server/ably-server";
 import prisma from "$lib/server/prisma";
-import type { PreorderedLeaderboardPlayer } from "$lib/types";
 import { error } from "@sveltejs/kit";
 
 async function endGame(gameId: number) {

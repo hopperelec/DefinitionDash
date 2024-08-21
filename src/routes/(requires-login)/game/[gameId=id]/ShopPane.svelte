@@ -1,10 +1,14 @@
 <script lang="ts">
 import "$lib/styles/button.css";
+import MinimizeButton from "$lib/components/split-panes/MinimizeButton.svelte";
+import PaneTitle from "$lib/components/split-panes/PaneTitle.svelte";
+import PaneTitleBar from "$lib/components/split-panes/PaneTitleBar.svelte";
 import type { ShopItem } from "@prisma/client";
 import type { Readable } from "svelte/store";
 
 export let shopItems: ShopItem[];
 export let currPoints: Readable<number>;
+export let minimize: () => void;
 
 async function buyItem(itemId: number) {
 	const res = await fetch(`buy-item/${itemId}`);
@@ -12,6 +16,10 @@ async function buyItem(itemId: number) {
 }
 </script>
 
+<PaneTitleBar>
+	<PaneTitle>Shop</PaneTitle>
+	<MinimizeButton {minimize}/>
+</PaneTitleBar>
 <ul>
 	{#each shopItems as item}
 		<li>
@@ -29,6 +37,8 @@ async function buyItem(itemId: number) {
 
 <style>
 ul {
+	flex-grow: 1;
+	overflow-y: auto;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(max(200px, calc(20% - 1em)), 1fr));
 	gap: 1em;

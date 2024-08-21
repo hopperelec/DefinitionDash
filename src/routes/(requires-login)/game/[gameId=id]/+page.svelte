@@ -3,23 +3,17 @@ import { page } from "$app/stores";
 import { getChannel } from "$lib/ably-client";
 import IconsPreloader from "$lib/components/preloaders/IconsPreloader.svelte";
 import TwoDimensionalPanes from "$lib/components/split-panes/TwoDimensionalSplitPanes.svelte";
-import decodeDoors from "$lib/decode-doors";
 import { title } from "$lib/page-meta.js";
-import { onMount } from "svelte";
-import { type Writable, derived, writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import type { PageData } from "./$types";
 import AnswerPane from "./AnswerPane.svelte";
 import PlayableMap from "./PlayableMapPane.svelte";
 import LeaderboardPane from "./ReactiveLeaderboardPane.svelte";
 import Shop from "./ShopPane.svelte";
 import "$lib/styles/status-bar.css";
-import {
-	type DefinitionDashPaneProps,
-	createPane,
-} from "$lib/components/split-panes/types";
+import { type PaneProps, createPane } from "$lib/components/split-panes/types";
 import StatusBar from "$lib/components/status-bar/StatusBar.svelte";
 import StatusBarSeparator from "$lib/components/status-bar/StatusBarSeparator.svelte";
-import type { Doors } from "$lib/types";
 import GuidePane from "./GuidePane.svelte";
 
 title.set(undefined);
@@ -31,7 +25,6 @@ const currMove = writable(data.currMove);
 
 let columnMode = true;
 let ptsChangeContainer: HTMLElement;
-const doors: Writable<Doors> = writable();
 
 function addPtsChangeGlyph(amount: number) {
 	const elm = ptsChangeContainer.appendChild(document.createElement("span"));
@@ -50,14 +43,11 @@ const playableMap = createPane(
 	PlayableMap,
 	{
 		currUserId: data.userId,
-		mapImgURL: data.map.imgURL,
+		mapData: data.map,
 		players,
 		claimedRooms: data.claimedRooms,
 		currMove,
-		doors,
 	},
-	true,
-	true,
 	true,
 );
 const answerPane = createPane(
@@ -68,30 +58,19 @@ const answerPane = createPane(
 		currMove,
 	},
 	true,
-	true,
-	true,
 );
 
-let panes: DefinitionDashPaneProps[][] = [
+let panes: PaneProps[][] = [
 	[playableMap, answerPane],
 	[
-		createPane(
-			"Shop",
-			Shop,
-			{ shopItems: data.shopItems, currPoints },
-			true,
-			true,
-			true,
-		),
+		createPane("Shop", Shop, { shopItems: data.shopItems, currPoints }, true),
 		createPane(
 			"Leaderboard",
 			LeaderboardPane,
 			{ currUserId: data.userId, players },
 			true,
-			true,
-			true,
 		),
-		createPane("Guide", GuidePane, {}, false, true, true),
+		createPane("Guide", GuidePane, {}, false),
 	],
 ];
 
@@ -146,14 +125,6 @@ $: if ($realtimeMessage) {
 		}
 	}
 }
-
-onMount(async () => {
-	doors.set(
-		await fetch(`/maps/${data.map.id}/doors`)
-			.then((response) => response.arrayBuffer())
-			.then(decodeDoors),
-	);
-});
 </script>
 
 <div id="page-container">

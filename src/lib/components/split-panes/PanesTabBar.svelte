@@ -1,9 +1,9 @@
 <script lang="ts">
 import StatusBarSeparator from "$lib/components/status-bar/StatusBarSeparator.svelte";
-import type { DefinitionDashPaneProps } from "./types";
+import type { PaneProps } from "./types";
 
 export let columnMode: boolean;
-export let panes: DefinitionDashPaneProps[] | DefinitionDashPaneProps[][];
+export let panes: PaneProps[] | PaneProps[][];
 </script>
 
 <div class="status-bar">
@@ -12,12 +12,8 @@ export let panes: DefinitionDashPaneProps[] | DefinitionDashPaneProps[][];
 	<ul id="tabs">
 		{#each panes.flat() as tab}
 			<StatusBarSeparator/>
-			<li class:open={tab.allowClosing && tab.shown}>
-				{#if tab.allowClosing}
-					<button type="button" on:click={() => tab.shown = !tab.shown}>{tab.name}</button>
-				{:else}
-					{tab.name}
-				{/if}
+			<li class:open={tab.shown}>
+				<button type="button" on:click={() => tab.shown = !tab.shown}>{tab.name}</button>
 			</li>
 		{/each}
 	</ul>

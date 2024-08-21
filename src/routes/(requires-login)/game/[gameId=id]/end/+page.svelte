@@ -15,7 +15,6 @@ title.set("Game over!");
 
 export let data: PageData;
 
-let map: SVGMap;
 let width: number;
 let height: number;
 $: columnMode = width / height < 1.3;
@@ -23,8 +22,7 @@ $: columnMode = width / height < 1.3;
 const mapPane = createPane(
 	"Map",
 	SVGMap,
-	{ imgURL: data.mapImgURL, onLoad: () => onMapLoad() },
-	true,
+	{ imgURL: data.mapImgURL, onLoad: onMapLoad },
 	true,
 );
 let panes = [
@@ -33,7 +31,6 @@ let panes = [
 		"Leaderboard",
 		Leaderboard,
 		{ currUserId: data.userId, players: data.players },
-		true,
 		true,
 	),
 ];
@@ -89,7 +86,7 @@ function onMapLoad() {
 		</div>
 	</StatusBar>
 	<div id="panes-container" bind:clientWidth={width} bind:clientHeight={height}>
-		<DefinitionDashSplitPanes {panes} {columnMode}/>
+		<DefinitionDashSplitPanes {panes} {columnMode} showTabBar={false}/>
 	</div>
 </div>
 <IconsPreloader players={data.players} />

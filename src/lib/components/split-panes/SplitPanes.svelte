@@ -3,14 +3,14 @@ import DefinitionDashPane from "$lib/components/split-panes/Pane.svelte";
 import PanesTabBar from "$lib/components/split-panes/PanesTabBar.svelte";
 import SplitpanesTheme from "$lib/components/split-panes/SplitpanesTheme.svelte";
 import { Splitpanes } from "svelte-splitpanes";
-import type { DefinitionDashPaneProps } from "./types";
+import type { PaneProps } from "./types";
 
-export let panes: DefinitionDashPaneProps[];
+export let panes: PaneProps[];
 export let columnMode = false;
-export let showTabBar: "never" | "for-closing" | "always" = "for-closing";
+export let showTabBar = true;
 </script>
 
-{#if showTabBar !== "never" && (showTabBar === "always" || panes.some(pane => pane.allowClosing))}
+{#if showTabBar}
 	<PanesTabBar bind:columnMode={columnMode} panes={panes}/>
 {/if}
 <Splitpanes theme="" horizontal={columnMode}>
