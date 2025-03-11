@@ -2,18 +2,7 @@ import { SESSION_COOKIE_KEY } from "$lib/constants";
 import prisma from "$lib/server/prisma";
 import { type Handle, type RequestEvent, redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
-import type { Options } from "html-minifier-terser";
-import { minify } from "html-minifier-terser";
 import { toBuffer } from "uuid-buffer";
-
-const minificationOptions: Options = {
-	collapseInlineTagWhitespace: true,
-	collapseWhitespace: true,
-	minifyJS: true,
-	minifyCSS: true,
-	noNewlinesBeforeTagClose: true,
-	removeRedundantAttributes: true,
-};
 
 function requiresAuthorization(event: RequestEvent) {
 	return event.route.id?.startsWith("/(requires-login)");
@@ -28,30 +17,22 @@ async function isAuthorized(event: RequestEvent) {
 	});
 	if (!session) error(400, "Invalid session UUID");
 	if (new Date() > session.expires) return false;
+	event.locals.user = session.user;
+	if (!requiresAuthorization(event)) return true;
 	if (!session.user.allowed)
 		error(
 			403,
 			"Currently, only accounts registered with my school are allowed to access Definition Dash",
 		);
-	event.locals.user = session.user;
-	if (!event.url.pathname.startsWith("/teacher") || session.user.isTeacher)
-		return true;
-	error(403, "Only teachers can access this page!");
+	if (event.url.pathname.startsWith("/teacher") && session.user.isTeacher)
+		error(403, "Only teachers can access this page!");
+	return true;
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-	let page = "";
-
 	// Check if authorized first so that `event.locals.user` is set even if authorization isn't required
-	if ((await isAuthorized(event)) || !requiresAuthorization(event)) {
-		return resolve(event, {
-			transformPageChunk: ({ html, done }) => {
-				page += html;
-				if (done) {
-					return minify(page, minificationOptions);
-				}
-			},
-		});
+	if (await isAuthorized(event)) {
+		return resolve(event);
 	}
 	return redirect(303, `/login/?redirect_uri=${event.url.pathname}`);
 };

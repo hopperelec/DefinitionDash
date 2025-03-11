@@ -11,7 +11,7 @@ export let showTabBar = true;
 </script>
 
 {#if showTabBar}
-	<PanesTabBar bind:columnMode={columnMode} bind:panes={panes}/>
+	<PanesTabBar bind:columnMode bind:panes/>
 {/if}
 <Splitpanes theme="" horizontal={!columnMode}>
 	{#each panes as group} <!-- Group is a column in column mode, and a row otherwise -->

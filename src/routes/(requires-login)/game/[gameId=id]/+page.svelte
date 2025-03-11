@@ -138,7 +138,7 @@ $: if ($realtimeMessage) {
 			<a href="end">End game</a>
 		{/if}
 	</StatusBar>
-	<TwoDimensionalPanes {panes} {columnMode}/>
+	<TwoDimensionalPanes bind:panes bind:columnMode/>
 </div>
 
 <IconsPreloader players={Object.values(data.players)}/>

@@ -13,7 +13,10 @@ export let panes: PaneProps[] | PaneProps[][];
 		{#each panes.flat() as tab}
 			<StatusBarSeparator/>
 			<li class:open={tab.shown}>
-				<button type="button" on:click={() => tab.shown = !tab.shown}>{tab.name}</button>
+				<button type="button" on:click={() => {
+					tab.shown = !tab.shown;
+					panes = panes; // trigger reactivity
+				}}>{tab.name}</button>
 			</li>
 		{/each}
 	</ul>
